@@ -1,3 +1,6 @@
+import sys
+sys.path.insert(0,"../")
+
 class Fichier:
 	"""docstring for Fichier"""
 	liste = []

@@ -13,4 +13,4 @@ if __name__ == '__main__':
     print("")
     print("la liste en int : ")
     print(monfichier.listeInt)'''
-    print('toto')
+    printToto()

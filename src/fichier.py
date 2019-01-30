@@ -42,5 +42,5 @@ class Fichier:
                 return cle
         return 0
 
-    def printToto(self):
-        print('Toto')
+def printToto():
+    print('Toto')

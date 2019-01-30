@@ -3,7 +3,7 @@ from src.fichier import *
 
 
 if __name__ == '__main__':
-    monfichier = Fichier("monfichier")
+    monfichier = Fichier("scikit_learn.pattern_mining/test/monfichier")
     monfichier.miseEnPlace()
     print("la liste normale")
     print(monfichier.liste)

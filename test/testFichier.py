@@ -1,4 +1,4 @@
-from test.fichier import *
+from fichier import *
 
 
 

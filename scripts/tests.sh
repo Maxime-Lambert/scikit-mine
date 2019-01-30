@@ -1,1 +1,1 @@
-python ../test/testFichier.py
+python test/testFichier.py

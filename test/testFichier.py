@@ -6,7 +6,7 @@ if __name__ == '__main__':
     print("la liste normale")
     print(monfichier.liste)
     print("")
-    print("le dico créé en lien avec le fichier")
+    print("le dico cree en lien avec le fichier")
     print(monfichier.dico)
     print("")
     print("la liste en int : ")

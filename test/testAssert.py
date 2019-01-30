@@ -17,11 +17,6 @@ class TestStringMethods(unittest.TestCase):
         with self.assertRaises(TypeError):
             s.split(2)
 
-    def test_false(self):
-        self.assertTrue(False)
-
-    def test_false2(self):
-        self.assertTrue(False)
 
 
 if __name__ == '__main__':

@@ -1,4 +1,8 @@
-from ..src.fichier import *
+import sys
+sys.path.insert(0,"../")
+from src.fichier import *
+
+
 
 if __name__ == '__main__':
     monfichier = Fichier("monfichier")

@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
-python test/testAssert.py
-python test/testFichier.py
+python3 test/testAssert.py
+python3 test/testFichier.py

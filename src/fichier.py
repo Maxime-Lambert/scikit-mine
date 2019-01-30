@@ -41,3 +41,6 @@ class Fichier:
             if (val == valeur):
                 return cle
         return 0
+
+    def printToto(self):
+        print('Toto')

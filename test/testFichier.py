@@ -1,4 +1,4 @@
-from fichier import *
+from src.fichier import *
 
 
 

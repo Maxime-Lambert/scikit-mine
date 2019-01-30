@@ -6,7 +6,7 @@ class Fichier:
 
 
 	def __init__(self, nom):
-		fichier = open("test/" + nom + ".txt","r")
+		fichier = open(nom + ".txt","r")
 		lignes = fichier.readlines();
 		tmp = []
 		tab = []

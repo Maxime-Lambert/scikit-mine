@@ -1,7 +1,7 @@
 class Fichier:
     """docstring for Fichier"""
     liste = []
-    listeInt = []
+    liste_int = []
     dico = {}
 
     def __init__(self, nom):
@@ -21,27 +21,27 @@ class Fichier:
                 tmp.append(trans2.replace("\n", ""))
             self.liste.append(tmp)
 
-    def miseEnPlace(self):
+    def mise_en_place(self):
         i = 1
         cle = 0
         for trans in self.liste:
             res = []
             for val in trans:
-                cle = self.valeurExist(val)
-                if (cle != 0):
+                cle = self.valeur_exist(val)
+                if cle != 0:
                     res.append(cle)
                 else:
                     self.dico[i] = val
                     res.append(i)
                     i += 1
-            self.listeInt.append(res)
+            self.liste_int.append(res)
 
-    def valeurExist(self, val):
+    def valeur_exist(self, val):
         for cle, valeur in self.dico.items():
-            if (val == valeur):
+            if val == valeur:
                 return cle
         return 0
 
 
-def printToto():
+def print_toto():
     print('Toto')

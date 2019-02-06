@@ -1,0 +1,8 @@
+./src/Transaction.py:20:1: W391 blank line at end of file
+./src/patern.py:1:1: F403 'from src.Transaction import *' used; unable to detect undefined names
+./src/patern.py:21:17: F405 'Transaction' may be undefined, or defined from star imports: src.Transaction
+./src/patern.py:26:13: F405 'Transaction' may be undefined, or defined from star imports: src.Transaction
+./src/patern.py:28:14: F405 'Transaction' may be undefined, or defined from star imports: src.Transaction
+./src/patern.py:30:14: F405 'Transaction' may be undefined, or defined from star imports: src.Transaction
+./test/testFichier.py:1:1: F403 'from src.fichier import *' used; unable to detect undefined names
+./test/testFichier.py:14:5: F405 'printToto' may be undefined, or defined from star imports: src.fichier

@@ -1,2 +1,2 @@
 #!/usr/bin/env bash
-src/SLIM/slimalgo.py
+python3 src/SLIM/slimalgo.py

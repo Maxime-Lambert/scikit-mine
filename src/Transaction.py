@@ -17,3 +17,4 @@ class Transaction:
     def __add__(self, transaction):
         return self.elements + transaction.elements
 
+

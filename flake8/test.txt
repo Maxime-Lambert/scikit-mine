@@ -1,0 +1,5 @@
+test/test.py:2:7: E111 indentation is not a multiple of four
+test/test.py:2:7: E117 over-indented
+test/test.py:2:20: E703 statement ends with a semicolon
+test/test.py:2:21: W292 no newline at end of file
+

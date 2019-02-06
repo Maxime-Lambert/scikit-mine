@@ -1,7 +1,5 @@
 from src.fichier import *
 
-
-
 if __name__ == '__main__':
     '''monfichier = Fichier("monfichier")
     monfichier.miseEnPlace()

@@ -1,2 +1,2 @@
 if(True):
-      print('toto');
+    print('toto');

@@ -17,8 +17,11 @@ class TestStringMethods(unittest.TestCase):
         with self.assertRaises(TypeError):
             s.split(2)
 
-    def assertFalse(self):
+    def testFalse(self):
         self.assertTrue(False)
+
+    def testTrue(self):
+        self.assertTrue(True)
 
 if __name__ == '__main__':
     unittest.main()

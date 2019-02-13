@@ -1,4 +1,4 @@
-from src.Transaction import *
+import transaction as Transaction
 
 
 class Pattern:

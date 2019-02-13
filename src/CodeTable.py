@@ -15,12 +15,11 @@
 
 import math
 
-"""
-import Database & Pattern
-"""
+import database
+import pattern
 
 
-class CodeTable:
+class codeTable:
 
     def __init__(self):
         self.patternMap = {}
@@ -28,24 +27,24 @@ class CodeTable:
     def __repr__(self):
         res = ""
         for k, v in self.patternMap.items():
-            res = res + k + " " + v.to_string() + " "
+            res += k.__repr__ + " " + v.to_string() + " "
         return res
 
-    def add(self, pattern):
+    def add(self, pattern1):
         for k, v in self.patternMap.items():
-            if pattern.__eq__(k):
+            if pattern1.__eq__(k):
                 k.usage += 1
             return 0
-        self.patternMap[pattern] = 0
+        self.patternMap.setdefault(pattern1, 0)
         return 1
 
-    def remove(self, pattern):
-        if pattern in self.patternMap:
-            del self.patternMap[pattern]
+    def remove(self, pattern1):
+        if pattern1 in self.patternMap:
+            del self.patternMap[pattern1]
         return self
 
-    def contains(self, pattern):
-        return pattern in self.patternMap
+    def contains(self, pattern1):
+        return pattern1 in self.patternMap
 
     def size(self):
         return len(self.patternMap)

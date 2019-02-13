@@ -2,6 +2,7 @@ import unittest
 
 from .fichier import *
 from .database import *
+from sqs_search import *
 
 class MyTest(unittest.TestCase):
     

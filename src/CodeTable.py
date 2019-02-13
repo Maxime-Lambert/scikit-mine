@@ -18,15 +18,12 @@ class CodeTable:
         return res
 
     def add(self, pattern):
-        b = False
-        for k, v in patternMap:
-            if pattern.eq(k):
-                b = True
-        if b:
-            self.patternMap[pattern].usage += 1
-        else:
-            self.patternMap[pattern] = 0
-        return self
+        for k, v in self.patternMap:
+            if pattern.__eq__(k):
+            k.usage += 1
+            return 0
+        self.patternMap[pattern] = 0
+        return 1
 
     def remove(self, pattern):
         if pattern in self.patternMap:

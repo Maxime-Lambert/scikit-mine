@@ -29,9 +29,6 @@ def build_window(sequence):
 
 
 def estimate(pattern, a, data):
-    t = set()
-    for transaction in pattern:
-
     pass
 
 

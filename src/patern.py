@@ -7,7 +7,6 @@ class Pattern:
     def __init__(self, transaction):
         self.usage = 0
         self.support = 0
-        self.codeLength = 0
         self.elements = transaction
 
     def __repr__(self):
@@ -19,6 +18,12 @@ class Pattern:
     def __eq__(self, pattern):
         return self.elements.__eq__(pattern.elements)
 
+    def __hash__(self):
+        i = 0
+        for t in self.elements:
+            i += t
+        return i
+        
     def union(self, pattern2):
         res = self.elements + pattern2.elements
         trans = Transaction(sorted(list(set(res))))

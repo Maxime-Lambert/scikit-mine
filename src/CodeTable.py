@@ -1,9 +1,23 @@
 # -*- coding: utf-8 -*-
 
-from Pattern import *
-from Database import *
+"""
+    how to sort how you want
+    def repeats(string):
+    # Lower the case in the string
+    string = string.lower()
+    # Get a set of the unique letters
+    uniques = set(string)
+    # Count the max occurrences of each unique letter
+    counts = [string.count(letter) for letter in uniques]
+    return max(counts)
+"""
+
 
 import math
+
+"""
+import Database & Pattern
+"""
 
 
 class CodeTable:
@@ -91,15 +105,3 @@ class CodeTable:
 
     def orderByUsage(self):
         return sorted(self.patternMap, key=self.patternMap.usage)
-    """
-    def repeats(string):
-    # Lower the case in the string
-    string = string.lower()
- 
-    # Get a set of the unique letters
-    uniques = set(string)
- 
-    # Count the max occurrences of each unique letter
-    counts = [string.count(letter) for letter in uniques]
- 
-    return max(counts)"""

@@ -15,9 +15,6 @@
 
 import math
 
-import database
-import pattern
-
 
 class codeTable:
 

@@ -17,12 +17,6 @@ class Pattern:
 
     def __eq__(self, pattern):
         return self.elements.__eq__(pattern.elements)
-
-    def __hash__(self):
-        i = 0
-        for t in self.elements:
-            i += t
-        return i
         
     def union(self, pattern2):
         res = self.elements + pattern2.elements

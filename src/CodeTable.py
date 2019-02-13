@@ -101,7 +101,7 @@ class CodeTable:
             del ct.patternMap[k]
             if self.compareGain(ct, data):
                 self.patternMap = ct
-                return self
+        return self
 
     def orderByUsage(self):
         return sorted(self.patternMap, key=self.patternMap.usage)

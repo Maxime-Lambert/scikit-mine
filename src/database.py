@@ -6,8 +6,8 @@ Created on Mon Feb 11 14:45:31 2019
 
 @author: Josie Signe
 """
-import src.CodeTable as CodeTable
-import src.Pattern as Pattern
+from src.CodeTable import *
+from src.Pattern import *
 
 
 class Database:

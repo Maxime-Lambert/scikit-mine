@@ -12,7 +12,7 @@ from patern import Pattern
 
 class Database:
 
-    def _init_(self, int_trans_list):
+    def __init__(self, int_trans_list):
         self.trans_collection = int_trans_list
 
     def standard_code_table(self):
@@ -28,3 +28,12 @@ class Database:
                 print(pattern.usage)
             # puis calcul des codes de la sct
         return sct
+
+    def __repr__(self):
+        return repr(self.transactions)
+
+    def __len__(self):
+        return len(self.trans_collection)
+
+    def __getitem__(self, transaction):
+        return self.transactions[transaction]

@@ -9,6 +9,17 @@ class Pattern:
         self.support = 0
         self.elements = transaction
 
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        try:
+            result = self.text[self.index].upper()
+        except IndexError:
+            raise StopIteration
+        self.index += 1
+        return result
+
     def __repr__(self):
         res = "["
         res += self.elements.toString()
@@ -24,10 +35,16 @@ class Pattern:
             res += str(transaction)
         return res
 
+    def __hash__(self):
+        return hash(self.usage)
+
     def union(self, pattern2):
         res = self.elements + pattern2.elements
         trans = Transaction(sorted(list(set(res))))
         return Pattern(trans)
+
+    def add_usage(self):
+        self.usage += 1
 
 
 if __name__ == '__main__':

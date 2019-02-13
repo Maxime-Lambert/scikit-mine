@@ -37,8 +37,8 @@ class Database:
             # les trans sont des ensemble d'int
             for item in trans:
                 pattern = Pattern([item])
-                sct.add(pattern)
-                pattern.usage = pattern.usage + 1  # ne fonctionne pas
+                sct.set(pattern)
+                #sct.get_pattern(pattern).add_usage()  # ne fonctionne pas
             # puis calcul des codes de la sct
         return sct
 

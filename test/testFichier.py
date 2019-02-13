@@ -1,17 +1,21 @@
-from src.fichier import *
+from src.File import *
 from src.database import *
 
 if __name__ == '__main__':
     monfichier = Fichier("monfichier")
-    monfichier.mise_en_place()
     print("la liste normale")
-    print(monfichier.liste)
+    print(monfichier.list_string)
     print("")
     print("le dico cree en lien avec le fichier")
     print(monfichier.dico)
     print("")
     print("la liste en int : ")
-    print(monfichier.liste_int)
-    database = Database(monfichier.liste_int)
+    print(monfichier.list_int)
+    database = Database(monfichier.list_int)
+    print("test database ! ")
+    print(database)
+    monfichier.list_int.append(18)
+    print("la liste en int : ")
+    print(monfichier.list_int)
     print("test database ! ")
     print(database)

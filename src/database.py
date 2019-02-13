@@ -6,8 +6,8 @@ Created on Mon Feb 11 14:45:31 2019
 
 @author: Josie Signe
 """
-from codetable import CodeTable
-from patern import Pattern
+from src.CodeTable import *
+from src.patern import *
 
 
 class Database:

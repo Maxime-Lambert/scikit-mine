@@ -1,12 +1,12 @@
 class Fichier:
     """docstring for Fichier"""
-    liste = []
-    liste_int = []
+    list_string = []
+    list_int = []
     dico = {}
 
     def __init__(self, nom):
-        fichier = open(nom + ".txt", "r")
-        lignes = fichier.readlines()
+        file = open(nom + ".txt", "r")
+        lignes = file.readlines()
         tmp = []
         tab = []
 
@@ -19,27 +19,28 @@ class Fichier:
             tmp = []
             for trans2 in trans:
                 tmp.append(trans2.replace("\n", ""))
-            self.liste.append(tmp)
+            self.list_string.append(tmp)
+        self.start()
 
-    def mise_en_place(self):
+    def start(self):
         i = 1
-        cle = 0
-        for trans in self.liste:
+        key = 0
+        for trans in self.list_string:
             res = []
             for val in trans:
-                cle = self.valeur_exist(val)
-                if cle != 0:
-                    res.append(cle)
+                key = self.key_exist(val)
+                if key != 0:
+                    res.append(key)
                 else:
                     self.dico[i] = val
                     res.append(i)
                     i += 1
-            self.liste_int.append(res)
+            self.list_int.append(res)
 
-    def valeur_exist(self, val):
-        for cle, valeur in self.dico.items():
-            if val == valeur:
-                return cle
+    def key_exist(self, val):
+        for key, value in self.dico.items():
+            if val == value:
+                return key
         return 0
 
 

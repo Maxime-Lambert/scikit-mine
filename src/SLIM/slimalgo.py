@@ -2,21 +2,23 @@
 #import scipy.sparse as sp
 #from .Transaction import Transaction 
 #from .codeTable import CodeTable
+#from .database import Database
 
 #v0 : helloworld?
 #v1 : Pour une premiere version on peut zapper la comparaison des usages
 #et tester toutes les combinaisons de candidats
 
-def _slim(database):
+
+def _slim(d):
     """
     Parameters
     ----------
-    D : scipy.sparse.csr_matrix, shape (n_transactions, n_items)
+    
     """
-    standard_code_table = CodeTable(database)#init CT ou SCT ?
-    code_table = standard_code_table 
+    standard_code_table = d.standard_code_table()
+    code_table = standard_code_table
     ct_has_improved = True
-    #ct_pattern_set = code_table.get_pattern_list #??
+    #ct_pattern_set = code_table.get_pattern_list
     
     while ct_has_improved != False:
         #tri par usage de CT + liste de candidat
@@ -25,7 +27,7 @@ def _slim(database):
         ct_has_improved = False
         indice_pattern_x = 0
         x_current = code_table.get_pattern(indice_pattern_x) #attention si viiiiiide
-	#-------------recherche candidats-------------#
+	#------------- Mine candidates -------------#
         while indice_pattern_x < code_table.size-1 & code_table.get(indice_pattern_x).usage>= best_usage:
             indice_pattern_y = indice_pattern_x + 1 #on ne prend que les patterns juste après x
             y_current = code_table.get_pattern(indice_pattern_y)
@@ -38,7 +40,7 @@ def _slim(database):
                         best_usage = x_y_current.usage
                 y_current = code_table.get_pattern(++indice_pattern_y)
             x_current = code_table.get_pattern(++indice_pattern_x) #on prend le premier pattern
-	#------------- Amélioration CT -------------#
+	#------------- Improve CT -------------#
         indice_candidat = 0
             # on parcours la liste de candidats tant que l'on a pas améliorer CT ou qu'il reste des candidats non testés
         while indice_candidat <= len(candidates_list) & ct_has_improved==False:
@@ -48,5 +50,5 @@ def _slim(database):
                 code_table = code_table_temp.post_prune
                 ct_has_improved = True
             else:
-                indice_candidat = indice_candidat+1 #remove pluot que de compteur
+                indice_candidat = indice_candidat+1 #remove plutot que de compteur
 print('Hello world!')

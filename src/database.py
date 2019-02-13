@@ -30,10 +30,10 @@ class Database:
         return sct
 
     def __repr__(self):
-        return repr(self.transactions)
+        return repr(self.trans_collection)
 
     def __len__(self):
         return len(self.trans_collection)
 
     def __getitem__(self, transaction):
-        return self.transactions[transaction]
+        return self.trans_collection[transaction]

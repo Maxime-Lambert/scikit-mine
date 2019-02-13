@@ -16,6 +16,9 @@ class Pattern:
         res += "]"
         return res
 
+    def __eq__(self, pattern):
+        return self.elements.__eq__(pattern.elements)
+
     def union(self, pattern2):
         res = self.elements + pattern2.elements
         trans = Transaction(sorted(list(set(res))))

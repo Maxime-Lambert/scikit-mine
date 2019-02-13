@@ -1,4 +1,5 @@
 from src.fichier import *
+from src.database import *
 
 if __name__ == '__main__':
     monfichier = Fichier("monfichier")
@@ -11,3 +12,6 @@ if __name__ == '__main__':
     print("")
     print("la liste en int : ")
     print(monfichier.liste_int)
+    database = Database(monfichier.liste_int)
+    print("test database ! ")
+    print(database)

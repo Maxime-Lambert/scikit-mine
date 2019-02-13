@@ -1,4 +1,4 @@
-from src.File import *
+from src.Files import *
 from src.database import *
 
 if __name__ == '__main__':

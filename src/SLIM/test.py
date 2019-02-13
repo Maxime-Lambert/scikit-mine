@@ -1,5 +1,5 @@
 
-from .database import Database
+from src.database import Database
 
 
 test = [[1, 2, 3, 4], [1, 2, 3], [1, 2, 3], [1, 2, 3],
@@ -9,4 +9,4 @@ db = Database(test)
 
 sct = db.standard_code_table()
 
-print(repr(sct))
+print(sct)

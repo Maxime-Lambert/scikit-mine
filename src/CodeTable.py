@@ -28,11 +28,11 @@ class CodeTable:
     def __repr__(self):
         res = ""
         for k, v in self.patternMap.items():
-            res = res + k.repr + " " + v.toString() + " "
+            res = res + k + " " + v.to_string() + " "
         return res
 
     def add(self, pattern):
-        for k, v in self.patternMap:
+        for k, v in self.patternMap.items():
             if pattern.__eq__(k):
                 k.usage += 1
             return 0

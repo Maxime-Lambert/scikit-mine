@@ -11,7 +11,10 @@ class Transaction:
     def remove(self, item):
         self.items.remove(item)
 
-    def to_string(self):
+    """def to_string(self):
+        return ",".join(self.items)
+    """
+    def __str__(self):
         return ",".join(self.items)
 
     def __add__(self, transaction):

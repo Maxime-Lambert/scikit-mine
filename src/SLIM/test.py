@@ -7,6 +7,6 @@ test = [[1, 2, 3, 4], [1, 2, 3], [1, 2, 3], [1, 2, 3],
 
 db = Database(test)
 
-sct = db.standard_code_table()
+sct = db.make_standard_code_table()
 
 print(sct)

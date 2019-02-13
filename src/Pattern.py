@@ -17,7 +17,13 @@ class Pattern:
 
     def __eq__(self, pattern):
         return self.elements.__eq__(pattern.elements)
-        
+
+    def __str__(self):
+        res = ""
+        for transaction in self.elements:
+            res += str(transaction)
+        return res
+
     def union(self, pattern2):
         res = self.elements + pattern2.elements
         trans = Transaction(sorted(list(set(res))))

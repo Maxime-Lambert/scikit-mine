@@ -6,8 +6,8 @@ Created on Mon Feb 11 14:45:31 2019
 
 @author: Josie Signe
 """
-from CodeTable import CodeTable
-from patern import Pattern
+from src.CodeTable import *
+from src.Pattern import *
 
 
 class Database:
@@ -29,7 +29,7 @@ class Database:
     def __init__(self, int_trans_list):
         self.trans_collection_ = int_trans_list
 
-    def _make_standard_code_table(self):
+    def make_standard_code_table(self):
         """Make and return the standard code table of the database."""
         sct = CodeTable()  # map pattern code
         # On ajoute les singletons de la base à la SCT

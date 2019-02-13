@@ -20,7 +20,7 @@ class CodeTable:
     def add(self, pattern):
         for k, v in self.patternMap:
             if pattern.__eq__(k):
-            k.usage += 1
+                k.usage += 1
             return 0
         self.patternMap[pattern] = 0
         return 1
@@ -91,7 +91,7 @@ class CodeTable:
 
     def orderByUsage(self):
         return sorted(self.patternMap, key=self.patternMap.usage)
-    
+    """
     def repeats(string):
     # Lower the case in the string
     string = string.lower()
@@ -102,4 +102,4 @@ class CodeTable:
     # Count the max occurrences of each unique letter
     counts = [string.count(letter) for letter in uniques]
  
-    return max(counts)
+    return max(counts)"""

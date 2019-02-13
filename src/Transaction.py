@@ -1,18 +1,18 @@
 class Transaction:
     """docstring for Transaction"""
-    elements = []
+    items = []
 
     def __init__(self, elements):
-        self.elements = elements
+        self.items = elements
 
     def append(self, item):
-        self.elements.append(item)
+        self.items.append(item)
 
     def remove(self, item):
-        self.elements.remove(item)
+        self.items.remove(item)
 
-    def toString(self):
-        return ",".join(self.elements)
+    def to_string(self):
+        return ",".join(self.items)
 
     def __add__(self, transaction):
-        return self.elements + transaction.elements
+        return self.items + transaction.items

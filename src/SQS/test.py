@@ -9,7 +9,7 @@ class MyTest(unittest.TestCase):
         bingo = "bingo"
         self.assertEquals(test, build_window(test))
         self.assertEquals([1], build_window(test))
-        self.assertEquals([1], build_windows([1, 1, 1]))
+        self.assertEquals([1], build_window([1, 1, 1]))
         with self.assertRaises(TypeError):
             result = build_window(bingo)
 

@@ -32,28 +32,12 @@ class CodeTable:
             res += "pattern : " + str(k) + " | usage : " + str(k.usage) + "\n"
         return res
 
-    def add(self, pattern):
-        self.patternMap[pattern] = 0
-        """if self.patternMap.has_key(pattern):
-            #if pattern in self.patternMap:
-            self.patternMap[pattern] += 1
-        else:
-            self.patternMap[pattern] = 0
-        return self"""
-
     def set(self, pattern):
         for key, value in self.patternMap.items():
             if key == pattern:
                 key.add_usage()
         self.patternMap[pattern] = 0
         pattern.usage = 1
-
-
-    def get_pattern(self, pattern):
-        for key in self.patternMap.keys():
-            if key == pattern:
-                return pattern
-        return None
 
     def remove(self, pattern):
         if pattern in self.patternMap:

@@ -6,7 +6,7 @@ from src.database import *
 
 
 class MyTest(unittest.TestCase):
-    
+
     def test_sequence_windows(self):
         test = [1]
         bingo = "bingo"
@@ -16,30 +16,30 @@ class MyTest(unittest.TestCase):
         with self.assertRaises(TypeError):
             result = build_window(bingo)
 
-        
     def test_sequence_search(self):
         test = [[1]]
         bango = "bango"
-        self.assertEquals(test, sqs_search(test))
-        self.assertEquals([1], sqs_search())
+        self.assertEquals([1], sqs_search(test))
+        self.assertEquals([1], sqs_search([[1]]))
         with self.assertRaises(TypeError):
             result = sqs_search(bango)
-            
+
     def test_sequence_estimae(self):
         test = [1]
         bongo = "bongo"
-            
+
     def test_sequence_prune(self):
         test = [1]
         congo = "congo"
 
-    def yvanresults(self):
-        enter = Fichier("testenter")
+    def test_yvanresults(self):
+        enter = Files("testenter")
         database1 = Database(enter.list_int)
-        result = sqs_search(database)
-        exit = Fichier("testexit")
-        database2 = Database(monfichier.list_int)
+        result = sqs_search(database1)
+        exits = Files("testexit")
+        database2 = Database(exits.list_int)
         self.assertEquals(result, database2)
-        
+
+
 if __name__ == '__main__':
     unittest.main()

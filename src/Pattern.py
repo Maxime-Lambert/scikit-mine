@@ -1,13 +1,11 @@
-import math
-
-from src import Transaction
+from src.Transaction import *
 
 
 class Pattern:
     """
         A pattern is consisted of a Collection of Transactions.
-        It also has an usage, a double, the occurence of that pattern in the Database;
-        a support, a double, being the total occurence of that pattern,
+        It also has an usage, a double, the occurrence of that pattern in the Database;
+        a support, a double, being the total occurrence of that pattern,
          even if it is part of a bigger pattern.
          
     """
@@ -15,14 +13,16 @@ class Pattern:
     def __init__(self, transaction):
         """
             Create a Pattern with a given transaction and an usage/support of 0
+            Has an index 0 for easier time with iterators
         """
         self.usage = 0
         self.support = 0
         self.elements = transaction
+        self.index = 0
 
     def __iter__(self):
         """Returns iterator over the transactions in the pattern."""
-        return iter(self.elements)
+        return self
 
     def __next__(self):
         """
@@ -31,7 +31,7 @@ class Pattern:
             :rtype: Transaction
         """
         try:
-            result = self.text[self.index].upper()
+            result = self.elements[self.index].upper()
         except IndexError:
             raise StopIteration
         self.index += 1
@@ -51,7 +51,7 @@ class Pattern:
     def __eq__(self, pattern):
         """
             Return a boolean to compare an equality between two patterns
-            :return: The result of the comparaison
+            :return: The result of the comparison
             :rtype: Boolean
         """
         return self.elements.__eq__(pattern.elements)
@@ -75,15 +75,15 @@ class Pattern:
         """
         return hash(self.usage)
 
-    def union(self, pattern2):
+    def union(self, pattern):
         """
             Merged two patterns into one bigger
             :return: The merged pattern
             :rtype: Pattern
         """
-        res = self.elements + pattern2.elements
-        trans = Transaction(sorted(list(set(res))))
-        return Pattern(trans)
+        res = self.elements + pattern.elements
+        transaction = Transaction(sorted(list(set(res))))
+        return Pattern(transaction)
 
     def add_usage(self):
         """
@@ -98,24 +98,3 @@ class Pattern:
             :return: void
         """
         self.support += 1
-
-
-if __name__ == '__main__':
-    trans = Transaction(['A', 'B'])
-    pattern = Pattern(trans)
-    trans2 = Transaction(['B', 'C'])
-    pattern2 = Pattern(trans2)
-    trans3 = Transaction(['C'])
-    pattern3 = Pattern(trans3)
-    print("pattern : ")
-    print(pattern)
-    print("pattern2 : ")
-    print(pattern2)
-    print("pattern3 : ")
-    print(pattern3)
-    pattern4 = pattern.union(pattern2)
-    print("pattern4 (pattern + pattern2) : ")
-    print(pattern4)
-    pattern5 = pattern.union(pattern3)
-    print("pattern5 (pattern + pattern3) : ")
-    print(pattern5)

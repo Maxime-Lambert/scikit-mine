@@ -1,3 +1,5 @@
+from src.SQS.sqs import find_windows
+
 
 def sqs_search(data):
     p_array = []
@@ -42,16 +44,25 @@ def l(data, pattenr):
 def prune(patterns, data, bool):
     ct = []
     ct_2 = []
+    g = 0
+
     for pattern in patterns:
         ct = codetable(data, patterns)
         ct_2 = codetable(data, private(patterns,pattern))
 
-        #g = sum_gain(gain(w)) ici c'est la somme mais je vois pas comment la faire
+        g += sum_gain(gain(find_windows(pattern))) #ici c'est la somme mais je vois pas comment la faire
         if bool or g < l(ct) - l(ct_2):
             if l(data,  private(patterns,pattern)) < l(data,patterns):
                 patterns.remove(pattern)
     return patterns
 
+
+def sum_gain(gain):
+    pass
+
+
+def gain(windows):
+    pass
 
 
 def scan_for_gaps(pattern):

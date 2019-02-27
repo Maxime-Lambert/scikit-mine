@@ -26,7 +26,9 @@ class SQS:
 
     def run(self):
         changes = True
+        print(self.data)
         for sequence in self.data:
+            print(sequence)
             sequence.set_usage(self.find_usage(sequence, self.data))
         for pattern in self.list_pattern:
             if pattern.length > 0:

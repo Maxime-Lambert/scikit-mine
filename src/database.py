@@ -73,10 +73,11 @@ class Database:
         return support
 
     def copy(self,list_int):
+        """make a copy of the list parameter."""
         res = []
         for element in list_int:
             tmp = []
             for sous_element in element:
                 tmp += [sous_element]
-            res += tmp
+            res += [tmp]
         return res

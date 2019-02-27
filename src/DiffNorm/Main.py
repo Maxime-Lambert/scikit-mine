@@ -1,4 +1,4 @@
-from DiffNorm import *
+from src.DiffNorm.DiffNorm import *
 
 
 if __name__ == '__main__':

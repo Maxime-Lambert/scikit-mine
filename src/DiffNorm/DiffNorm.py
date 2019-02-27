@@ -1,7 +1,7 @@
-from CodeTable import *
-from DataBase import *
-from Pattern import *
-from DiffNormUtils import *
+from src.DiffNorm.CodeTable import *
+from src.DiffNorm.DataBase import *
+from src.DiffNorm.Pattern import *
+from src.DiffNorm.DiffNormUtils import *
 
 
 class DiffNorm:

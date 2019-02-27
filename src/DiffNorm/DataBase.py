@@ -1,4 +1,4 @@
-from ItemSet import *
+from src.DiffNorm.ItemSet import *
 
 
 class DataBase:

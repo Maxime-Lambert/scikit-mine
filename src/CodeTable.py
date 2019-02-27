@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
 import math
-from src import database
-from src import Pattern
+from src import database as Database
+from src import pattern as Pattern
 
 
 class CodeTable:
@@ -19,6 +19,9 @@ class CodeTable:
             Creates a Codetable with an empty PatternMap
         """
         self.patternMap = {}
+
+    def __eq__(self, ct):
+        return self == ct
 
     def __repr__(self):
         """
@@ -47,7 +50,7 @@ class CodeTable:
             Gets the corresponding code length to a pattern
 
             :return: the number of patterns contained in the Codetable
-            :rtype
+            :rtype: double
         """
         self.calculateCode()
         return self.patterns[item]
@@ -63,24 +66,34 @@ class CodeTable:
         """
         return pattern in self.patternMap.items()
 
-    def set(self, pattern):
+    def add(self, pattern, transaction):
         """
             Add a Pattern to the Codetable, if it's already present it adds
             1 to its usage else it's put in
 
             :param pattern: The pattern you want to add to the Codetable
+            :param transaction: The Transaction your pattern appears in
             :type pattern: Pattern
+            :type transaction: Transaction | List<Transaction>
             :return: The Codetable with the pattern added
             :rtype: Codetable
         """
+        b = False
         for key, value in self.patternMap.items():
             if key == pattern:
                 key.add_usage()
-        self.patternMap[pattern] = 0
-        pattern.usage = 1
+                key.add_support()
+                key.add_usageList(transaction)
+                b = True
+        if b:
+            self.patternMap[pattern] = 0
+            pattern.usage = 1
+            pattern.support = 1
+            pattern.usageList = transaction
+        self.CalculateCodeLength()
         return self.OrderByStandardCoverOrder()
 
-    def Remove(self, pattern):
+    def remove(self, pattern):
         """
             Remove a Pattern from the Codetable
 
@@ -91,9 +104,10 @@ class CodeTable:
         """
         if pattern in self.patternMap:
             del self.patternMap[pattern]
+        self.CalculateCodeLength()
         return self.OrderByStandardCoverOrder()
 
-    def Get(self, number):
+    def get(self, number):
         """
             Gives the pattern at a certain index in the Codetable
 
@@ -110,7 +124,7 @@ class CodeTable:
                 i += 1
         return -1
 
-    def OrderByUsage(self):
+    def order_by_usage(self):
         """
             Order the Codetable by its pattern's usage
 
@@ -119,7 +133,7 @@ class CodeTable:
         """
         return sorted(self.patternMap, key=self.patternMap.usage, reverse=True)
 
-    def OrderByStandardCoverOrder(self):
+    def order_by_standard_cover_order(self):
         """
             Order the Codetable by following Standard Cover Order
             Standard Cover Order is :
@@ -133,10 +147,10 @@ class CodeTable:
         """
         return sorted(self.patternMap, key=lambda p: (p.elements.__len__,
                                                       p.support,
-                                                      p.__repr__),
+                                                      repr(p)),
                       reverse=True)
 
-    def UsageSum(self):
+    def usage_sum(self):
         """
             Gives the sum of all the pattern's usage in the Codetable
             This function is used locally
@@ -149,7 +163,7 @@ class CodeTable:
             i += k.usage
         return i
 
-    def CalculateCodeLength(self):
+    def calculate_code_length(self):
         """
             Gives each pattern in the Codetable a corresponding code length to
             encode the database
@@ -158,12 +172,12 @@ class CodeTable:
             :return: The Codetable with its values updated
             :rtype: Codetable
         """
-        sum = self.UsageSum()
+        sum = self.usage_sum()
         for k, v in self.patternMap.items():
             self.patternMap[k] = (-math.log2(k.usage/sum))
         return self
 
-    def DatabaseEncodedLength(self):
+    def database_encoded_length(self):
         """
             Gives the size of the database encoded with the Codetable
             This function is used locally
@@ -171,13 +185,13 @@ class CodeTable:
             :return: The size of the database encoded with the Codetable
             :rtype: double
         """
-        self.CalculateCodeLength()
+        self.calculate_code_length()
         i = 0
         for k, v in self.patternMap.items():
             i += (k.usage * v)
         return i
 
-    def CodeTableLength(self, SCT):
+    def codetable_length(self, sct):
         """
             Gives the size of the current Codetable encoded
             This function is used locally
@@ -187,51 +201,56 @@ class CodeTable:
             :return: the size of the current Codetable encoded
             :rtype: double
         """
-        self.CalculateCodeLength()
-        SCT.CalculateCodeLength()
         i = 0
         for k, v in self.patternMap.items():
             for p in k.elements:
-                for x, y in SCT.patternMap.items():
-                    if(p == x):
+                for x, y in sct.patternMap.items():
+                    if p == x:
                         i += y
         return i
 
-    def CompareGain(self, CT, data, SCT):
+    def best_code_table(self, ct, data, sct):
         """
             Compare the size of the database encoded with two different
             Codetables
 
-            :param CT: The other Codetable you want to compare to
+            :param ct: The other Codetable you want to compare to
             :param data: The database concerned
-            :param SCT: The standard code table of the database
-            :type CT: Codetable
+            :param sct: The standard code table of the database
+            :type ct: Codetable
             :type data: Database
-            :type SCT: Codetable
+            :type sct: Codetable
             :return: The Codetable which encodes best the database
             :rtype: boolean
 
         """
-        compCT = CT.CodeTableLength(SCT)+CT.DatabaseEncodedLength()
-        compSelf = self.CodeTableLength(SCT)+self.DatabaseEncodedLength()
-        if(compCT > compSelf):
-            return CT
+        compct = ct.codetablelength(sct)+ct.databaseencodedlength()
+        compself = self.codetablelength(sct)+self.databaseencodedlength()
+        if compct > compself:
+            return ct
         return self
 
-    def PostPrune(self, data):
+    def post_prune(self, data, sct):
         """
             Checks whether the Codetable is better with some of its elements
             deleted
 
             :param data: The database concerned
+            :param sct: The standard code table of the database
             :type data: Database
+            :type sct: Codetable
             :return: The Codetable without useless elements
             :rtype: Codetable
         """
-        self.OrderByStandardCoverOrder()
         for k, v in self.patternMap:
-            CT = self
-            CT.Remove(k)
-            if (self.CompareGain(CT, data).__eq__(CT)):
-                self.patternMap = CT
+            ct = self
+            ct.remove(k)
+            if self.best_code_table(ct, data, sct) == ct:
+                self.patternMap = ct
         return self
+
+    def copy(self):
+        ct = CodeTable()
+        for k, v in self.patternMap.items():
+            ct.add(k, k.usagelist)
+        return ct

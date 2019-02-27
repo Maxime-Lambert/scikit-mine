@@ -2,7 +2,6 @@
 
 import math
 from src import database as Database
-from src import pattern as Pattern
 
 
 class CodeTable:

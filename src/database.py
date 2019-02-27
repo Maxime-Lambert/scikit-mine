@@ -7,7 +7,7 @@ Created on Mon Feb 11 14:45:31 2019
 @author: Josie Signe
 """
 from src.CodeTable import CodeTable
-from src.Pattern import Pattern
+from src.Pattern import *
 
 
 class Database:
@@ -27,7 +27,7 @@ class Database:
     """
 
     def __init__(self, int_data_list):
-        self.data_collection_ = int_data_list.copy
+        self.data_collection = self.copy(int_data_list)
         self.index = 0
         self.db_card = len(self.data_collection)
 
@@ -71,3 +71,12 @@ class Database:
             if transaction >= pattern:
                 support += 1
         return support
+
+    def copy(self,list_int):
+        res = []
+        for element in list_int:
+            tmp = []
+            for sous_element in element:
+                tmp += [sous_element]
+            res += tmp
+        return res

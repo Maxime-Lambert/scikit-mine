@@ -4,6 +4,7 @@ class SQS:
         self.data = data
         self.list_pattern = list_pattern
 
+
     def find_usage(self, sequence, data):
         res = 0
         for s in data:

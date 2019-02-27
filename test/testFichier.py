@@ -1,5 +1,4 @@
 from src.Files import *
-from src.database import *
 
 if __name__ == '__main__':
     monfichier = Files("fichier2")

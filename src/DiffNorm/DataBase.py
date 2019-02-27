@@ -1,14 +1,18 @@
 from src.DiffNorm.ItemSet import *
+from os import path
 
 
 class DataBase:
 
     def __init__(self, name, db_id):
+        data_directory_path = "../../test/data/DiffNorm/"
+        dn_dir = path.dirname(__file__)
+        abs_file_path = path.join(dn_dir, data_directory_path)
         self.id = db_id
         self.index = 0
         self.transactions = []
         self.name = name
-        file = open("test/" + name, "r")
+        file = open(abs_file_path + name, "r")
         lines = file.readlines()
         for line in lines:
             transacations = line.split(" ")

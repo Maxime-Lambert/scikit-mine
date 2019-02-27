@@ -18,7 +18,6 @@ class CodeTable:
         self.final_encoded_size = 0.0
         self.encoded_db_size = 0.0
         self.old_db_size = 0.0
-
     def __repr__(self):
         return repr(self.patterns)
 
@@ -116,20 +115,18 @@ class CodeTable:
     def try_add(self, candidate):
         self.old_db_size = self.encoded_db_size
         self.add(candidate.copy())
-        if self.database is not None:
-            self.sort_in_sco()
-            self.update_t_data()
-            self.update_usage()
-            self.update_usages()
+        self.sort_in_sco()
+        self.update_t_data()
+        self.update_usage()
+        self.update_usages()
 
     def try_del(self, candidate):
         self.old_db_size = self.encoded_db_size
         self.delete_pattern(candidate)
-        if self.database is not None:
-            self.sort_in_sco()
-            self.update_t_data()
-            self.update_usage()
-            self.update_usages()
+        self.sort_in_sco()
+        self.update_t_data()
+        self.update_usage()
+        self.update_usages()
 
     def delete_pattern(self, pattern):
         self.patterns.remove(pattern)
@@ -151,10 +148,7 @@ class CodeTable:
             self.size += 1
 
     def pp(self):
-        if self.database is not None:
-            print("NИNИNИNИNИNИN ct de " + self.database.name + " NИNИNИNИNИNИNИ")
-        else:
-            print("NИNИNИNИNИNИN Sj NИNИNИNИNИNИNИ")
+        print("NИNИNИNИNИNИN ct de " + self.database.name + " NИNИNИNИNИNИNИ")
         print()
         print("Initial encoded size")
         print(self.initial_encoded_size)

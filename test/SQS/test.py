@@ -1,6 +1,6 @@
 import unittest
 
-from sqs_search import *
+from src.SQS.sqs_search import *
 
 class MyTest(unittest.TestCase):
     

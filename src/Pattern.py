@@ -1,8 +1,16 @@
-import src.Transaction as Transaction
+import math
+
+from src import Transaction
 
 
 class Pattern:
-    """docstring for Pattern"""
+    """
+        A pattern is consisted of a Collection of Items.
+        It also has an usage, a double, the occurence of that pattern in the Database;
+        a support, a double, being the total occurence of that pattern,
+         even if it is part of a bigger pattern.
+         
+    """
 
     def __init__(self, transaction):
         self.usage = 0

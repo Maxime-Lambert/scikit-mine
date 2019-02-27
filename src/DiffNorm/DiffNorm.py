@@ -234,7 +234,7 @@ class DiffNorm:
 
     #  Generate a list of candidates to consider
     def generate_candidates(self):
-        # At first we generate candidates in I x I, these candidates can be accepted in any Sj.
+        # At first we genereate candidates in I x I, these candidates can be accepted in any Sj.
         if self.num_iterations == 0:
             x_id = 0
             while x_id < len(self.alphabet):
@@ -245,13 +245,15 @@ class DiffNorm:
                 x_id += 1
         else:
             # Then we permute previously added candidate with the patterns and items of sj in which it was added
-            for j in self.commit_sj_id:
-                for pattern in self.coding_sets_i[j]:
+            j = 0
+            for sj in self.coding_set_patterns:
+                for pattern in sj:
                     if len(pattern) == 1:
                         if pattern not in self.current_candidate:
                             self.create_candidate(pattern, self.current_candidate, j, j)
                     else:
                         self.create_candidate(pattern, self.current_candidate, j, j)
+                j += 1
         self.candidates.sort(key=lambda z: z.get_est_gain(), reverse=True)
 
     """Add the candidate to all concerned Sj, i.e. if the candidate is I x I then he can be added anywhere, but if it's

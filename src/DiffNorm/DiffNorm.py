@@ -3,13 +3,16 @@ from src.DiffNorm.DataBase import *
 from src.DiffNorm.Pattern import *
 from src.DiffNorm.DiffNormUtils import *
 
+data_directory_path = "test/data/DiffNorm/"
+
 
 class DiffNorm:
 
+    global data_directory_path
     alphabet_id = -1
     # Minimum usage to filter the candidates before adding them to potential candidates
     min_usage = 120
-    # Candidate will be added if he reduces the cost of encoded size of a database for atleast 1 bit
+    # Candidate will be added if he reduces the cost of encoded size of a database for at least 1 bit
     min_gain = 1.0
 
     def __init__(self, nom_db, nom_u):
@@ -26,13 +29,13 @@ class DiffNorm:
         self.u = []
         self.alphabet = []
         self.current_candidate = None
-        # |Dcursive|
+        # |D cursive|
         self.all_db_card = 0
         self.candidate_accepted = False
         # List of Sj where previous candidate was added in the last loop
         self.commit_sj_id = []
 
-        file_db = open("test/" + nom_db, "r")
+        file_db = open(data_directory_path + nom_db, "r")
         databases = file_db.readline().split(" ")
         db_id = 0
         for database in databases:
@@ -43,7 +46,7 @@ class DiffNorm:
             self.all_db_card += len(new_db)
             db_id += 1
 
-        file_u = open("test/" + nom_u, "r")
+        file_u = open(data_directory_path + nom_u, "r")
         groupes = file_u.readlines()
         for line in groupes:
             if line[-1:] == '\n':
@@ -57,7 +60,7 @@ class DiffNorm:
                 if len(cs_param) > 1:
                     self.u.append(cs_param)
 
-    # Initialize the alphabet I by going through all the transactions and saving all unique items.
+    # Initialize the alphabet I by going through all the transactions and saving all unique items = Standard Code Table
     def init_alphabet(self):
         for database in self.databases:
             for transaction in database:
@@ -74,7 +77,7 @@ class DiffNorm:
         for cs in self.coding_sets_i:
             cs.final_encoded_size = cs.encoded_db_size
 
-    # For all Di in Dcursive calculate and store L(Di|Ci).
+    # For all Di in D cursive calculate and store L(Di|Ci).
     def calc_db_sizes_all(self):
         i = 0
         for cs in self.coding_sets_i:
@@ -126,18 +129,6 @@ class DiffNorm:
         usage_new_cs = \
             usage_old_cs - usage_old_right - usage_old_right + \
             usage_new_right + usage_new_left + usage_new_cand
-        """if coding_set_id == 0:
-            print("PSHH PSHH, INSPECTION")
-            print("STOP YOUR CAR IMMEDIATLY")
-            print(len_old_cs)
-            print(len_new_cs)
-            print(usage_new_cand)
-            print(usage_old_left)
-            print(usage_old_right)
-            print(usage_new_left)
-            print(usage_new_right)
-            print(usage_old_cs)
-            print(usage_new_cs)"""
         db_gain = \
             log_gamma(usage_old_cs + constant * len_old_cs) - log_gamma(usage_new_cs + constant * len_new_cs) + \
             log_gamma(usage_new_left + constant) - log_gamma(usage_old_left + constant) + \
@@ -350,23 +341,14 @@ class DiffNorm:
         for cs in self.coding_sets_i:
             candidates = []
             for pattern in cs:
-                """print("PATTERN TO CONSIDER")
-                print(pattern)
-                print("OLD U: " + repr(pattern.old_usage) + " NEW U: " + repr(pattern.usage))"""
                 if pattern.old_usage > pattern.usage and len(pattern) > 1:
                     candidates.append(pattern)
             candidates.sort(key=lambda x: x.old_usage - x.usage, reverse=True)
-            """print("CANDIDATES TO BE PRUNED")
-            print(candidates)"""
             while candidates:
-                #   print("-------------" + repr(j) + "-------------")
                 old_db_size = cs.calculate_db_encoded_size()
                 candidate = candidates.pop(0)
                 cs.try_del(candidate)
                 new_db_size = cs.calculate_db_encoded_size()
-                """print("CANDIDATE FOR PRUNE: " + repr(candidate))
-                print("OLD DB SIZE: " + repr(old_db_size))
-                print("NEW DB SIZE: " + repr(new_db_size))"""
                 if old_db_size < new_db_size:
                     cs.try_add(candidate)
                 else:

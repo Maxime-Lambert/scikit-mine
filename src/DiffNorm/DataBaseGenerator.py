@@ -25,8 +25,8 @@ while idx < db_num + 1:
             patterns[id_patt_num].add(randint(0, i_len - 1))
             id_patt_len += 1
         id_patt_num += 1
-    f1 = open("test/gen_db" + repr(idx), "w+")
-    f2 = open("test/gen_db" + repr(idx) + "_patterns", "w+")
+    f1 = open("test/data/gen_db" + repr(idx), "w+")
+    f2 = open("test/data/gen_db" + repr(idx) + "_patterns", "w+")
     for pattern in patterns:
         f2.write(repr(pattern) + "\n")
     idz = 0
@@ -42,7 +42,7 @@ while idx < db_num + 1:
         idz += 1
     all_db += "gen_db" + repr(idx) + " "
     idx += 1
-f1 = open("test/gen_all", "w+")
+f1 = open("test/data/gen_all", "w+")
 f1.write(all_db[:-1])
-f2 = open("test/gen_u", "w+")
+f2 = open("test/data/gen_u", "w+")
 f2.write(u)

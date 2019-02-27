@@ -2,7 +2,7 @@ from src.Files import *
 from src.database import *
 
 if __name__ == '__main__':
-    monfichier = Fichier("monfichier")
+    monfichier = Files("monfichier")
     print("la liste normale")
     print(monfichier.list_string)
     print("")
@@ -11,11 +11,4 @@ if __name__ == '__main__':
     print("")
     print("la liste en int : ")
     print(monfichier.list_int)
-    database = Database(monfichier.list_int)
-    print("test database ! ")
-    print(database)
-    monfichier.list_int.append(18)
-    print("la liste en int : ")
-    print(monfichier.list_int)
-    print("test database ! ")
-    print(database)
+

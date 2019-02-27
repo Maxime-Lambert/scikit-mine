@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import math
-from src import Database
+from src import database
 from src import Pattern
 
 

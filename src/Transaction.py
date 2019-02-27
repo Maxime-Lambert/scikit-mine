@@ -21,7 +21,7 @@ class Transaction:
         return self.items + transaction.items
 
     def __eq__(self, transaction):
-        for item in items:
+        for item in self.items:
             if item not in transaction.items:
                 return False
         return True

@@ -1,4 +1,4 @@
-class Fichier:
+class Files:
     """docstring for Fichier"""
     list_string = []
     list_int = []

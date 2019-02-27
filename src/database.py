@@ -8,28 +8,28 @@ Created on Mon Feb 11 14:45:31 2019
 """
 from src.CodeTable import CodeTable
 from src.Pattern import *
+from src.item_collection import ItemCollection
 
 
 class Database:
     """Database class
 
-    Use derived classes?
-
     Parameters
     ----------
-    trans_collection : object, optional (default=None)
-        The base estimator from which the ensemble is built.
+    int_data_collection : list of integer list
+    elements to put in the database
 
     Attributes
     ----------
-    trans_collection_ : estimator
-        The base estimator from which the ensemble is grown.
+    data_list: ItemCollection list
     """
 
-    def __init__(self, int_data_list):
-        self.data_collection = self.copy(int_data_list)
+    def __init__(self, data_list):
+        for item_list in data_list:
+            transaction = ItemCollection(item_list)
+            self.transaction_list.add(transaction)
         self.index = 0
-        self.db_card = len(self.data_collection)
+        self.db_card = len(self.data_list)
 
     def make_standard_code_table(self):
         """Make and return the standard code table of the database."""
@@ -38,23 +38,22 @@ class Database:
         for trans in self.data_collection:
             for item in trans:
                 pattern = Pattern([item])
-                sct.set(pattern)
-            # puis calcul des codes de la sct
+                sct.add(pattern, trans)
         return sct
 
     def __repr__(self):
         return repr(self.data_collection)
 
     def __len__(self):
-        """Returns the number of transaction of the database."""
+        """Returns the number of database's elements."""
         return len(self.data_collection)
 
-    def __getitem__(self, index_trans):
-        """Returns the transaction at index_trans"""
-        return self.data_collection[index_trans]
+    def __getitem__(self, index_elem):
+        """Returns the element at index_elem"""
+        return self.data_collection[index_elem]
 
     def __iter__(self):
-        """Returns iterator over estimators in the ensemble."""
+        """Returns iterator over data_list."""
         return iter(self.data_collection)
 
     def __next__(self):
@@ -64,20 +63,3 @@ class Database:
         except IndexError:
             self.index = 0
             raise StopIteration
-
-    def get_support(self, pattern):
-        support = 0
-        for transaction in self.data_collection:
-            if transaction >= pattern:
-                support += 1
-        return support
-
-    def copy(self,list_int):
-        """make a copy of the list parameter."""
-        res = []
-        for element in list_int:
-            tmp = []
-            for sous_element in element:
-                tmp += [sous_element]
-            res += [tmp]
-        return res

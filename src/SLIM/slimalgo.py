@@ -22,7 +22,7 @@ def _slim(d):
     
     while ct_has_improved != False:
         #tri par usage de CT + liste de candidat
-        candidates_list = []
+        candidates_list = [] #pattern list
         best_usage = 0
         ct_has_improved = False
         indice_pattern_x = 0
@@ -50,5 +50,5 @@ def _slim(d):
                 code_table = code_table_temp.post_prune
                 ct_has_improved = True
             else:
-                indice_candidat = indice_candidat+1 #remove plutot que de compteur
+                indice_candidat = indice_candidat+1 #remove plutot que compteur
 print('Hello world!')

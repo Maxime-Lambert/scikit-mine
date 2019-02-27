@@ -39,9 +39,32 @@ def l(data, pattenr):
     pass
 
 
-def prune(pattern, data, bool):
-    pass
+def prune(patterns, data, bool):
+    ct = []
+    ct_2 = []
+    for pattern in patterns:
+        ct = codetable(data, patterns)
+        ct_2 = codetable(data, private(patterns,pattern))
+
+        #g = sum_gain(gain(w)) ici c'est la somme mais je vois pas comment la faire
+        if bool or g < l(ct) - l(ct_2):
+            if l(data,  private(patterns,pattern)) < l(data,patterns):
+                patterns.remove(pattern)
+    return patterns
+
 
 
 def scan_for_gaps(pattern):
     pass
+
+
+def codetable(data, patterns):
+    pass
+
+
+def private(list_pattern, pattern):
+    res = []
+    for p in list_pattern:
+        if not p == pattern:
+            res += p
+    return p

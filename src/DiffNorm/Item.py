@@ -7,7 +7,7 @@ class Item:
         self.integer = integer
 
     def __repr__(self):
-        return "(" + repr(self.integer) + ")"
+        return repr(self.integer)
 
     def __eq__(self, other):
         if isinstance(other, Item):

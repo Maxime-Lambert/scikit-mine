@@ -1,20 +1,21 @@
 from src.DiffNorm.ItemSet import *
+from src.DiffNorm.DiffNormUtils import *
 
 
 class CodeTable:
 
     patterns = []
-    databases = []
 
-    def __init__(self, database, ct_type):
+    def __init__(self, database):
         self.index = 0
         self.usage = 0
         self.size = 0
         self.patterns = []
         self.database = database
-        self.ct_type = ct_type
         self.t_data = {}
         self.mb_rollback = []
+        self.initial_encoded_size = 0.0
+        self.final_encoded_size = 0.0
         self.encoded_db_size = 0.0
         self.old_db_size = 0.0
 
@@ -42,9 +43,9 @@ class CodeTable:
         return self.patterns[item]
 
     def copy(self):
-        copy = CodeTable(self.database, self.ct_type)
+        copy = CodeTable(self.database)
         for pattern in self.patterns:
-            copy.add(pattern)
+            copy.add(pattern.copy())
         copy.usage = self.usage
         copy.size = self.size
         copy.update_t_data()
@@ -53,7 +54,7 @@ class CodeTable:
     def update_t_data(self):
         tid = 0
         for transaction in self.database:
-            self.t_data[tid] = self.calculate_cover(transaction)
+            self.t_data[int(str(self.database.id) + str(tid))] = self.calculate_cover(transaction)
             tid += 1
 
     def set_encoded_db_size(self, size):
@@ -68,26 +69,40 @@ class CodeTable:
             usage += len(self.gather_usages(pattern))
         return usage
 
+    def update_usages(self):
+        for pattern in self.patterns:
+            pattern.old_usage = pattern.usage
+            pattern.usage = len(self.gather_usages(pattern))
+
+    def rollback_usages(self):
+        for pattern in self.patterns:
+            pattern.usage = pattern.old_usage
+
+    def calculate_db_encoded_size(self):
+        constant = 0.5
+        x = log_gamma(self.usage + constant * self.size)
+        y = log_gamma(constant * self.size)
+        t = 0.0
+        # print("CALCULATION")
+        for pattern in self.patterns:
+            usage = pattern.usage
+            t += calc_log_double_factorial(2 * usage - 1) - usage
+            """print(repr(pattern) + " " + repr(usage))
+        print(self.usage)
+        print(x)
+        print(y)
+        print(t)"""
+        return x - y - t
+
     def gather_usages(self, pattern):
-        usages = []
-        tid = 0
-        for transaction in self.database:
+        usages = set()
+        for tid in self.t_data:
             if pattern in self.get_cover(tid):
-                usages.append(transaction)
-            tid += 1
+                usages.add(tid)
         return usages
 
     def get_support(self, pattern):
         return self.database.get_support(pattern)
-
-    def estimate_usage(self, candidate):
-        usage = 0
-        usages_left = self.gather_usages(candidate.left_is)
-        usages_right = self.gather_usages(candidate.right_is)
-        for transaction in usages_left:
-            if transaction in usages_right:
-                usage += 1
-        return usage
 
     def get_cover(self, tid):
         return self.t_data[tid]
@@ -100,34 +115,52 @@ class CodeTable:
 
     def try_add(self, candidate):
         self.old_db_size = self.encoded_db_size
-        self.add(candidate)
-        self.sort_in_sco()
-        self.update_t_data()
-        self.update_usage()
-        self.mb_rollback.append(candidate)
+        self.add(candidate.copy())
+        if self.database is not None:
+            self.sort_in_sco()
+            self.update_t_data()
+            self.update_usage()
+            self.update_usages()
+
+    def try_del(self, candidate):
+        self.old_db_size = self.encoded_db_size
+        self.delete_pattern(candidate)
+        if self.database is not None:
+            self.sort_in_sco()
+            self.update_t_data()
+            self.update_usage()
+            self.update_usages()
 
     def delete_pattern(self, pattern):
         self.patterns.remove(pattern)
+        self.size -= 1
 
     def rollback(self):
+        self.encoded_db_size = self.old_db_size
         self.sort_in_sco()
         self.update_t_data()
         self.update_usage()
+        self.rollback_usages()
 
     def sort_in_sco(self):
         self.patterns.sort(key=lambda x: (len(x), self.get_support(x), str(x)), reverse=True)
 
-    def add(self, element):
-        self.patterns.append(element)
-        self.size += 1
+    def add(self, pattern):
+        if pattern not in self.patterns:
+            self.patterns.append(pattern)
+            self.size += 1
 
     def pp(self):
-        if self.ct_type == 1:
+        if self.database is not None:
             print("NИNИNИNИNИNИN ct de " + self.database.name + " NИNИNИNИNИNИNИ")
-        elif self.ct_type == 0:
-            print("NИNИNИNИNИNИNИ alphabet NИNИNИNИNИNИNИ")
         else:
-            print("NИNИNИNИNИNИNИNИN Sj ИNИNИNИNИNИNИNИNИ")
+            print("NИNИNИNИNИNИN Sj NИNИNИNИNИNИNИ")
+        print()
+        print("Initial encoded size")
+        print(self.initial_encoded_size)
+        print("Final encoded size")
+        print(self.final_encoded_size)
+        print()
         for x in self.patterns:
-            print(repr(x))
+            print(repr(x) + " " + repr(len(self.gather_usages(x))))
         print()

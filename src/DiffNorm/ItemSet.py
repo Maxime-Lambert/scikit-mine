@@ -3,6 +3,9 @@ from src.DiffNorm.Item import *
 
 class ItemSet:
 
+    usage = 0
+    old_usage = 0
+
     def __init__(self, items):
         self.index = 0
         self.items = set(items)
@@ -25,9 +28,7 @@ class ItemSet:
         return ItemSet(self.items & other.items)
 
     def __or__(self, other):
-        if isinstance(other, set) or isinstance(self, set):
-            print(repr(self) + "  " + repr(type(self)) + "  " + repr(other) + "  " + repr(type(other)))
-        return ItemSet(self.items | other.items)
+        return self.items | other.items
 
     def __sub__(self, other):
         return ItemSet(self.items - other.items)
@@ -51,6 +52,10 @@ class ItemSet:
             return self.contains(other)
         else:
             return False
+
+    def copy(self):
+        copy = ItemSet(self.items)
+        return copy
 
     def fuse(self, other):
         res = [self]

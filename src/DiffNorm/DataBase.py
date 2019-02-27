@@ -3,7 +3,8 @@ from src.DiffNorm.ItemSet import *
 
 class DataBase:
 
-    def __init__(self, name):
+    def __init__(self, name, db_id):
+        self.id = db_id
         self.index = 0
         self.transactions = []
         self.name = name

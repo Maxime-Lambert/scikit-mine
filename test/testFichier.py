@@ -2,7 +2,7 @@ from src.Files import *
 from src.database import *
 
 if __name__ == '__main__':
-    monfichier = Files("monfichier")
+    monfichier = Files("fichier2")
     print("la liste normale")
     print(monfichier.list_string)
     print("")

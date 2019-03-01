@@ -83,10 +83,8 @@ class DiffNorm:
 
     # For all Di in D cursive calculate and store L(Di|Ci).
     def calc_db_sizes_all(self):
-        i = 0
         for cs in self.coding_sets_i:
             cs.set_encoded_db_size(cs.calculate_db_encoded_size())
-            i += 1
 
     # Initialize all Ci with the items of I and sorting it in SCO
     def init_all_ct_i(self):
@@ -187,9 +185,9 @@ class DiffNorm:
                     if usage > max_usage:
                         max_usage = usage
         else:
-            if candidate.left_cs_id > len(self.coding_sets_i):
-                for cs_left_id in self.u[candidate.left_cs_id]:
-                    for cs_right_id in self.u[candidate.left_cs_id]:
+            if candidate.sj_id > len(self.coding_sets_i):
+                for cs_left_id in self.u[candidate.sj_id]:
+                    for cs_right_id in self.u[candidate.sj_id]:
                         usages_left = self.coding_sets_i[cs_left_id].gather_usages(candidate.left_is)
                         usages_right = self.coding_sets_i[cs_right_id].gather_usages(candidate.right_is)
                         usage = len(usages_left & usages_right)
@@ -207,26 +205,16 @@ class DiffNorm:
         candidate_len = universal_code_len(len(candidate))
         freq_x_in_all_db = self.get_freq_in_all(candidate)
         estimate_diff_sj = candidate_len + freq_x_in_all_db
-        """print("CANDIDATE ITSELF")
-        print(candidate)
-        print("CAND LEN:")
-        print(candidate_len)
-        print("FREQ IN ALL")
-        print(freq_x_in_all_db)"""
         if candidate.left_cs_id == candidate.right_cs_id == self.alphabet_id:
             for j in self.u:
                 gain_sj = estimate_diff_sj
                 for i in j:
                     gain_sj += self.estimate_db_gain(candidate, i)
-                """print("GAIN S" + repr(j))
-                print(gain_sj)
-                print("MAX")
-                print(max_gain)"""
                 if gain_sj > max_gain:
                     max_gain = gain_sj
         else:
             gain_sj = estimate_diff_sj
-            for i in self.u[candidate.right_cs_id]:
+            for i in self.u[candidate.sj_id]:
                 gain_sj += self.estimate_db_gain(candidate, i)
             if gain_sj > max_gain:
                 max_gain = gain_sj
@@ -238,14 +226,8 @@ class DiffNorm:
 
     """Create and check if the candidate hasn't been already created, rejected or accepted, 
     filter low usage candidates and estimate their gain"""
-    def create_candidate(self, left, right, left_cs_id, right_cs_id):
-        new_candidate = Pattern(left, right, left_cs_id, right_cs_id)
-        if len(new_candidate) == 5:
-            print(new_candidate)
-            print(left)
-            print(right)
-            print(self.estimate_max_usage(new_candidate))
-            self.coding_sets_i[left_cs_id].pp()
+    def create_candidate(self, left, right, left_cs_id, right_cs_id, sj_id):
+        new_candidate = Pattern(left, right, left_cs_id, right_cs_id, sj_id)
         if not (self.already_generated(new_candidate)
                 or self.already_rejected(new_candidate)
                 or self.already_accepted(new_candidate)):
@@ -263,16 +245,28 @@ class DiffNorm:
             while x_id < len(self.alphabet):
                 y_id = x_id + 1
                 while y_id < len(self.alphabet):
-                    self.create_candidate(self.alphabet[x_id], self.alphabet[y_id], self.alphabet_id, self.alphabet_id)
+                    self.create_candidate(self.alphabet[x_id], self.alphabet[y_id],
+                                          self.alphabet_id, self.alphabet_id, self.alphabet_id)
                     y_id += 1
                 x_id += 1
         else:
             # Then we permute previously added candidate with the patterns and items of sj in which it was added
-            for j in self.commit_sj_id:
+            """for j in self.commit_sj_id:
                 for pattern in self.coding_set_patterns[j]:
                     if not self.current_candidate >= pattern:
                         if pattern not in self.current_candidate:
-                            self.create_candidate(pattern, self.current_candidate, j, j)
+                            self.create_candidate(pattern, self.current_candidate, j, j, j)"""
+            for j in self.commit_sj_id:
+                cs_x_id = 0
+                while cs_x_id < len(self.coding_set_patterns1[j].coding_sets):
+                    cs_y_id = cs_x_id + 1
+                    while cs_y_id < len(self.coding_set_patterns1[j].coding_sets):
+                        for x in self.coding_set_patterns1[j].coding_sets[cs_x_id]:
+                            for y in self.coding_set_patterns1[j].coding_sets[cs_y_id]:
+                                self.create_candidate(x, y, self.coding_set_patterns1[j].coding_sets[cs_x_id].i, self.coding_set_patterns1[j].coding_sets[cs_y_id].i, j)
+                        cs_y_id += 1
+                    cs_x_id += 1
+
         self.candidates.sort(key=lambda z: z.get_est_gain(), reverse=True)
 
     """Add the candidate to all concerned Sj, i.e. if the candidate is I x I then he can be added anywhere, but if it's
@@ -283,7 +277,7 @@ class DiffNorm:
                 c_i.try_add(self.current_candidate)
             self.calc_db_sizes_all()
         else:
-            for i in self.u[self.current_candidate.left_cs_id]:
+            for i in self.u[self.current_candidate.sj_id]:
                 self.coding_sets_i[i].try_add(self.current_candidate)
                 self.coding_sets_i[i].set_encoded_db_size(self.coding_sets_i[i].calculate_db_encoded_size())
 
@@ -292,18 +286,19 @@ class DiffNorm:
         self.candidate_accepted = False
         self.commit_sj_id = []
         w_id = 0
-        print("HERE IS W:")
+        """print("HERE IS W:")
         print(w)
         print("FOR CANDIDATE: ")
         print(self.current_candidate)
-        print(" ")
+        print(" ")"""
         if self.current_candidate.left_cs_id == self.current_candidate.right_cs_id == self.alphabet_id:
             for group in self.u:
                 if w[w_id] > self.min_gain:
                     self.accepted_candidates.append(self.current_candidate)
                     self.candidate_accepted = True
                     self.commit_sj_id.append(w_id)
-                    self.coding_set_patterns[w_id].try_add(self.current_candidate)
+                    #  self.coding_set_patterns[w_id].try_add(self.current_candidate)
+                    self.coding_set_patterns1[w_id].try_add(self.current_candidate)
                 else:
                     for cs in group:
                         self.coding_sets_i[cs].delete_pattern(self.current_candidate)
@@ -311,15 +306,16 @@ class DiffNorm:
                     self.rejected_candidates.append(self.current_candidate)
                 w_id += 1
         else:
-            if w[self.current_candidate.left_cs_id] > self.min_gain:
+            if w[self.current_candidate.sj_id] > self.min_gain:
                 self.accepted_candidates.append(self.current_candidate)
                 self.candidate_accepted = True
-                self.commit_sj_id.append(self.current_candidate.left_cs_id)
-                self.coding_set_patterns[self.current_candidate.left_cs_id].try_add(self.current_candidate)
+                self.commit_sj_id.append(self.current_candidate.sj_id)
+                #  self.coding_set_patterns[self.current_candidate.sj_id].try_add(self.current_candidate)
+                self.coding_set_patterns1[self.current_candidate.sj_id].try_add(self.current_candidate)
             else:
-                for cs in self.u[self.current_candidate.left_cs_id]:
-                    self.coding_sets_i[cs].delete_pattern(self.current_candidate)
-                    self.coding_sets_i[cs].rollback()
+                for cs_id in self.u[self.current_candidate.sj_id]:
+                    self.coding_sets_i[cs_id].delete_pattern(self.current_candidate)
+                    self.coding_sets_i[cs_id].rollback()
                 self.rejected_candidates.append(self.current_candidate)
 
     # Calculate ∆L(D, S ⊕j Z) for all Sj
@@ -347,7 +343,7 @@ class DiffNorm:
             concerned_cs = 0
             for j in self.u:
                 gain_group = 0.0
-                if concerned_cs == self.current_candidate.right_cs_id:
+                if concerned_cs == self.current_candidate.sj_id:
                     gain_group = estimate_diff_sj
                     for i in j:
                         gain_group += (self.coding_sets_i[i].old_db_size - self.coding_sets_i[i].encoded_db_size)
@@ -368,20 +364,24 @@ class DiffNorm:
                 candidate = candidates.pop(0)
                 cs.try_del(candidate)
                 new_db_size = cs.calculate_db_encoded_size()
-                if len(candidate) == 2:
+                """if len(candidate) == 2:
                     print(candidate)
                     print("OLD")
                     print(old_db_size)
                     print("NEW")
                     print(new_db_size)
+                    print(candidate.old_usage)
+                    print(candidate.usage)"""
                 if old_db_size < new_db_size:
                     cs.try_add(candidate)
                 else:
+                    cs.set_encoded_db_size(cs.calculate_db_encoded_size())
                     self.reestimate_gain()
                     self.candidates.sort(key=lambda z: z.get_est_gain(), reverse=True)
                     for group in self.u:
                         if j in group:
-                            self.coding_set_patterns[j].try_del(candidate)
+                            #  self.coding_set_patterns[j].try_del(candidate)
+                            self.coding_set_patterns1[j].try_del(candidate)
                 for pattern in cs:
                     if pattern.old_usage > pattern.usage and pattern not in candidates and len(pattern) > 1:
                         candidates.append(pattern)
@@ -414,8 +414,8 @@ class DiffNorm:
                 self.rejected_candidates.append(self.current_candidate)
         self.set_final_encoded_size()
         self.pp_db()
-        for c in self.rejected_candidates:
-            print(c)
+        """for c in self.rejected_candidates:
+            print(c)"""
 
     def pp_db(self):
         """for database in self.databases:
@@ -428,9 +428,9 @@ class DiffNorm:
                 print(repr(x) + " | " + repr(x.left_cs_id) + " | " + repr(x.right_cs_id) + " | " + repr(x.max_gain))"""
         for cs in self.coding_sets_i:
             cs.pp()
-        print("NИNИNИNИNИNИИ model NИИNИNИNИNИNИ")
+        """print("NИNИNИNИNИNИИ model NИИNИNИNИNИNИ")
         j = 1
-        """for sj in self.coding_set_patterns:
+        for sj in self.coding_set_patterns:
             print("S" + repr(j) + ": ")
             sj.pp()
             j += 1"""

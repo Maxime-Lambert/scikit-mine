@@ -12,12 +12,14 @@ class CodeTable:
         self.size = 0
         self.patterns = []
         self.database = database
+        self.i = self.database.id
         self.t_data = {}
         self.mb_rollback = []
         self.initial_encoded_size = 0.0
         self.final_encoded_size = 0.0
         self.encoded_db_size = 0.0
         self.old_db_size = 0.0
+
     def __repr__(self):
         return repr(self.patterns)
 
@@ -129,6 +131,9 @@ class CodeTable:
         self.update_usages()
 
     def delete_pattern(self, pattern):
+        print(self.i)
+        self.pp()
+        print(pattern)
         self.patterns.remove(pattern)
         self.size -= 1
 

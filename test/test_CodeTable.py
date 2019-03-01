@@ -1,7 +1,6 @@
 import pytest
-from src.CodeTable import CodeTable
-from src.Transaction import Transaction
-from src.Pattern import Pattern
+from src.CodeTable import *
+from src.Pattern import *
 import math
 
 t1 = Transaction([1, 2, 3])
@@ -20,8 +19,8 @@ def ct():
 @pytest.fixture
 def ct_full():
     ct = CodeTable()
-    ct.set(p1)
-    ct.set(p2)
+    ct.add(p1)
+    ct.add(p2)
     return ct
 
 
@@ -87,4 +86,5 @@ def test_post_prune(ct):
 
 
 def test_order_by_usage(ct):
+
     pass

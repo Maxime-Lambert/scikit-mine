@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import math
-from src import database as Database
+from src.database import *
 
 
 class CodeTable:
@@ -29,7 +29,7 @@ class CodeTable:
             :return: A String representing the Codetable
             :rtype: String
         """
-        self.OrderByStandardCoverOrder()
+        self.order_by_standard_cover_order()
         res = ""
         for k, v in self.patternMap.items():
             res += "pattern : " + str(k) + " | usage : " + str(k.usage) + "\n"
@@ -51,8 +51,8 @@ class CodeTable:
             :return: the number of patterns contained in the Codetable
             :rtype: double
         """
-        self.calculateCode()
-        return self.patterns[item]
+        self.calculate_code_length()
+        return self.patternMap[item]
 
     def __contains__(self, pattern):
         """
@@ -89,8 +89,8 @@ class CodeTable:
             pattern.usage = 1
             pattern.support = 1
             pattern.usageList = transaction
-        self.CalculateCodeLength()
-        return self.OrderByStandardCoverOrder()
+        self.calculate_code_length()
+        return self.order_by_standard_cover_order()
 
     def remove(self, pattern):
         """
@@ -103,8 +103,8 @@ class CodeTable:
         """
         if pattern in self.patternMap:
             del self.patternMap[pattern]
-        self.CalculateCodeLength()
-        return self.OrderByStandardCoverOrder()
+        self.calculate_code_length()
+        return self.order_by_standard_cover_order()
 
     def get(self, number):
         """
@@ -130,7 +130,7 @@ class CodeTable:
             :return: The Codetable ordered by pattern's usage
             :rtype: Codetable
         """
-        return sorted(self.patternMap, key=self.patternMap.usage, reverse=True)
+        return sorted(self.patternMap, key=self.patternMap.get, reverse=True)
 
     def order_by_standard_cover_order(self):
         """
@@ -223,8 +223,8 @@ class CodeTable:
             :rtype: boolean
 
         """
-        compct = ct.codetablelength(sct)+ct.databaseencodedlength()
-        compself = self.codetablelength(sct)+self.databaseencodedlength()
+        compct = ct.codetable_length(sct)+ct.database_encoded_length()
+        compself = self.codetable_length(sct)+self.database_encoded_length()
         if compct > compself:
             return ct
         return self

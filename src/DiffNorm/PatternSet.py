@@ -73,7 +73,6 @@ class PatternSet:
 
     def pp(self):
         print()
-        print("NИNИNИNИNИNИN S" + self.j + " NИNИNИNИNИNИNИ")
+        print("NИNИNИNИNИNИN S" + repr(self.j) + " NИNИNИNИNИNИNИ")
         for x in self.patterns:
             print(x)
-        print()

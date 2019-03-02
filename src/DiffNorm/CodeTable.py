@@ -131,9 +131,9 @@ class CodeTable:
         self.update_usages()
 
     def delete_pattern(self, pattern):
-        print(self.i)
+        """print(self.i)
         self.pp()
-        print(pattern)
+        print(pattern)"""
         self.patterns.remove(pattern)
         self.size -= 1
 

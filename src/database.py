@@ -6,9 +6,10 @@ Created on Mon Feb 11 14:45:31 2019
 
 @author: Josie Signe
 """
-from src.CodeTable import CodeTable
-from src.Pattern import *
-from src.item_collection import ItemCollection
+from src.CodeTable import *
+from src.Pattern import Pattern
+# from src.item_collection import ItemCollection
+from src.Transaction import Transaction
 
 
 class Database:
@@ -26,7 +27,7 @@ class Database:
 
     def __init__(self, data_list):
         for item_list in data_list:
-            transaction = ItemCollection(item_list)
+            transaction = Transaction(item_list)
             self.transaction_list.add(transaction)
         self.index = 0
         self.db_card = len(self.data_list)

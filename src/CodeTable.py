@@ -31,7 +31,7 @@ class CodeTable:
         """
         self.order_by_standard_cover_order()
         res = ""
-        for k, v in self.patternMap.items():
+        for k in self.patternMap.keys():
             res += "pattern : " + str(k) + " | usage : " + str(k.usage) + "\n"
         return res
 
@@ -63,7 +63,7 @@ class CodeTable:
             :return: True if the Codetable contains pattern, else False
             :rtype: boolean
         """
-        return pattern in self.patternMap.items()
+        return pattern in self.patternMap.keys()
 
     def add(self, pattern):
         """
@@ -75,12 +75,12 @@ class CodeTable:
             :return: The Codetable with the pattern added
             :rtype: Codetable
         """
-        b = False
-        for key, value in self.patternMap.items():
+        b = True
+        for key in self.patternMap.keys():
             if key == pattern:
                 key.add_usage()
                 key.add_support()
-                b = True
+                b = False
         if b:
             self.patternMap[pattern] = 0
             pattern.usage = 1
@@ -112,7 +112,7 @@ class CodeTable:
             :rtype: Pattern | int
         """
         i = 0
-        for k, v in self.patternMap.items():
+        for k in self.patternMap.keys():
             if i == number:
                 return k
             else:
@@ -145,7 +145,7 @@ class CodeTable:
             :rtype: double
         """
         i = 0
-        for k, v in self.patternMap.items():
+        for k in self.patternMap.keys():
             i += k.usage
         return i
 
@@ -158,9 +158,9 @@ class CodeTable:
             :return: The Codetable with its values updated
             :rtype: Codetable
         """
-        sum = self.usage_sum()
-        for k, v in self.patternMap.items():
-            self.patternMap[k] = (-math.log2(k.usage/sum))
+        us_sum = self.usage_sum()
+        for k in self.patternMap.keys():  # TODO : correct Error -> dictionary changed size during iteration
+            self.patternMap[k] = (-math.log2(k.usage/us_sum))
         return self
 
     def database_encoded_length(self):
@@ -178,6 +178,12 @@ class CodeTable:
         return i
 
     def codetable_length(self, sct):
+        # Je pense qu'il faut prendre en compte d'autres choses en plus pour la taille :
+        # typiquement le nombre de patterns et pas uniquement leur longueur
+        # ex: tu as 2 patterns de longueur 5 (10 +2), c'est plus intéressant
+        # que 5 patterns de longueur 2 (10 + 5) je pense
+        # c'est le principe de MDL un peu (miser sur un nb réduit de patterns), mais cela se discute certainement
+        # notamment en fonction de l'influence que ça a sur la database_encoded_length
         """
             Gives the size of the current Codetable encoded
             This function is used locally
@@ -188,14 +194,14 @@ class CodeTable:
             :rtype: double
         """
         i = 0
-        for k, v in self.patternMap.items():
+        for k in self.patternMap.keys():
             for p in k.elements:
                 for x, y in sct.patternMap.items():
                     if p == x:
                         i += y
         return i
 
-    def best_code_table(self, ct, data, sct):
+    def best_code_table(self, ct, data, sct):  # data to be removed?
         """
             Compare the size of the database encoded with two different
             Codetables
@@ -229,7 +235,7 @@ class CodeTable:
             :rtype: Codetable
         """
         for k, v in self.patternMap:
-            ct = self
+            ct = self  # peut-être une copie profonde à faire?
             ct.remove(k)
             if self.best_code_table(ct, data, sct) == ct:
                 self.patternMap = ct
@@ -237,6 +243,6 @@ class CodeTable:
 
     def copy(self):
         ct = CodeTable()
-        for k, v in self.patternMap.items():
-            ct.add(k, k.usagelist)
+        for k in self.patternMap.keys():
+            ct.add(k)
         return ct

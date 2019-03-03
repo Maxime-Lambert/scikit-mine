@@ -65,15 +65,13 @@ class CodeTable:
         """
         return pattern in self.patternMap.items()
 
-    def add(self, pattern, transaction):
+    def add(self, pattern):
         """
             Add a Pattern to the Codetable, if it's already present it adds
             1 to its usage else it's put in
 
             :param pattern: The pattern you want to add to the Codetable
-            :param transaction: The Transaction your pattern appears in
             :type pattern: Pattern
-            :type transaction: Transaction | List<Transaction>
             :return: The Codetable with the pattern added
             :rtype: Codetable
         """
@@ -82,13 +80,11 @@ class CodeTable:
             if key == pattern:
                 key.add_usage()
                 key.add_support()
-                key.add_usageList(transaction)
                 b = True
         if b:
             self.patternMap[pattern] = 0
             pattern.usage = 1
             pattern.support = 1
-            pattern.usageList = transaction
         self.calculate_code_length()
         return self.order_by_standard_cover_order()
 
@@ -122,15 +118,6 @@ class CodeTable:
             else:
                 i += 1
         return -1
-
-    def order_by_usage(self):
-        """
-            Order the Codetable by its pattern's usage
-
-            :return: The Codetable ordered by pattern's usage
-            :rtype: Codetable
-        """
-        return sorted(self.patternMap, key=self.patternMap.get, reverse=True)
 
     def order_by_standard_cover_order(self):
         """

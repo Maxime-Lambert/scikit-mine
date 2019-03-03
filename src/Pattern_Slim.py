@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from src.Transaction import *
-from src.Pattern import *
+from src import Pattern
 
 
 class Pattern_Slim(Pattern):

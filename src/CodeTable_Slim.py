@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from src.database import *
-from src.Codetable import *
+from src import CodeTable
 
 
 class CodeTable_Slim(CodeTable):

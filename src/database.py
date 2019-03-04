@@ -24,13 +24,15 @@ class Database:
     ----------
     data_list: ItemCollection list
     """
+    data_collection = []
 
     def __init__(self, data_list):
         for item_list in data_list:
             transaction = Transaction(item_list)
-            self.transaction_list.add(transaction)
+            print(repr(transaction))
+            self.data_collection.append(transaction)
         self.index = 0
-        self.db_card = len(self.data_list)
+        self.db_card = len(data_list)
 
     def make_standard_code_table(self):
         """Make and return the standard code table of the database."""
@@ -56,11 +58,3 @@ class Database:
     def __iter__(self):
         """Returns iterator over data_list."""
         return iter(self.data_collection)
-
-    def __next__(self):
-        self.index += 1
-        try:
-            return self.data_collection[self.index - 1]
-        except IndexError:
-            self.index = 0
-            raise StopIteration

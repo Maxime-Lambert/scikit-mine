@@ -9,10 +9,42 @@
 #et tester toutes les combinaisons de candidats
 # -*- coding: utf-8 -*-
 
-from src.database import *
+from src.database import Database
 from src.CodeTable import CodeTable
-from src.Transaction import *
-from src.Pattern import *
+from src.Transaction import Transaction
+from src.Pattern import Pattern
+from src.Files import Files
+
+class DatabaseSlim(Database):
+    """Database class
+
+    Parameters
+    ----------
+    int_data_collection : list of integer list
+    elements to put in the database
+
+    Attributes
+    ----------
+    data_list: ItemCollection list
+    """
+    transactions = []
+
+    def __init__(self, transaction_set):
+        for itemset in transaction_set:
+            trans = Transaction(itemset.copy())
+            self.transactions.append(trans)
+        self.index = 0
+        self.db_card = len(transaction_set)
+
+    def make_standard_code_table(self):
+        """Make and return the standard code table of the database."""
+        sct = CodeTableSlim()  # map pattern code
+        # On ajoute les singletons de la base à la SCT
+        for trans in self.transactions:
+            for item in trans:
+                pattern = PatternSlim([item])
+                sct.add(pattern, trans)
+        return sct
 
 
 class PatternSlim(Pattern):
@@ -26,8 +58,8 @@ class PatternSlim(Pattern):
         It has an usageList (set(Transaction)) : all the transactions
         containing the pattern
     """
-
-    def __init__(self, item, transaction):
+    elements = set()
+    def __init__(self, item):
         """
             Create a Pattern with a given transaction and an usage/support of 0
             Has an index 0 for easier time with iterators
@@ -41,10 +73,12 @@ class PatternSlim(Pattern):
         """
         self.usage = 0
         self.support = 0
-        self.elements = {item}
-        self.usage_list = {transaction}
-        return self
+        self.elements = item.copy()
+        self.usage_list = []
 
+    def __repr__(self):
+        repr(self.elements)
+            
     def union(self, pattern):
         """
             Merged two patterns into one bigger
@@ -53,7 +87,7 @@ class PatternSlim(Pattern):
             :return: The merged pattern
             :rtype: Pattern_Slim
         """
-        p = Pattern_Slim(self.elements & pattern.elements,
+        p = PatternSlim(self.elements & pattern.elements,
                          self.usage_list | pattern.usage_list)
         p.usage = len(p.usage_list)
         p.support = p.usage
@@ -67,9 +101,19 @@ class PatternSlim(Pattern):
             :return: The merged pattern
             :rtype: Pattern_Slim
         """
-        self.usage_list.add(transaction)
+        self.usage_list.append(transaction)
         return self
 
+    def __eq__(self, pattern):
+         return self.elements==pattern.elements
+
+    def __hash__(self):
+        """
+            Return the hash value of the usage
+            :return: An hash value
+            :rtype: Integer
+        """
+        return hash(self.usage)
 
 class CodeTableSlim(CodeTable):
     """
@@ -79,13 +123,17 @@ class CodeTableSlim(CodeTable):
 
         Its attribute is patternMap
     """
-
+    patternMap = {}
+        
     def __init__(self):
         """
             Creates a CodeTable_Slim with an empty PatternMap
         """
         self.patternMap = {}
 
+    def patternset(self):
+        return self.patternMap.keys()
+        
     def add(self, pattern, transaction):
         """
             Add a Pattern to the CodeTable_Slim, if it's already present it
@@ -103,15 +151,14 @@ class CodeTableSlim(CodeTable):
             if key == pattern:
                 key.add_usage()
                 key.add_support()
-                key.add_usageList(transaction)
+                key.add_usagelist(transaction)
                 b = True
-        if b:
+        if not b:
             self.patternMap[pattern] = 0
             pattern.usage = 1
             pattern.support = 1
             pattern.usageList = transaction
-        self.calculate_code_length()
-        return self.order_by_standard_cover_order()
+       # return self.order_by_standard_cover_order()
 
     def order_by_usage(self):
         """
@@ -122,13 +169,14 @@ class CodeTableSlim(CodeTable):
         """
         return sorted(self.patternMap, key=lambda p: p.usage, reverse=True)
 
-def slim(database,max_iter):
+def slim(db,max_iter):
     """
     Parameters
     ----------
     
     """
-    standard_code_table = database.standard_code_table()
+    database = DatabaseSlim(db)    
+    standard_code_table = database.make_standard_code_table()
     code_table = standard_code_table
     ct_has_improved = True
     #ct_pattern_set = code_table.get_pattern_list

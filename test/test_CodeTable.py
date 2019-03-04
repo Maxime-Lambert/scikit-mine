@@ -1,6 +1,8 @@
 import pytest
-from src.CodeTable import *
-from src.database import *
+from src.CodeTable import CodeTable
+from src.Transaction import Transaction
+from src.Pattern import Pattern
+
 import math
 
 t1 = Transaction([1, 2, 3])  # Change the transactions creation process using item_collection
@@ -60,13 +62,14 @@ def test_get(ct_full):
     assert ct_full.get(ct_full.__len__()) == p2  # TOCHECK : returns last element
     assert ct_full.get(5) == -1  # returns -1 if can't find any pattern for this index
 
-
+"""
 def test_order_by_usage(ct_full):
     ct_full.add(p3)
     ct_full.add(p3)
     ct_full.add(p3)
     ct_full.order_by_usage()
     assert ct_full.get(0) == p3
+"""
 
 
 def test_order_by_standard_cover_order(ct_full):

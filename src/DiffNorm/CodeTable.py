@@ -84,7 +84,7 @@ class CodeTable:
         x = log_gamma(self.usage + constant * self.size)
         y = log_gamma(constant * self.size)
         t = 0.0
-        # print("CALCULATION")
+        #  print("CALCULATION FOR " + repr(self.i))
         for pattern in self.patterns:
             usage = pattern.usage
             t += calc_log_double_factorial(2 * usage - 1) - usage

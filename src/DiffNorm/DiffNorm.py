@@ -10,7 +10,7 @@ class DiffNorm:
 
     alphabet_id = -1
     # Minimum usage to filter the candidates before adding them to potential candidates
-    min_usage = 3
+    min_usage = 5
     # Candidate will be added if he reduces the cost of encoded size of a database for at least 1 bit
     min_gain = 1.0
 
@@ -294,14 +294,26 @@ class DiffNorm:
                 if len(j) > 1:
                     if w[w_id] > self.min_gain:
                         better_in_specific_sj = False
+                        ids_of_better = []
                         for i in j:
                             if w[i] > w[w_id]:
                                 better_in_specific_sj = True
+                                ids_of_better.append(i)
                         if not better_in_specific_sj:
                             self.accepted_candidates.append(self.current_candidate)
                             self.candidate_accepted = True
                             self.commit_sj_id.append(w_id)
                             self.coding_set_patterns1[w_id].try_add(self.current_candidate)
+                        else:
+                            deleted = False
+                            for i in j:
+                                if i not in ids_of_better:
+                                    deleted = True
+                                    self.coding_sets_i[i].delete_pattern(self.current_candidate)
+                                    self.coding_sets_i[i].rollback()
+                            if deleted:
+                                if self.current_candidate not in self.rejected_candidates:
+                                    self.rejected_candidates.append(self.current_candidate)
                 else:
                     if w[w_id] > self.min_gain:
                         if self.current_candidate not in self.accepted_candidates:
@@ -321,30 +333,40 @@ class DiffNorm:
                             self.coding_sets_i[w_id].rollback()
                             if self.current_candidate not in self.rejected_candidates:
                                 self.rejected_candidates.append(self.current_candidate)
-                """if w[w_id] > self.min_gain:
-                    self.accepted_candidates.append(self.current_candidate)
-                    self.candidate_accepted = True
-                    self.commit_sj_id.append(w_id)
-                    #  self.coding_set_patterns[w_id].try_add(self.current_candidate)
-                    self.coding_set_patterns1[w_id].try_add(self.current_candidate)
-                else:
-                    for cs in j:
-                        self.coding_sets_i[cs].delete_pattern(self.current_candidate)
-                        self.coding_sets_i[cs].rollback()
-                    self.rejected_candidates.append(self.current_candidate)"""
                 w_id += 1
         else:
             if len(self.u[self.current_candidate.sj_id]) > 1:
                 if w[self.current_candidate.sj_id] > self.min_gain:
                     better_in_specific_sj = False
+                    ids_of_better = []
                     for i in self.u[self.current_candidate.sj_id]:
                         if w[i] > w[self.current_candidate.sj_id]:
                             better_in_specific_sj = True
+                            ids_of_better.append(i)
                     if not better_in_specific_sj:
                         self.accepted_candidates.append(self.current_candidate)
                         self.candidate_accepted = True
                         self.commit_sj_id.append(self.current_candidate.sj_id)
                         self.coding_set_patterns1[self.current_candidate.sj_id].try_add(self.current_candidate)
+                    else:
+                        deleted = False
+                        accepted = False
+                        for i in self.u[self.current_candidate.sj_id]:
+                            if i in ids_of_better:
+                                accepted = True
+                                self.candidate_accepted = True
+                                self.commit_sj_id.append(i)
+                                self.coding_set_patterns1[i].try_add(self.current_candidate)
+                            else:
+                                deleted = True
+                                self.coding_sets_i[i].delete_pattern(self.current_candidate)
+                                self.coding_sets_i[i].rollback()
+                        if deleted:
+                            if self.current_candidate not in self.rejected_candidates:
+                                self.rejected_candidates.append(self.current_candidate)
+                        if accepted:
+                            if self.current_candidate not in self.rejected_candidates:
+                                self.accepted_candidates.append(self.current_candidate)
                 else:
                     for cs_id in self.u[self.current_candidate.sj_id]:
                         self.coding_sets_i[cs_id].delete_pattern(self.current_candidate)
@@ -380,8 +402,6 @@ class DiffNorm:
                     print(self.coding_sets_i[i].old_db_size)
                     print("NEW")
                     print(self.coding_sets_i[i].encoded_db_size)
-                    print("DIFF SJ")
-                    print(estimate_diff_sj)
                     print("GAIN GROUP")
                     print(gain_group)"""
                 gain.append(gain_group)
@@ -396,30 +416,71 @@ class DiffNorm:
                             gain_alone = (self.coding_sets_i[i].old_db_size - self.coding_sets_i[i].encoded_db_size)
                             gain_group += gain_alone
                             gain[i] = gain_alone
+                            """print("-----------------" + repr(i) + "-----------------")
+                            print("OLD CSS")
+                            print(self.coding_sets_i[i].old_db_size)
+                            print("NEW")
+                            print(self.coding_sets_i[i].encoded_db_size)
+                            print("GAIN GROUP")
+                            print(gain_group)"""
                     else:
                         gain_group = (self.coding_sets_i[j[0]].old_db_size - self.coding_sets_i[j[0]].encoded_db_size)
-                    """print("OLD CSS")
-                    print(self.coding_sets_i[i].old_db_size)
-                    print("NEW")
-                    print(self.coding_sets_i[i].encoded_db_size)
-                    print("DIFF SJ")
-                    print(estimate_diff_sj)
-                    print("GAIN GROUP")
-                    print(gain_group)"""
                 gain.append(gain_group)
                 concerned_cs += 1
         return gain
 
     def prune(self):
-        j = 0
         for cs in self.coding_sets_i:
+            cs.pp()
             candidates = []
             for pattern in cs:
                 if pattern.old_usage > pattern.usage and len(pattern) > 1:
                     candidates.append(pattern)
             candidates.sort(key=lambda x: x.old_usage - x.usage, reverse=True)
             while candidates:
-                old_db_size = cs.calculate_db_encoded_size()
+                candidate = candidates.pop(0)
+                j = 0
+                while j < len(self.coding_set_patterns1):
+                    if candidate in self.coding_set_patterns1[j]:
+                        print()
+                        print(candidate)
+                        print("J HERE " + repr(j))
+                        total_diff = 0.0
+                        for c_i in self.coding_set_patterns1[j].coding_sets:
+                            old_db_size = c_i.calculate_db_encoded_size()
+                            c_i.try_del(candidate)
+                            new_db_size = c_i.calculate_db_encoded_size()
+                            total_diff += old_db_size - new_db_size
+                        print("TOTAL")
+                        print(total_diff)
+                        if total_diff > 0:
+                            print("Less")
+                            self.coding_set_patterns1[j].try_del(candidate)
+                            self.coding_set_patterns1[j].pp()
+                            cs_to_del_candidate = self.coding_set_patterns1[j].get_cs_ids()
+                            print("DELETE FROM THESE ")
+                            print(cs_to_del_candidate)
+                            for sj in self.coding_set_patterns1:
+                                if candidate in sj:
+                                    for cs_id in sj.get_cs_ids():
+                                        if cs_id in cs_to_del_candidate:
+                                            cs_to_del_candidate.remove(cs_id)
+                            for cs_id in self.coding_set_patterns1[j].get_cs_ids():
+                                if cs_id not in cs_to_del_candidate:
+                                    self.coding_sets_i[cs_id].try_add(candidate)
+                            print("DELETE FROM THESE ")
+                            print(cs_to_del_candidate)
+                            for cs_id in cs_to_del_candidate:
+                                self.coding_sets_i[cs_id].pp()
+                                self.coding_sets_i[cs_id].set_encoded_db_size(
+                                    self.coding_sets_i[cs_id].calculate_db_encoded_size())
+                            self.reestimate_gain()
+                            self.candidates.sort(key=lambda z: z.get_est_gain(), reverse=True)
+                        else:
+                            for c_i in self.coding_set_patterns1[j].coding_sets:
+                                c_i.try_add(candidate)
+                    j += 1
+                """old_db_size = cs.calculate_db_encoded_size()
                 candidate = candidates.pop(0)
                 cs.try_del(candidate)
                 new_db_size = cs.calculate_db_encoded_size()
@@ -432,18 +493,17 @@ class DiffNorm:
                     group_id = 0
                     for group in self.u:
                         if j in group:
-                            """print("HERE")
+                            print("HERE")
                             print(candidate)
-                            self.coding_set_patterns1[group_id].pp()"""
+                            self.coding_set_patterns1[group_id].pp()
                             #  self.coding_set_patterns[j].try_del(candidate)
                             if candidate in self.coding_set_patterns1[group_id]:
                                 self.coding_set_patterns1[group_id].try_del(candidate)
-                        group_id += 1
+                        group_id += 1"""
                 for pattern in cs:
                     if pattern.old_usage > pattern.usage and pattern not in candidates and len(pattern) > 1:
                         candidates.append(pattern)
                 candidates.sort(key=lambda x: x.old_usage - x.usage, reverse=True)
-            j += 1
 
     def run(self):
         self.init_alphabet()
@@ -462,7 +522,10 @@ class DiffNorm:
             self.num_iterations += 1
             if self.candidate_accepted:
                 print("ADDED")
+                print(self.commit_sj_id)
                 self.prune()
+                for el in self.coding_set_patterns1:
+                    el.pp()
                 for candidate in self.candidates:
                     self.estimate_gain(candidate)
                 self.reestimate_gain()

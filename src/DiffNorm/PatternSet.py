@@ -39,6 +39,12 @@ class PatternSet:
     def __getitem__(self, item):
         return self.patterns[item]
 
+    def get_cs_ids(self):
+        ids = []
+        for cs in self.coding_sets:
+            ids.append(cs.i)
+        return ids
+
     def get_support(self, pattern):
         support = 0
         for database in self.databases:

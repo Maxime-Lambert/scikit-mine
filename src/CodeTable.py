@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 import math
-from src.database import *
 
 
 class CodeTable:
@@ -131,10 +130,8 @@ class CodeTable:
             :return: The Codetable ordered by Standard Cover Order
             :rtype: Codetable
         """
-        return sorted(self.patternMap, key=lambda p: (p.elements.__len__,
-                                                      p.support,
-                                                      repr(p)),
-                      reverse=True)
+        sorted(self.patternMap, key=lambda p: (len(p.elements), p.support,
+                                               str(p)), reverse=True)
 
     def usage_sum(self):
         """

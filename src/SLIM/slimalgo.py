@@ -158,7 +158,7 @@ class CodeTableSlim(CodeTable):
             pattern.usage = 1
             pattern.support = 1
             pattern.usageList = transaction
-       # return self.order_by_standard_cover_order()
+        self.order_by_standard_cover_order()
 
     def order_by_usage(self):
         """
@@ -168,6 +168,11 @@ class CodeTableSlim(CodeTable):
             :rtype: Codetable
         """
         return sorted(self.patternMap, key=lambda p: p.usage, reverse=True)
+    
+    def print_res(self):
+    
+        for k, v in self.patternMap.items():
+            print(k, k.usage)
 
 def slim(db,max_iter):
     """

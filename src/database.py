@@ -29,7 +29,6 @@ class Database:
     def __init__(self, data_list):
         for item_list in data_list:
             transaction = Transaction(item_list)
-            print(repr(transaction))
             self.data_collection.append(transaction)
         self.index = 0
         self.db_card = len(data_list)

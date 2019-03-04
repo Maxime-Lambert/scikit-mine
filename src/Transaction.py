@@ -3,7 +3,7 @@ class Transaction:
     items = []
 
     def __init__(self, elements):
-        self.items = elements
+        self.items = elements.copy()
 
     def append(self, item):
         self.items.append(item)
@@ -17,6 +17,9 @@ class Transaction:
     def __str__(self):
         return ",".join(self.items)
 
+    def __repr__(self):
+        return repr(self.items)
+
     def __add__(self, transaction):
         return self.items + transaction.items
 
@@ -25,3 +28,6 @@ class Transaction:
             if item not in transaction.items:
                 return False
         return True
+
+    def __iter__(self):
+        return iter(self.items)

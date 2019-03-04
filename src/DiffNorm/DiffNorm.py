@@ -47,7 +47,7 @@ class DiffNorm:
             self.databases.append(new_db)
             self.coding_sets_i.append(CodeTable(new_db))
             self.u.append([db_id])
-            self.all_db_card += len(new_db)
+            self.all_db_card += new_db.db_card
             db_id += 1
 
         file_u = open(abs_file_path + nom_u, "r")
@@ -97,7 +97,7 @@ class DiffNorm:
             cs.update_usage()
             cs.update_usages()
             self.coding_set_patterns.append(cs.copy())
-            sj = PatternSet([cs], j)
+            sj = PatternSet([cs], self.databases, j)
             sj.sort_in_sco()
             self.coding_set_patterns1.append(sj)
             j += 1
@@ -108,7 +108,7 @@ class DiffNorm:
                 list_of_cs = []
                 for cs_id in group:
                     list_of_cs.append(self.coding_sets_i[cs_id])
-                sj = PatternSet(list_of_cs, j)
+                sj = PatternSet(list_of_cs, self.databases, j)
                 sj.sort_in_sco()
                 self.coding_set_patterns1.append(sj)
                 j += 1
@@ -215,7 +215,10 @@ class DiffNorm:
         else:
             gain_sj = estimate_diff_sj
             for i in self.u[candidate.sj_id]:
-                gain_sj += self.estimate_db_gain(candidate, i)
+                gain_ci = self.estimate_db_gain(candidate, i)
+                gain_sj += gain_ci
+                if gain_ci > max_gain:
+                    max_gain = gain_ci
             if gain_sj > max_gain:
                 max_gain = gain_sj
         candidate.set_est_gain(max_gain)
@@ -252,19 +255,25 @@ class DiffNorm:
         else:
             # Then we permute previously added candidate with items of I and the patterns of sj in which it was added
             for j in self.commit_sj_id:
-                cs_x_id = 0
-                while cs_x_id < len(self.coding_set_patterns1[j].patterns):
-                    for y in self.alphabet:
-                        self.create_candidate(self.coding_set_patterns1[j].patterns[cs_x_id], y,
-                                              j, j, j)
-                    cs_y_id = cs_x_id + 1
-                    while cs_y_id < len(self.coding_set_patterns1[j].patterns):
-                        self.create_candidate(self.coding_set_patterns1[j].patterns[cs_x_id],
-                                              self.coding_set_patterns1[j].patterns[cs_y_id],
-                                              j, j, j)
-                        cs_y_id += 1
-                    cs_x_id += 1
-
+                for y in self.alphabet:
+                    if y not in self.current_candidate:
+                        self.create_candidate(self.current_candidate, y, j, j, j)
+                for y in self.coding_set_patterns1[j].patterns:
+                    if y != self.current_candidate:
+                        self.create_candidate(self.current_candidate, y, j, j, j)
+                """else:
+                    cs_x_id = 0
+                    while cs_x_id < len(self.coding_set_patterns1[j].patterns):
+                        for y in self.alphabet:
+                            if y not in self.coding_set_patterns1[j].patterns[cs_x_id]:
+                                self.create_candidate(self.coding_set_patterns1[j].patterns[cs_x_id], y, j, j, j)
+                        cs_y_id = cs_x_id + 1
+                        while cs_y_id < len(self.coding_set_patterns1[j].patterns):
+                            self.create_candidate(self.coding_set_patterns1[j].patterns[cs_x_id],
+                                                  self.coding_set_patterns1[j].patterns[cs_y_id],
+                                                  j, j, j)
+                            cs_y_id += 1
+                        cs_x_id += 1"""
         self.candidates.sort(key=lambda z: z.get_est_gain(), reverse=True)
 
     """Add the candidate to all concerned Sj, i.e. if the candidate is I x I then he can be added anywhere, but if it's

@@ -1,6 +1,6 @@
-from src.DiffNorm.DiffNorm import *
+from src.DiffNorm.DiffNorm1 import *
 
 
 if __name__ == '__main__':
-    d = DiffNorm("all", "u")
+    d = DiffNorm1("all", "u")
     d.run()

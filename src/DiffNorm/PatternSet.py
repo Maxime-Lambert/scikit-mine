@@ -5,13 +5,17 @@ class PatternSet:
 
     patterns = []
 
-    def __init__(self, coding_sets, j):
+    def __init__(self, coding_sets, all_databases, j):
         self.index = 0
         self.j = j
         self.usage = 0
         self.size = 0
         self.patterns = []
         self.coding_sets = coding_sets
+        self.all_databases = all_databases
+        self.all_db_card = 0
+        for database in self.all_databases:
+            self.all_db_card += database.db_card
         self.databases = []
         for cs in coding_sets:
             self.databases.append(cs.database)
@@ -51,11 +55,31 @@ class PatternSet:
             support += database.get_support(pattern)
         return support
 
+        #  Calculate sum(log(freq_in_D_cursive(x)))
+    def get_freq_in_all(self, pattern):
+        freq = 0.0
+        for item in pattern:
+            support = 0
+            for database in self.all_databases:
+                support += database.get_support(item)
+            freq += log2(support / self.all_db_card)
+        return freq
+
     def calculate_cover(self, transaction):
         for pattern in self.patterns:
             if transaction >= pattern:
                 return pattern.fuse(self.calculate_cover(ItemSet(transaction) - ItemSet(pattern)))
         return ItemSet([])
+
+    def calculate_patternset_diff_encoded_size(self, pattern):
+        old_sj_card_size = universal_code_len(self.size)
+        new_sj_card_size = universal_code_len(self.size + 1)
+        pattern_size = universal_code_len(len(pattern))
+        freq = self.get_freq_in_all(pattern)
+        cs_sum_of_diff = 0.0
+        for cs in self.coding_sets:
+            cs_sum_of_diff += cs.old_db_size - cs.encoded_db_size
+        return old_sj_card_size - new_sj_card_size - pattern_size + freq + cs_sum_of_diff
 
     def try_add(self, candidate):
         self.add(candidate.copy())

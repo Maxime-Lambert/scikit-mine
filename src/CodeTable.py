@@ -29,8 +29,10 @@ class CodeTable:
             :rtype: String
         """
         res = ""
-        for k in self.order_by_standard_cover_order():
-            res += "pattern : " + str(k) + " | usage : " + str(k.usage)
+        for pattern in self.order_by_standard_cover_order():
+            res += "pattern : " + str(pattern) + " #USG : "
+            res += str(pattern.usage) + " "
+            res += " #CODELEN : " + repr(self.patternMap[pattern]) + "\n"
         return res
 
     def __len__(self):
@@ -52,28 +54,25 @@ class CodeTable:
         self.calculate_code_length()
         return self.patternMap[item]
 
-    def add(self, pattern):
+    def add(self, pattern_to_add):
         """
             Add a Pattern to the Codetable, if it's already present it adds
             1 to its usage else it's put in
 
-            :param pattern: The pattern you want to add to the Codetable
-            :type pattern: Pattern
-            :return: The Codetable with the pattern added
-            :rtype: Codetable
+            :param pattern_to_add: The pattern you want to add to the Codetable
+            :type pattern_to_add: Pattern
         """
-        b = True
-        for key in self.patternMap.keys():
-            if key == pattern:
-                key.add_usage()
-                key.add_support()
-                b = False
-        if b:
-            self.patternMap[pattern] = 0
-            pattern.usage = 1
-            pattern.support = 1
+        pattern_found = False
+        for pattern in self.patternMap.keys():
+            if pattern == pattern_to_add:
+                pattern.add_usage()
+                pattern.add_support()
+                pattern_found = True
+        if not pattern_found:
+            pattern_to_add.usage = 1
+            pattern_to_add.support = 1
+            self.patternMap[pattern_to_add] = 0
         self.calculate_code_length()
-        pass
 
     def remove(self, pattern):
         """
@@ -81,13 +80,10 @@ class CodeTable:
 
             :param pattern: The pattern you want to remove from the Codetable
             :type pattern: Pattern
-            :return: The Codetable with pattern removed
-            :rtype: Codetable
         """
         if pattern in self.patternMap:
             del self.patternMap[pattern]
         self.calculate_code_length()
-        pass
 
     def order_by_standard_cover_order(self):
         """
@@ -104,7 +100,7 @@ class CodeTable:
             :rtype: List<Pattern>
         """
         return sorted(self.patternMap.keys(),
-                      key=lambda p: (-len(p.elements),-p.support, str(p)))
+                      key=lambda p: (-len(p.elements), -p.support, str(p)))
 
     def usage_sum(self):
         """
@@ -114,25 +110,20 @@ class CodeTable:
             :return: The sum of all usages
             :rtype: double
         """
-        i = 0
-        for k in self.patternMap.keys():
-            i += k.usage
-        return i
+        sum = 0
+        for pattern in self.patternMap.keys():
+            sum += pattern.usage
+        return sum
 
     def calculate_code_length(self):
         """
             Gives each pattern in the Codetable a corresponding code length to
             encode the database
             This function is used locally
-
-            :return: The Codetable with its values updated
-            :rtype: Codetable
         """
         us_sum = self.usage_sum()
-        for k, v in self.patternMap:
-            # TODO : correct Error -> dictionary changed size during iteration
-            self.patternMap[k] = (-math.log2(k.usage/us_sum))
-        pass
+        for pattern in self.patternMap.keys():
+            self.patternMap[pattern] = (-math.log2(pattern.usage/us_sum))
 
     def database_encoded_length(self):
         """
@@ -143,8 +134,8 @@ class CodeTable:
             :rtype: double
         """
         i = 0
-        for k, v in self.patternMap.items():
-            i += (k.usage * v)
+        for pattern, codelength in self.patternMap.items():
+            i += (pattern.usage * codelength)
         return i
 
     def codetable_length(self, sct):
@@ -206,9 +197,9 @@ class CodeTable:
             :return: The Codetable without useless elements
             :rtype: Codetable
         """
-        for k, v in self.patternMap:
-            ct = self.copy()  # peut-être une copie profonde à faire?
-            ct.remove(k)
+        for pattern in self.patternMap.keys():
+            ct = self.copy()
+            ct.remove(pattern)
             if self.best_code_table(ct, data, sct) == ct:
                 self.patternMap = ct.copy()
         return self

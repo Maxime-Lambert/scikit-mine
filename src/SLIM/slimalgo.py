@@ -130,9 +130,6 @@ class CodeTableSlim(CodeTable):
             Creates a CodeTable_Slim with an empty PatternMap
         """
         self.patternMap = {}
-
-    def patternset(self):
-        return self.patternMap.keys()
         
     def add(self, pattern, transaction):
         """
@@ -164,15 +161,10 @@ class CodeTableSlim(CodeTable):
         """
             Order the Codetable by its pattern's usage
 
-            :return: The Codetable ordered by pattern's usage
-            :rtype: Codetable
+            :return: The Patterns from patternmap ordered
+            :rtype: List<Pattern_Slim>
         """
-        return sorted(self.patternMap, key=lambda p: p.usage, reverse=True)
-    
-    def print_res(self):
-    
-        for k, v in self.patternMap.items():
-            print(k, k.usage)
+        return sorted(self.patternMap.keys(), key=lambda p: p.usage, reverse=True)
 
 def slim(db,max_iter):
     """

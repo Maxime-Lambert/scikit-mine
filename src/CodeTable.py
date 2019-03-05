@@ -28,10 +28,10 @@ class CodeTable:
             :return: A String representing the Codetable
             :rtype: String
         """
-        self.order_by_standard_cover_order()
         res = ""
-        for k in self.patternMap.keys():
-            res += "pattern : " + str(k) + " | usage : " + str(k.usage) + "\n"
+        for k in self.order_by_standard_cover_order():
+            res += "pattern : " + str(k) + " | usage : " + str(k.usage)
+            res += "codeLength : " + self.patternMap.getitem(k)
         return res
 
     def __len__(self):
@@ -52,17 +52,6 @@ class CodeTable:
         """
         self.calculate_code_length()
         return self.patternMap[item]
-
-    def __contains__(self, pattern):
-        """
-            Says if a pattern is contained in the Codetable or not
-
-            :param pattern: The pattern concerned
-            :type pattern: Pattern
-            :return: True if the Codetable contains pattern, else False
-            :rtype: boolean
-        """
-        return pattern in self.patternMap.keys()
 
     def add(self, pattern):
         """
@@ -85,7 +74,7 @@ class CodeTable:
             pattern.usage = 1
             pattern.support = 1
         self.calculate_code_length()
-        return self.order_by_standard_cover_order()
+        pass
 
     def remove(self, pattern):
         """
@@ -99,24 +88,7 @@ class CodeTable:
         if pattern in self.patternMap:
             del self.patternMap[pattern]
         self.calculate_code_length()
-        return self.order_by_standard_cover_order()
-
-    def get(self, number):
-        """
-            Gives the pattern at a certain index in the Codetable
-
-            :param number: The index you want access to
-            :type number: int
-            :return: The pattern at the index if it exists, else -1
-            :rtype: Pattern | int
-        """
-        i = 0
-        for k in self.patternMap.keys():
-            if i == number:
-                return k
-            else:
-                i += 1
-        return -1
+        pass
 
     def order_by_standard_cover_order(self):
         """
@@ -125,13 +97,16 @@ class CodeTable:
                 1 - Pattern's elements length
                 2 - Pattern's support
                 3 - Pattern's name lexicographilly
-            This function is used locally
 
-            :return: The Codetable ordered by Standard Cover Order
-            :rtype: Codetable
+            To iterate on the sorted map, simply write :
+                for pattern in codetable.order_by_standard_cover_order()
+
+            :return: The Patterns from patternmap ordered
+            :rtype: List<Pattern>
         """
-        sorted(self.patternMap, key=lambda p: (len(p.elements), p.support,
-                                               str(p)), reverse=True)
+        return sorted(self.patternMap.keys(),
+                      key=lambda p: (len(p.elements), p.support, str(p)),
+                      reverse=True)
 
     def usage_sum(self):
         """
@@ -156,9 +131,10 @@ class CodeTable:
             :rtype: Codetable
         """
         us_sum = self.usage_sum()
-        for k in self.patternMap.keys():  # TODO : correct Error -> dictionary changed size during iteration
+        for k, v in self.patternMap:
+            # TODO : correct Error -> dictionary changed size during iteration
             self.patternMap[k] = (-math.log2(k.usage/us_sum))
-        return self
+        pass
 
     def database_encoded_length(self):
         """
@@ -168,19 +144,21 @@ class CodeTable:
             :return: The size of the database encoded with the Codetable
             :rtype: double
         """
-        self.calculate_code_length()
         i = 0
         for k, v in self.patternMap.items():
             i += (k.usage * v)
         return i
 
     def codetable_length(self, sct):
-        # Je pense qu'il faut prendre en compte d'autres choses en plus pour la taille :
+        # Je pense qu'il faut prendre en compte d'autres choses en plus
+        # pour la taille :
         # typiquement le nombre de patterns et pas uniquement leur longueur
         # ex: tu as 2 patterns de longueur 5 (10 +2), c'est plus intéressant
         # que 5 patterns de longueur 2 (10 + 5) je pense
-        # c'est le principe de MDL un peu (miser sur un nb réduit de patterns), mais cela se discute certainement
-        # notamment en fonction de l'influence que ça a sur la database_encoded_length
+        # c'est le principe de MDL un peu (miser sur un nb réduit de patterns),
+        # mais cela se discute certainement
+        # notamment en fonction de l'influence que ça
+        # a sur la database_encoded_length
         """
             Gives the size of the current Codetable encoded
             This function is used locally
@@ -191,11 +169,10 @@ class CodeTable:
             :rtype: double
         """
         i = 0
-        for k in self.patternMap.keys():
-            for p in k.elements:
-                for x, y in sct.patternMap.items():
-                    if p == x:
-                        i += y
+        for pattern, codelength in self.patternMap.items():
+            for singleton in pattern:
+                i += sct.patternMap.getitem(singleton)
+            i += codelength
         return i
 
     def best_code_table(self, ct, data, sct):  # data to be removed?
@@ -232,10 +209,10 @@ class CodeTable:
             :rtype: Codetable
         """
         for k, v in self.patternMap:
-            ct = self  # peut-être une copie profonde à faire?
+            ct = self.copy()  # peut-être une copie profonde à faire?
             ct.remove(k)
             if self.best_code_table(ct, data, sct) == ct:
-                self.patternMap = ct
+                self.patternMap = ct.copy()
         return self
 
     def copy(self):

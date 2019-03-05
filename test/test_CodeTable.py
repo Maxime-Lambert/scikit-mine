@@ -40,7 +40,6 @@ def test_add_1(ct):
     assert ct.patternMap[p] == 0
     assert p.usage == 1
     assert p.support == 1  # maybe useless
-    # assert p.usageList = t
 
 
 def test_add_2(ct_full):
@@ -49,7 +48,6 @@ def test_add_2(ct_full):
     assert ct_full.patternMap[p1] == 1
     assert p1.usage == 2
     assert p1.support == 2  # maybe useless
-    # assert p1.usageList = t4
 
 
 def test_remove(ct_full):
@@ -57,12 +55,13 @@ def test_remove(ct_full):
     assert p1 not in ct_full.patternMap.keys()
 
 
+""""
 def test_get(ct_full):
     assert ct_full.get(0) == p1  # first element
     assert ct_full.get(ct_full.__len__()) == p2  # TOCHECK : returns last element
     assert ct_full.get(5) == -1  # returns -1 if can't find any pattern for this index
 
-"""
+
 def test_order_by_usage(ct_full):
     ct_full.add(p3)
     ct_full.add(p3)

@@ -76,6 +76,13 @@ class PatternSlim(Pattern):
         self.elements = item.copy()
         self.usage_list = []
 
+    def copy(self):
+        copy = PatternSlim()
+        copy.usage = self.usage
+        copy.support = self.support
+        copy.elements = self.elements
+        copy.usage_list = self.usage_list
+
     def __repr__(self):
         repr(self.elements)
             
@@ -87,8 +94,9 @@ class PatternSlim(Pattern):
             :return: The merged pattern
             :rtype: Pattern_Slim
         """
-        p = PatternSlim(self.elements & pattern.elements,
-                         self.usage_list | pattern.usage_list)
+        p = PatternSlim(0)
+        p.elements = self.elements & pattern.elements
+        p.usage_list = self.usage_list | pattern.usage_list
         p.usage = len(p.usage_list)
         p.support = p.usage
         return p
@@ -102,7 +110,6 @@ class PatternSlim(Pattern):
             :rtype: Pattern_Slim
         """
         self.usage_list.append(transaction)
-        return self
 
     def __eq__(self, pattern):
          return self.elements==pattern.elements
@@ -131,31 +138,32 @@ class CodeTableSlim(CodeTable):
         """
         self.patternMap = {}
         
-    def add(self, pattern, transaction):
+    def add(self, pattern_to_add, transaction):
         """
             Add a Pattern to the CodeTable_Slim, if it's already present it
             adds 1 to its usage else it's put in
 
-            :param pattern: Pattern_Slim you want to add to CodeTable_Slim
+            :param pattern_to_add: Pattern_Slim you want to add to CodeTable_Slim
             :param transaction: The Transaction your pattern appears in
-            :type pattern: Pattern_Slim
+            :type pattern_to_add: Pattern_Slim
             :type transaction: Transaction | List<Transaction>
             :return: The CodeTable_Slim with the pattern added
             :rtype: CodeTable_Slim
         """
-        b = False
-        for key, value in self.patternMap.items():
-            if key == pattern:
-                key.add_usage()
-                key.add_support()
-                key.add_usagelist(transaction)
-                b = True
-        if not b:
-            self.patternMap[pattern] = 0
-            pattern.usage = 1
-            pattern.support = 1
-            pattern.usageList = transaction
-        self.order_by_standard_cover_order()
+        pattern_found = False
+        for pattern in self.patternMap.keys():
+            if pattern == pattern_to_add:
+                pattern.add_usage()
+                pattern.add_support()
+                pattern.add_usagelist(transaction.copy())
+                pattern_found = True
+        if not pattern_found:
+            copy = pattern.copy()
+            copy.usage = 1
+            copy.support = 1
+            copy.usageList.add(transaction.copy())
+            self.patternMap[copy] = 0
+        self.calculate_code_length()
 
     def order_by_usage(self):
         """

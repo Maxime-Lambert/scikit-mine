@@ -22,7 +22,7 @@ class Pattern:
 
     def __iter__(self):
         """Returns iterator over the transactions in the pattern."""
-        return self
+        return self.elements
 
     def __next__(self):
         """

@@ -31,7 +31,6 @@ class CodeTable:
         res = ""
         for k in self.order_by_standard_cover_order():
             res += "pattern : " + str(k) + " | usage : " + str(k.usage)
-            res += "codeLength : " + self.patternMap.getitem(k)
         return res
 
     def __len__(self):
@@ -105,8 +104,7 @@ class CodeTable:
             :rtype: List<Pattern>
         """
         return sorted(self.patternMap.keys(),
-                      key=lambda p: (len(p.elements), p.support, str(p)),
-                      reverse=True)
+                      key=lambda p: (-len(p.elements),-p.support, str(p)))
 
     def usage_sum(self):
         """

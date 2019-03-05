@@ -31,3 +31,9 @@ class Transaction:
 
     def __iter__(self):
         return iter(self.items)
+
+    def __hash__(self):
+        return len(self.items)
+
+    def copy(self):
+        return Transaction(self.items)

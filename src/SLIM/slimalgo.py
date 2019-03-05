@@ -14,114 +14,6 @@ from src.CodeTable import CodeTable
 from src.Transaction import Transaction
 from src.Pattern import Pattern
 from src.Files import Files
-
-class DatabaseSlim(Database):
-    """Database class
-
-    Parameters
-    ----------
-    int_data_collection : list of integer list
-    elements to put in the database
-
-    Attributes
-    ----------
-    data_list: ItemCollection list
-    """
-    transactions = []
-
-    def __init__(self, transaction_set):
-        for itemset in transaction_set:
-            trans = Transaction(itemset.copy())
-            self.transactions.append(trans)
-        self.index = 0
-        self.db_card = len(transaction_set)
-
-    def make_standard_code_table(self):
-        """Make and return the standard code table of the database."""
-        sct = CodeTableSlim()  # map pattern code
-        # On ajoute les singletons de la base à la SCT
-        for trans in self.transactions:
-            for item in trans:
-                pattern = PatternSlim([item])
-                sct.add(pattern, trans)
-        return sct
-
-
-class PatternSlim(Pattern):
-
-    """
-        A Pattern_Slim is consisted of a Collection of Items.
-        It has an usage (double) : the occurrence of that pattern in the
-        cover of the Database
-        It has a support (double) : the total occurrence of that pattern
-        in the Database
-        It has an usageList (set(Transaction)) : all the transactions
-        containing the pattern
-    """
-    elements = set()
-    def __init__(self, item):
-        """
-            Create a Pattern with a given transaction and an usage/support of 0
-            Has an index 0 for easier time with iterators
-
-            :param item: The item corresponding to the Pattern
-            :param transaction: The transaction where the Pattern appears
-            :type item: int
-            :type transaction: Transaction
-            :return: A new Pattern_Slim
-            :rtype: Pattern_Slim
-        """
-        self.usage = 0
-        self.support = 0
-        self.elements = item.copy()
-        self.usage_list = []
-
-    def copy(self):
-        copy = PatternSlim()
-        copy.usage = self.usage
-        copy.support = self.support
-        copy.elements = self.elements
-        copy.usage_list = self.usage_list
-
-    def __repr__(self):
-        repr(self.elements)
-            
-    def union(self, pattern):
-        """
-            Merged two patterns into one bigger
-            :param pattern: the pattern you want to merge self with
-            :type pattern: Pattern_Slim
-            :return: The merged pattern
-            :rtype: Pattern_Slim
-        """
-        p = PatternSlim(0)
-        p.elements = self.elements & pattern.elements
-        p.usage_list = self.usage_list | pattern.usage_list
-        p.usage = len(p.usage_list)
-        p.support = p.usage
-        return p
-
-    def add_usagelist(self, transaction):
-        """
-            Add a transaction to the current usage_list
-            :param transaction: the transaction you want to add
-            :type transaction: Transaction
-            :return: The merged pattern
-            :rtype: Pattern_Slim
-        """
-        self.usage_list.append(transaction)
-
-    def __eq__(self, pattern):
-         return self.elements==pattern.elements
-
-    def __hash__(self):
-        """
-            Return the hash value of the usage
-            :return: An hash value
-            :rtype: Integer
-        """
-        return hash(self.usage)
-
 class CodeTableSlim(CodeTable):
     """
         A CodeTable_Slim is consisted of a Dictionnary Pattern_Slim -> Double
@@ -158,12 +50,10 @@ class CodeTableSlim(CodeTable):
                 pattern.add_usagelist(transaction.copy())
                 pattern_found = True
         if not pattern_found:
-            copy = pattern.copy()
-            copy.usage = 1
-            copy.support = 1
-            copy.usageList.add(transaction.copy())
+            copy = pattern_to_add.copy()
+            copy.usage_list.add(transaction.copy())
             self.patternMap[copy] = 0
-        self.calculate_code_length()
+        #self.calculate_code_length()
 
     def order_by_usage(self):
         """
@@ -173,6 +63,114 @@ class CodeTableSlim(CodeTable):
             :rtype: List<Pattern_Slim>
         """
         return sorted(self.patternMap.keys(), key=lambda p: p.usage, reverse=True)
+
+class DatabaseSlim(Database):
+    """Database class
+
+    Parameters
+    ----------
+    int_data_collection : list of integer list
+    elements to put in the database
+
+    Attributes
+    ----------
+    data_list: ItemCollection list
+    """
+
+    def __init__(self, transaction_set):        
+        self.transactions = []
+        for itemset in transaction_set:
+            trans = Transaction(itemset.copy())
+            self.transactions.append(trans)
+        self.index = 0
+        self.db_card = len(transaction_set)
+
+    def make_standard_code_table(self):
+        """Make and return the standard code table of the database."""
+        sct = CodeTableSlim()  # map pattern code
+        # On ajoute les singletons de la base à la SCT
+        for trans in self.transactions:
+            for item in trans:
+                pattern = PatternSlim(item)
+                sct.add(pattern, trans)
+        return sct
+
+
+class PatternSlim(Pattern):
+
+    """
+        A Pattern_Slim is consisted of a Collection of Items.
+        It has an usage (double) : the occurrence of that pattern in the
+        cover of the Database
+        It has a support (double) : the total occurrence of that pattern
+        in the Database
+        It has an usageList (set(Transaction)) : all the transactions
+        containing the pattern
+    """
+    def __init__(self, item):
+        """
+            Create a Pattern with a given transaction and an usage/support of 0
+            Has an index 0 for easier time with iterators
+
+            :param item: The item corresponding to the Pattern
+            :param transaction: The transaction where the Pattern appears
+            :type item: int
+            :type transaction: Transaction
+            :return: A new Pattern_Slim
+            :rtype: Pattern_Slim
+        """
+        self.usage = 1
+        self.support = 1
+        self.elements = set()
+        self.elements.add(item)
+        self.usage_list = set()
+
+    def copy(self):
+        copy = PatternSlim(0)
+        copy.usage = self.usage
+        copy.support = self.support
+        copy.elements = self.elements.copy()
+        copy.usage_list = self.usage_list.copy()
+        return copy
+
+    def __repr__(self):
+        repr(self.elements)
+            
+    def union(self, pattern):
+        """
+            Merged two patterns into one bigger
+            :param pattern: the pattern you want to merge self with
+            :type pattern: Pattern_Slim
+            :return: The merged pattern
+            :rtype: Pattern_Slim
+        """
+        p = PatternSlim(0)
+        p.elements = self.elements & pattern.elements
+        p.usage_list = self.usage_list | pattern.usage_list
+        p.usage = len(p.usage_list)
+        p.support = p.usage
+        return p
+
+    def add_usagelist(self, transaction):
+        """
+            Add a transaction to the current usage_list
+            :param transaction: the transaction you want to add
+            :type transaction: Transaction
+            :return: The merged pattern
+            :rtype: Pattern_Slim
+        """
+        self.usage_list.add(transaction.copy())
+
+    def __eq__(self, pattern):
+         return self.elements == pattern.elements
+
+    def __hash__(self):
+        """
+            Return the hash value of the usage
+            :return: An hash value
+            :rtype: Integer
+        """
+        return hash(self.usage)
 
 def generate_candidat(code_table):
     """Generate a list of candidates from a code table.

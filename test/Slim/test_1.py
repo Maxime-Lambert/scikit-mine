@@ -7,7 +7,6 @@ Created on Sun Mar  3 19:14:36 2019
 
 from src.SLIM.slimalgo import slim
 
-def test_mine_candidate():
 
 def test_iter0_empty():
     db = []
@@ -17,7 +16,7 @@ def test_iter0_empty():
 
 def test_iter0_default():
 
-    db = [[2, 1, 3, 54], [1, 2, 4], [1, 2, 4], [1, 2, 4],
+    db = [[2, 1, 3, 4], [1, 2, 4], [1, 2, 4], [1, 2, 4],
           [2, 4], [2, 4], [1], [1], [3]]
 
     res = slim(db, 0)
@@ -39,4 +38,4 @@ def test_iter1_default():
     print(res)
 
 
-test_iter1_default()
+test_iter0_default()

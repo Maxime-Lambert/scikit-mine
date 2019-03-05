@@ -32,7 +32,7 @@ class CodeTable:
         for pattern in self.order_by_standard_cover_order():
             res += "pattern : " + str(pattern) + " #USG : "
             res += str(pattern.usage) + " "
-            res += " #CODELEN : " + repr(self.patternMap[pattern]) + "\n"
+            #res += " #CODELEN : " + repr(self.patternMap[pattern]) + "\n"
         return res
 
     def __len__(self):
@@ -51,7 +51,7 @@ class CodeTable:
             :return: the number of patterns contained in the Codetable
             :rtype: double
         """
-        self.calculate_code_length()
+        #self.calculate_code_length()
         return self.patternMap[item]
 
     def add(self, pattern_to_add):
@@ -72,7 +72,7 @@ class CodeTable:
             pattern_to_add.usage = 1
             pattern_to_add.support = 1
             self.patternMap[pattern_to_add] = 0
-        self.calculate_code_length()
+        #self.calculate_code_length()
 
     def remove(self, pattern):
         """
@@ -83,7 +83,7 @@ class CodeTable:
         """
         if pattern in self.patternMap:
             del self.patternMap[pattern]
-        self.calculate_code_length()
+        #self.calculate_code_length()
 
     def order_by_standard_cover_order(self):
         """

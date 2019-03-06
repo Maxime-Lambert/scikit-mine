@@ -1,2 +1,2 @@
 #!/usr/bin/env bash
-python3 src/SLIM/slimalgo.py
+pytest --junitxml=pytest/slim.xml test/Slim/test_1.py

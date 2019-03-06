@@ -35,30 +35,23 @@ class CodeTableSlim(CodeTable):
             :return: The CodeTable_Slim with the pattern added
             :rtype: CodeTable_Slim
         """
-        pattern_found = False
-        for pattern in self.patternMap.keys():
-            if pattern == pattern_to_add:
-                to_remove = pattern
-                to_remove.add_usage()
-                to_remove.add_support()
-                if transaction is not None:
-                    to_remove.add_usagelist(transaction.copy())
-                pattern_found = True
-        if not pattern_found:
-            self.patternMap[pattern_to_add] = 0
-            if transaction is not None:
-                pattern_to_add.add_usagelist(transaction)
+        if pattern_to_add in self.patternMap:
+            for k in self.patternMap.keys():
+                if k == pattern_to_add:
+                    k.usage += 1
+                    k.support += 1
+                    if transaction is not None:
+                        k.usage_list.add(transaction)
         else:
-            pattern_to_add.usage = to_remove.usage
-            pattern_to_add.support = to_remove.support
-            pattern_to_add.usage_list = to_remove.usage_list
-            self.remove(to_remove)
+            if transaction is not None:
+                pattern_to_add.usage_list.add(transaction)
             self.patternMap[pattern_to_add] = 0
         if len(pattern_to_add.elements) > 1:
             for pattern in self.patternMap.keys():
-                if pattern.elements.issubset(pattern_to_add.elements):
-                    pattern.usage_list -= pattern_to_add.usage_list
-                    pattern.usage -= pattern_to_add.usage
+                if pattern is not pattern_to_add:
+                    if pattern.elements.issubset(pattern_to_add.elements):
+                        pattern.usage_list -= pattern_to_add.usage_list
+                        pattern.usage -= pattern_to_add.usage
         self.calculate_code_length()
 
     def order_by_usage(self):
@@ -74,7 +67,12 @@ class CodeTableSlim(CodeTable):
     def copy(self):
         ct = CodeTableSlim()
         for k in self.patternMap.keys():
-            ct.add(k, None)
+            copy = PatternSlim(0)
+            copy.usage = k.usage
+            copy.support = k.support
+            copy.usage_list = k.usage_list
+            copy.elements = k.elements
+            ct.add(copy, None)
         return ct
 
 
@@ -147,8 +145,13 @@ class PatternSlim(Pattern):
         copy.usage_list = self.usage_list.copy()
         return copy
 
+
     def __repr__(self):
-        repr(self.elements)
+        str = ""
+        str += "pattern : " + repr(self.elements)
+        str += " usage : " + repr(self.usage)
+        str += " usagelist : " + repr(self.usage_list)
+        return str
 
     def union(self, pattern):
         """
@@ -165,6 +168,8 @@ class PatternSlim(Pattern):
         p.support = p.usage
         return p
 
+    def getusage(self):
+        return self.usage
     def add_usagelist(self, transaction):
         """
             Add a transaction to the current usage_list
@@ -184,7 +189,7 @@ class PatternSlim(Pattern):
             :return: An hash value
             :rtype: Integer
         """
-        return hash(self.usage)
+        return len(self.elements)
 
 
 def generate_candidat(code_table):
@@ -204,20 +209,20 @@ def generate_candidat(code_table):
     candidates_list = []
     best_usage = 0
     indice_pattern_x = 0
+    indice_pattern_y = 0
     x_current = ct[indice_pattern_x]  # attention si viiiiiide
     # ------------- Mine candidates -------------#
-    while indice_pattern_x < len(ct) and x_current.usage >= best_usage:
+    while indice_pattern_x < len(ct)-1 and ct[indice_pattern_x].usage >= best_usage:
+        x_current = ct[indice_pattern_x]
         indice_pattern_y = indice_pattern_x + 1
-        y_current = ct[indice_pattern_y]
-        while indice_pattern_y < len(ct) and y_current.usage >= best_usage:
+        while indice_pattern_y < len(ct) and ct[indice_pattern_y].usage >= best_usage:
+            y_current = ct[indice_pattern_y]
             x_y_current = x_current.union(y_current)
             if best_usage <= x_y_current.usage:
                 candidates_list.append(x_y_current)
                 best_usage = x_y_current.usage
-            indice_pattern_y = indice_pattern_y + 1
-            y_current = ct[indice_pattern_y]
-        indice_pattern_x = indice_pattern_x + 1
-        x_current = ct[indice_pattern_x]
+            indice_pattern_y += 1
+        indice_pattern_x += 1
     return candidates_list
 
 
@@ -235,15 +240,20 @@ def slim(db, max_iter):
     while (ct_has_improved) and (iter < max_iter):
         ct_has_improved = False
         candidate_list = generate_candidat(code_table)
+        candidate_list = sorted(candidate_list, key=lambda p: (p.usage),
+                                reverse=True)
     # ------------- Improve CT -------------#
         indice_candidat = 0
         while (indice_candidat < len(candidate_list)) and not(ct_has_improved):
             candidate = candidate_list[indice_candidat]
             code_table_temp = code_table.copy()
             code_table_temp.add(candidate, None)
-            code_table = code_table_temp.best_code_table(code_table, db,
+            is_code_table_best = code_table.best_code_table(code_table_temp, db,
                                                          standard_code_table)
-            indice_candidat = indice_candidat+1
-            ct_has_improved = code_table == code_table_temp
+
+            indice_candidat += 1
+            ct_has_improved = not is_code_table_best
+            if not is_code_table_best:
+                code_table = code_table_temp
         iter += 1
     return code_table

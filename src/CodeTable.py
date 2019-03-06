@@ -29,7 +29,7 @@ class CodeTable:
             :rtype: String
         """
         res = ""
-        for pattern in self.patternMap.keys():
+        for pattern in self.order_by_standard_cover_order():
             res += "pattern : " + str(pattern) + " #USG : "
             res += str(pattern.usage) + " "
             res += "#CODELEN : " + str(self.patternMap[pattern]) + "\n"
@@ -65,24 +65,19 @@ class CodeTable:
             :param pattern_to_add: The pattern you want to add to the Codetable
             :type pattern_to_add: Pattern
         """
-        pattern_found = False
-        for pattern in self.patternMap.keys():
-            if pattern == pattern_to_add:
-                to_remove = pattern
-                to_remove.add_usage()
-                to_remove.add_support()
-                pattern_found = True
-        if not pattern_found:
-            self.patternMap[pattern_to_add] = 0
+        if pattern_to_add in self.patternMap:
+            for k in self.patternMap.keys():
+                if k == pattern_to_add:
+                    k.usage += 1
+                    k.support += 1
         else:
-            pattern_to_add.usage = to_remove.usage
-            pattern_to_add.support = to_remove.support
-            self.remove(to_remove)
             self.patternMap[pattern_to_add] = 0
         if len(pattern_to_add.elements) > 1:
             for pattern in self.patternMap.keys():
-                if pattern.elements.issubset(pattern_to_add.elements):
-                    pattern.usage -= pattern_to_add.usage
+                if pattern is not pattern_to_add:
+                    if pattern.elements.issubset(pattern_to_add.elements):
+                        pattern.usage_list -= pattern_to_add.usage_list
+                        pattern.usage -= pattern_to_add.usage
         self.calculate_code_length()
 
     def remove(self, pattern_to_remove):
@@ -92,19 +87,9 @@ class CodeTable:
             :param pattern: The pattern you want to remove from the Codetable
             :type pattern: Pattern
         """
-        change = {}
-        found_one = False
-        for pattern in self.patternMap.keys():
-            if found_one:
-                    change[pattern] = self.patternMap[pattern]
-            else:
-                if not pattern == pattern_to_remove:
-                    change[pattern] = self.patternMap[pattern]
-                else:
-                    found_one = True
-        self.patternMap.clear()
-        for pattern in change.keys():
-            self.patternMap[pattern] = change[pattern]
+        if pattern in self.patternMap:
+            del self.patternMap[pattern]
+        self.calculate_code_length()
 
     def order_by_standard_cover_order(self):
         """
@@ -143,16 +128,11 @@ class CodeTable:
             This function is used locally
         """
         us_sum = self.usage_sum()
-        if us_sum == 0:
-            us_sum == 1
-        change = {}
         for pattern in self.patternMap.keys():
             if pattern.usage == 0:
-                change[pattern] = 0
+                self.patternMap[pattern] = 0
             else:
-                change[pattern] = (-math.log2(pattern.usage/us_sum))
-        for pattern in change.keys():
-            self.patternMap[pattern] = change[pattern]
+                self.patternMap[pattern] = (-math.log2(pattern.usage/us_sum))
 
     def database_encoded_length(self):
         """
@@ -213,15 +193,13 @@ class CodeTable:
         compct = ct.codetable_length(sct)+ct.database_encoded_length()
         compself = self.codetable_length(sct)+self.database_encoded_length()
         if compct > compself:
-            return ct
-        return self
+            return True
+        return False
 
     def post_prune(self, data, sct):
         """
             Checks whether the Codetable is better with some of its elements
             deleted
-
-            NE FONCTIONNE PAS
 
             :param data: The database concerned
             :param sct: The standard code table of the database

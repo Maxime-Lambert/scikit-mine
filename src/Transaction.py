@@ -26,12 +26,6 @@ class Transaction:
     def __add__(self, transaction):
         return self.items + transaction.items
 
-    def __eq__(self, transaction):
-        for item in self.items:
-            if item not in transaction.items:
-                return False
-        return True
-
     def __iter__(self):
         return iter(self.items)
 

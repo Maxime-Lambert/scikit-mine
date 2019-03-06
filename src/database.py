@@ -6,7 +6,7 @@ Created on Mon Feb 11 14:45:31 2019
 
 @author: Josie Signe
 """
-from src.CodeTable import *
+from src.CodeTable import CodeTable
 from src.Pattern import Pattern
 # from src.item_collection import ItemCollection
 from src.Transaction import Transaction

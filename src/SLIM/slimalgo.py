@@ -39,12 +39,12 @@ class CodeTableSlim(CodeTable):
                 to_remove = pattern
                 to_remove.add_usage()
                 to_remove.add_support()
-                if not transaction is None:
+                if transaction is not None:
                     to_remove.add_usagelist(transaction.copy())
                 pattern_found = True
         if not pattern_found:
             self.patternMap[pattern_to_add] = 0
-            if not transaction is None:
+            if transaction is not None:
                 pattern_to_add.add_usagelist(transaction)
         else:
             pattern_to_add.usage = to_remove.usage
@@ -52,6 +52,11 @@ class CodeTableSlim(CodeTable):
             pattern_to_add.usage_list = to_remove.usage_list
             self.remove(to_remove)
             self.patternMap[pattern_to_add] = 0
+        if len(pattern_to_add.elements) > 1:
+            for pattern in self.patternMap.items():
+                if pattern.elements.issubset(pattern_to_add.elements):
+                    pattern.usage_list -= pattern_to_add.usage_list
+                    pattern.usage -= pattern_to_add.usage
         self.calculate_code_length()
 
     def order_by_usage(self):
@@ -241,7 +246,7 @@ def slim(db,max_iter):
             code_table = code_table_temp.best_code_table(code_table, db, standard_code_table)
             if code_table == code_table_temp:
                 ct_has_improved = True
-            else: 
+            else:
                 ct_has_improved = False
             indice_candidat = indice_candidat+1 #remove plutot que compteur
         iter+=1

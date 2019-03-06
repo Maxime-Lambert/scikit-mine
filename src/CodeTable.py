@@ -79,6 +79,10 @@ class CodeTable:
             pattern_to_add.support = to_remove.support
             self.remove(to_remove)
             self.patternMap[pattern_to_add] = 0
+        if len(pattern_to_add.elements) > 1:
+            for pattern in self.patternMap.items():
+                if pattern.elements.issubset(pattern_to_add.elements):
+                    pattern.usage -= pattern_to_add.usage
         self.calculate_code_length()
 
     def remove(self, pattern_to_remove):

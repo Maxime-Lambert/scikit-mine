@@ -1,13 +1,13 @@
 from random import *
 from os import path
 
-db_num = 5
-u = "1 2 3 4 5"
-i_len = 15
-tr_max_len = 8
-tr_min_len = 6
-db_min_len = 300
-db_max_len = 500
+db_num = 3
+u = "1 2 3"
+i_len = 12
+tr_max_len = 3
+tr_min_len = 3
+db_min_len = 200
+db_max_len = 300
 patt_min_len = int(i_len/3)
 patt_max_len = 3 * patt_min_len
 patt_min_num = 1

@@ -80,7 +80,7 @@ class CodeTable:
             self.remove(to_remove)
             self.patternMap[pattern_to_add] = 0
         if len(pattern_to_add.elements) > 1:
-            for pattern in self.patternMap.items():
+            for pattern in self.patternMap.keys():
                 if pattern.elements.issubset(pattern_to_add.elements):
                     pattern.usage -= pattern_to_add.usage
         self.calculate_code_length()
@@ -143,9 +143,14 @@ class CodeTable:
             This function is used locally
         """
         us_sum = self.usage_sum()
+        if us_sum == 0:
+            us_sum == 1
         change = {}
         for pattern in self.patternMap.keys():
-            change[pattern] = (-math.log2(pattern.usage/us_sum))
+            if pattern.usage == 0:
+                change[pattern] = 0
+            else:
+                change[pattern] = (-math.log2(pattern.usage/us_sum))
         for pattern in change.keys():
             self.patternMap[pattern] = change[pattern]
 

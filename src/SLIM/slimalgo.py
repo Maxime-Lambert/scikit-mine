@@ -53,7 +53,7 @@ class CodeTableSlim(CodeTable):
             self.remove(to_remove)
             self.patternMap[pattern_to_add] = 0
         if len(pattern_to_add.elements) > 1:
-            for pattern in self.patternMap.items():
+            for pattern in self.patternMap.keys():
                 if pattern.elements.issubset(pattern_to_add.elements):
                     pattern.usage_list -= pattern_to_add.usage_list
                     pattern.usage -= pattern_to_add.usage

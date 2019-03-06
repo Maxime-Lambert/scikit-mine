@@ -45,15 +45,21 @@ class CodeTableSlim(CodeTable):
         pattern_found = False
         for pattern in self.patternMap.keys():
             if pattern == pattern_to_add:
+                to_remove = pattern
                 pattern.add_usage()
                 pattern.add_support()
                 pattern.add_usagelist(transaction.copy())
                 pattern_found = True
         if not pattern_found:
-            copy = pattern_to_add.copy()
-            copy.usage_list.add(transaction.copy())
-            self.patternMap[copy] = 0
-        #self.calculate_code_length()
+            self.patternMap[pattern_to_add] = 0
+            pattern_to_add.add_usagelist(transaction)
+        else:
+            pattern_to_add.usage = to_remove.usage
+            pattern_to_add.support = to_remove.support
+            pattern_to_add.usage_list = to_remove.usage_list
+            self.remove(to_remove)
+            self.patternMap[pattern_to_add] = 0
+        self.calculate_code_length()
 
     def order_by_usage(self):
         """
@@ -145,8 +151,8 @@ class PatternSlim(Pattern):
             :rtype: Pattern_Slim
         """
         p = PatternSlim(0)
-        p.elements = self.elements & pattern.elements
-        p.usage_list = self.usage_list | pattern.usage_list
+        p.elements = self.elements | pattern.elements
+        p.usage_list = self.usage_list & pattern.usage_list
         p.usage = len(p.usage_list)
         p.support = p.usage
         return p

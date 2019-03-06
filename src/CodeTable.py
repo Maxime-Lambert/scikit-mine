@@ -29,10 +29,10 @@ class CodeTable:
             :rtype: String
         """
         res = ""
-        for pattern in self.order_by_standard_cover_order():
+        for pattern in self.patternMap.keys():
             res += "pattern : " + str(pattern) + " #USG : "
             res += str(pattern.usage) + " "
-            #res += " #CODELEN : " + repr(self.patternMap[pattern]) + "\n"
+            res += " #CODELEN : " + str(self.patternMap[pattern]) + "\n"
         return res
 
     def __len__(self):
@@ -51,7 +51,7 @@ class CodeTable:
             :return: the number of patterns contained in the Codetable
             :rtype: double
         """
-        #self.calculate_code_length()
+        self.calculate_code_length()
         return self.patternMap[item]
 
     def add(self, pattern_to_add):
@@ -65,14 +65,18 @@ class CodeTable:
         pattern_found = False
         for pattern in self.patternMap.keys():
             if pattern == pattern_to_add:
+                to_remove = pattern
                 pattern.add_usage()
                 pattern.add_support()
                 pattern_found = True
         if not pattern_found:
-            pattern_to_add.usage = 1
-            pattern_to_add.support = 1
             self.patternMap[pattern_to_add] = 0
-        #self.calculate_code_length()
+        else:
+            pattern_to_add.usage = to_remove.usage
+            pattern_to_add.support = to_remove.support
+            self.remove(to_remove)
+            self.patternMap[pattern_to_add] = 0
+        self.calculate_code_length()
 
     def remove(self, pattern):
         """
@@ -83,7 +87,7 @@ class CodeTable:
         """
         if pattern in self.patternMap:
             del self.patternMap[pattern]
-        #self.calculate_code_length()
+        self.calculate_code_length()
 
     def order_by_standard_cover_order(self):
         """
@@ -122,8 +126,11 @@ class CodeTable:
             This function is used locally
         """
         us_sum = self.usage_sum()
+        change = {}
         for pattern in self.patternMap.keys():
-            self.patternMap[pattern] = (-math.log2(pattern.usage/us_sum))
+            change[pattern] = (-math.log2(pattern.usage/us_sum))
+        for pattern in change.keys():
+            self.patternMap[pattern] = change[pattern]
 
     def database_encoded_length(self):
         """

@@ -15,8 +15,8 @@ class Pattern:
             Create a Pattern with a given transaction and an usage/support of 0
             Has an index 0 for easier time with iterators
         """
-        self.usage = 0
-        self.support = 0
+        self.usage = 1
+        self.support = 1
         self.elements = transaction
         self.index = 0
 

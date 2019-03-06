@@ -180,7 +180,9 @@ class CodeTable:
         i = 0
         for pattern, codelength in self.patternMap.items():
             for singleton in pattern.elements:
-                i += sct.patternMap[singleton]
+                for patterns, codelengths in sct.patternMap.items():
+                    if patterns.elements == singleton:
+                        i += codelengths
             i += codelength
         return i
 

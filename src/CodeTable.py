@@ -85,7 +85,6 @@ class CodeTable:
             :param pattern: The pattern you want to remove from the Codetable
             :type pattern: Pattern
         """
-        print(pattern_to_remove)
         change = {}
         found_one = False
         for pattern in self.patternMap.keys():

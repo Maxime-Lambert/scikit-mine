@@ -15,7 +15,10 @@ class Transaction:
         return ",".join(self.items)
     """
     def __str__(self):
-        return ",".join(self.items)
+        res = ""
+        for element in self.items:
+            res += str(element) + " "
+        return res
 
     def __repr__(self):
         return repr(self.items)

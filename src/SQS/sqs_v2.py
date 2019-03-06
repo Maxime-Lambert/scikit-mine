@@ -4,7 +4,6 @@ class SQS:
         self.data = data
         self.list_pattern = list_pattern
 
-
     def find_usage(self, sequence, data):
         res = 0
         for s in data:
@@ -13,7 +12,11 @@ class SQS:
         return res
 
     def find_windows(self, pattern, data):
-        pass
+        res = []
+        for sequence in data:
+            if pattern in sequence:
+                res += [pattern]
+        return res
 
     def align(self, window):
         pass
@@ -31,10 +34,12 @@ class SQS:
             print(sequence)
             sequence.set_usage(self.find_usage(sequence, self.data))
         for pattern in self.list_pattern:
-            if pattern.length > 0:
+            print("pattern : ")
+            print(pattern)
+            if len(pattern) > 0:
                 list_window = self.find_windows(pattern, self.data)
-                pattern.set_usage(list_window.length)
-                pattern.set_gap(pattern.length - 1)
+                pattern.set_usage(len(list_window))
+                pattern.set_gap(len(pattern) - 1)
         w = self.merge(list_window)
 
         while changes:

@@ -5,7 +5,7 @@ import os
 
 if __name__ == '__main__':
     absolute_path = os.path.dirname(os.path.abspath(__file__))
-    file_path = absolute_path + "\\..\\..\\test\\data\\SQS\\monfichier"
+    file_path = absolute_path + "/../../test/data/SQS/monfichier"
     test = [[1, 2, 3], [4, 6]]
     list_seq = []
     for it in test:

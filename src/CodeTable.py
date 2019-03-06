@@ -19,7 +19,7 @@ class CodeTable:
         self.patternMap = {}
 
     def __eq__(self, ct):
-        return self == ct
+        return self.patternMap == ct.patternMap
 
     def __repr__(self):
         """
@@ -52,7 +52,10 @@ class CodeTable:
             :rtype: double
         """
         self.calculate_code_length()
-        return self.patternMap[item]
+        for pattern, codelength in self.patternMap:
+            if pattern == item:
+                return codelength
+        return None
 
     def add(self, pattern_to_add):
         """
@@ -176,8 +179,8 @@ class CodeTable:
         """
         i = 0
         for pattern, codelength in self.patternMap.items():
-            for singleton in pattern:
-                i += sct.patternMap.getitem(singleton)
+            for singleton in pattern.elements:
+                i += sct.patternMap[singleton]
             i += codelength
         return i
 
@@ -206,6 +209,8 @@ class CodeTable:
         """
             Checks whether the Codetable is better with some of its elements
             deleted
+
+            NE FONCTIONNE PAS
 
             :param data: The database concerned
             :param sct: The standard code table of the database

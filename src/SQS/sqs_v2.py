@@ -42,7 +42,7 @@ class SQS:
                 pattern.set_gap(len(pattern) - 1)
         w = self.merge(list_window)
 
-        while changes:
-            a = self.align(w)
+        #while changes:
+            #a = self.align(w)
 
-        return a
+        return []

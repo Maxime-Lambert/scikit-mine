@@ -15,8 +15,10 @@ def test_generate_candidate_default_sct():
           [2, 4], [2, 4], [1], [1], [3]]
     database = DatabaseSlim(db)
     standard_code_table = database.make_standard_code_table()
-    print(standard_code_table)
+    # code_table = standard_code_table.copy()
     res = slimalgo.generate_candidat(standard_code_table)
+    for i in res:
+        print(str(i))
 
 
 test_generate_candidate_default_sct()

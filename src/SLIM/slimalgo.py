@@ -4,7 +4,8 @@ from src.database import Database
 from src.CodeTable import CodeTable
 from src.Transaction import Transaction
 from src.Pattern import Pattern
-from src.Files import Files
+
+
 class CodeTableSlim(CodeTable):
     """
         A CodeTable_Slim is consisted of a Dictionnary Pattern_Slim -> Double
@@ -26,7 +27,8 @@ class CodeTableSlim(CodeTable):
             Add a Pattern to the CodeTable_Slim, if it's already present it
             adds 1 to its usage else it's put in
 
-            :param pattern_to_add: Pattern_Slim you want to add to CodeTable_Slim
+            :param pattern_to_add
+                Pattern_Slim you want to add to CodeTable_Slim
             :param transaction: The Transaction your pattern appears in
             :type pattern_to_add: Pattern_Slim
             :type transaction: Transaction | List<Transaction>
@@ -66,13 +68,15 @@ class CodeTableSlim(CodeTable):
             :return: The Patterns from patternmap ordered
             :rtype: List<Pattern_Slim>
         """
-        return sorted(self.patternMap.keys(), key=lambda p: p.usage, reverse=True)
+        return sorted(self.patternMap.keys(), key=lambda p: p.usage,
+                      reverse=True)
 
     def copy(self):
         ct = CodeTableSlim()
         for k in self.patternMap.keys():
             ct.add(k, None)
         return ct
+
 
 class DatabaseSlim(Database):
     """Database class
@@ -172,7 +176,7 @@ class PatternSlim(Pattern):
         self.usage_list.add(transaction.copy())
 
     def __eq__(self, pattern):
-         return self.elements == pattern.elements
+        return self.elements == pattern.elements
 
     def __hash__(self):
         """
@@ -181,6 +185,7 @@ class PatternSlim(Pattern):
             :rtype: Integer
         """
         return hash(self.usage)
+
 
 def generate_candidat(code_table):
     """Generate a list of candidates from a code table.
@@ -196,17 +201,17 @@ def generate_candidat(code_table):
     """
     # must work on the list code_table.order_by_usage()
     ct = code_table.order_by_usage()
-    candidates_list = [] #pattern list
+    candidates_list = []
     best_usage = 0
     indice_pattern_x = 0
-    x_current = ct[indice_pattern_x] #attention si viiiiiide
-	# ------------- Mine candidates -------------#
+    x_current = ct[indice_pattern_x]  # attention si viiiiiide
+    # ------------- Mine candidates -------------#
     while indice_pattern_x < len(ct) and x_current.usage >= best_usage:
-        indice_pattern_y = indice_pattern_x + 1 #on ne prend que les patterns juste après x
+        indice_pattern_y = indice_pattern_x + 1
         y_current = ct[indice_pattern_y]
         while indice_pattern_y < len(ct) and y_current.usage >= best_usage:
             x_y_current = x_current.union(y_current)
-            if best_usage <= x_y_current.usage: #si bon usage on le garde et maj best_usage
+            if best_usage <= x_y_current.usage:
                 candidates_list.append(x_y_current)
                 best_usage = x_y_current.usage
             indice_pattern_y = indice_pattern_y + 1
@@ -215,7 +220,8 @@ def generate_candidat(code_table):
         x_current = ct[indice_pattern_x]
     return candidates_list
 
-def slim(db,max_iter):
+
+def slim(db, max_iter):
     """
     Parameters
     ----------
@@ -225,29 +231,19 @@ def slim(db,max_iter):
     standard_code_table = database.make_standard_code_table()
     code_table = standard_code_table.copy()
     ct_has_improved = True
-    #ct_pattern_set = code_table.get_pattern_list
     iter = 0
-    while ct_has_improved != False & iter < max_iter:
+    while (ct_has_improved) and (iter < max_iter):
         ct_has_improved = False
-	# ------------- Mine candidates -------------#
-        candidate_list=[]
         candidate_list = generate_candidat(code_table)
-	# ------------- Improve CT -------------#
+    # ------------- Improve CT -------------#
         indice_candidat = 0
-            # on parcours la liste de candidats tant que l'on a pas améliorer CT ou qu'il reste des candidats non testés
-        while (indice_candidat < len(candidate_list)) and ct_has_improved==False:
-            print(indice_candidat < len(candidate_list))
-            print((indice_candidat < len(candidate_list)) and (not ct_has_improved))
+        while (indice_candidat < len(candidate_list)) and not(ct_has_improved):
             candidate = candidate_list[indice_candidat]
             code_table_temp = code_table.copy()
-            print("boucle")
-            print(code_table_temp)
             code_table_temp.add(candidate, None)
-            code_table = code_table_temp.best_code_table(code_table, db, standard_code_table)
-            if code_table == code_table_temp:
-                ct_has_improved = True
-            else:
-                ct_has_improved = False
-            indice_candidat = indice_candidat+1 #remove plutot que compteur
-        iter+=1
+            code_table = code_table_temp.best_code_table(code_table, db,
+                                                         standard_code_table)
+            indice_candidat = indice_candidat+1
+            ct_has_improved = code_table == code_table_temp
+        iter += 1
     return code_table

@@ -1,6 +1,6 @@
 #import numpy as np
 #import scipy.sparse as sp
-#from .Transaction import Transaction 
+#from .Transaction import Transaction
 #from .codeTable import CodeTable
 #from .database import Database
 
@@ -23,13 +23,13 @@ class CodeTableSlim(CodeTable):
         Its attribute is patternMap
     """
     patternMap = {}
-        
+
     def __init__(self):
         """
             Creates a CodeTable_Slim with an empty PatternMap
         """
         self.patternMap = {}
-        
+
     def add(self, pattern_to_add, transaction):
         """
             Add a Pattern to the CodeTable_Slim, if it's already present it
@@ -46,9 +46,9 @@ class CodeTableSlim(CodeTable):
         for pattern in self.patternMap.keys():
             if pattern == pattern_to_add:
                 to_remove = pattern
-                pattern.add_usage()
-                pattern.add_support()
-                pattern.add_usagelist(transaction.copy())
+                to_remove.add_usage()
+                to_remove.add_support()
+                to_remove.add_usagelist(transaction.copy())
                 pattern_found = True
         if not pattern_found:
             self.patternMap[pattern_to_add] = 0
@@ -83,7 +83,7 @@ class DatabaseSlim(Database):
     data_list: ItemCollection list
     """
 
-    def __init__(self, transaction_set):        
+    def __init__(self, transaction_set):
         self.transactions = []
         for itemset in transaction_set:
             trans = Transaction(itemset.copy())
@@ -141,7 +141,7 @@ class PatternSlim(Pattern):
 
     def __repr__(self):
         repr(self.elements)
-            
+
     def union(self, pattern):
         """
             Merged two patterns into one bigger
@@ -180,17 +180,17 @@ class PatternSlim(Pattern):
 
 def generate_candidat(code_table):
     """Generate a list of candidates from a code table.
-    
+
     Parameters
     ----------
     code_table : CodeTable
         Code table where we want to mine candidate
-    
+
     Returns
     ----------
     list of candidates
     """
-    # must work on the list code_table.order_by_usage()        
+    # must work on the list code_table.order_by_usage()
     ct = code_table.order_by_usage()
     candidates_list = [] #pattern list
     best_usage = 0
@@ -217,15 +217,15 @@ def slim(db,max_iter):
     """
     Parameters
     ----------
-    
+
     """
-    database = DatabaseSlim(db)    
+    database = DatabaseSlim(db)
     standard_code_table = database.make_standard_code_table()
     code_table = standard_code_table
     ct_has_improved = True
     #ct_pattern_set = code_table.get_pattern_list
     iter = 0
-    while ct_has_improved != False & iter < max_iter:        
+    while ct_has_improved != False & iter < max_iter:
         ct = code_table.order_by_usage()
         candidates_list = [] #pattern list
         best_usage = 0
@@ -251,7 +251,7 @@ def slim(db,max_iter):
         indice_candidat = 0
             # on parcours la liste de candidats tant que l'on a pas améliorer CT ou qu'il reste des candidats non testés
         while indice_candidat < len(candidates_list) & ct_has_improved==False:
-            candidate = candidates_list[indice_candidat] 
+            candidate = candidates_list[indice_candidat]
             code_table_temp = code_table.add_pattern(candidate)
             if code_table_temp.taille <= code_table.taille:
                 code_table = code_table_temp.post_prune

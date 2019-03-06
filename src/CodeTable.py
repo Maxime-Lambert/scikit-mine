@@ -32,7 +32,7 @@ class CodeTable:
         for pattern in self.patternMap.keys():
             res += "pattern : " + str(pattern) + " #USG : "
             res += str(pattern.usage) + " "
-            res += " #CODELEN : " + str(self.patternMap[pattern]) + "\n"
+            res += "#CODELEN : " + str(self.patternMap[pattern]) + "\n"
         return res
 
     def __len__(self):
@@ -66,8 +66,8 @@ class CodeTable:
         for pattern in self.patternMap.keys():
             if pattern == pattern_to_add:
                 to_remove = pattern
-                pattern.add_usage()
-                pattern.add_support()
+                to_remove.add_usage()
+                to_remove.add_support()
                 pattern_found = True
         if not pattern_found:
             self.patternMap[pattern_to_add] = 0
@@ -78,16 +78,27 @@ class CodeTable:
             self.patternMap[pattern_to_add] = 0
         self.calculate_code_length()
 
-    def remove(self, pattern):
+    def remove(self, pattern_to_remove):
         """
             Remove a Pattern from the Codetable
 
             :param pattern: The pattern you want to remove from the Codetable
             :type pattern: Pattern
         """
-        if pattern in self.patternMap:
-            del self.patternMap[pattern]
-        self.calculate_code_length()
+        print(pattern_to_remove)
+        change = {}
+        found_one = False
+        for pattern in self.patternMap.keys():
+            if found_one:
+                    change[pattern] = self.patternMap[pattern]
+            else:
+                if not pattern == pattern_to_remove:
+                    change[pattern] = self.patternMap[pattern]
+                else:
+                    found_one = True
+        self.patternMap.clear()
+        for pattern in change.keys():
+            self.patternMap[pattern] = change[pattern]
 
     def order_by_standard_cover_order(self):
         """

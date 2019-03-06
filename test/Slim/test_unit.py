@@ -17,8 +17,6 @@ def test_generate_candidate_default_sct():
     standard_code_table = database.make_standard_code_table()
     print(standard_code_table)
     res = slimalgo.generate_candidat(standard_code_table)
-    for i in res:
-        print(str(i))
 
 
 test_generate_candidate_default_sct()

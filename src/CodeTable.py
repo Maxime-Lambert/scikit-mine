@@ -77,7 +77,7 @@ class CodeTable:
                 if pattern is not pattern_to_add:
                     if pattern.elements.issubset(pattern_to_add.elements):
                         pattern.usage_list -= pattern_to_add.usage_list
-                        pattern.usage -= pattern_to_add.usage
+                        pattern.usage -= len(pattern.usage_list)
         self.calculate_code_length()
 
     def remove(self, pattern_to_remove):

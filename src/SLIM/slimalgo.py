@@ -51,7 +51,7 @@ class CodeTableSlim(CodeTable):
                 if pattern is not pattern_to_add:
                     if pattern.elements.issubset(pattern_to_add.elements):
                         pattern.usage_list -= pattern_to_add.usage_list
-                        pattern.usage -= pattern_to_add.usage
+                        pattern.usage = len(pattern.usage_list)
         self.calculate_code_length()
 
     def order_by_usage(self):
@@ -72,7 +72,7 @@ class CodeTableSlim(CodeTable):
             copy.support = k.support
             copy.usage_list = k.usage_list
             copy.elements = k.elements
-            ct.add(copy, None)
+            ct.patternMap[copy] = self.patternMap[k]
         return ct
 
 
@@ -207,7 +207,7 @@ def generate_candidat(code_table):
     # must work on the list code_table.order_by_usage()
     ct = code_table.order_by_usage()
     candidates_list = []
-    best_usage = 0
+    best_usage = 1
     indice_pattern_x = 0
     indice_pattern_y = 0
     x_current = ct[indice_pattern_x]  # attention si viiiiiide
@@ -245,6 +245,7 @@ def slim(db, max_iter):
     # ------------- Improve CT -------------#
         indice_candidat = 0
         while (indice_candidat < len(candidate_list)) and not(ct_has_improved):
+            print("je regarde pour ajouter"+repr(candidate_list[indice_candidat]))
             candidate = candidate_list[indice_candidat]
             code_table_temp = code_table.copy()
             code_table_temp.add(candidate, None)
@@ -255,5 +256,7 @@ def slim(db, max_iter):
             ct_has_improved = not is_code_table_best
             if not is_code_table_best:
                 code_table = code_table_temp
+            code_table.post_prune(db, standard_code_table)
+            print(code_table)
         iter += 1
-    return code_table.post_prune(db, standard_code_table)
+    return code_table

@@ -256,4 +256,4 @@ def slim(db, max_iter):
             if not is_code_table_best:
                 code_table = code_table_temp
         iter += 1
-    return code_table
+    return code_table.post_prune(db, standard_code_table)

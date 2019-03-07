@@ -208,11 +208,13 @@ class CodeTable:
             :return: The Codetable without useless elements
             :rtype: Codetable
         """
+        copy = {}
         for pattern in self.patternMap.keys():
-            ct = self.copy()
-            ct.remove(pattern)
-            if self.best_code_table(ct, data, sct) == ct:
-                self.patternMap = ct.copy()
+            if not pattern.usage == 0:
+                copy[pattern] = self.patternMap[pattern]
+        self.patternMap.clear()
+        for pattern in copy.keys():
+            self.patternMap[pattern] = copy[pattern]
         return self
 
     def copy(self):

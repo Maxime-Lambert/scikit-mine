@@ -220,5 +220,9 @@ class CodeTable:
     def copy(self):
         ct = CodeTable()
         for k in self.patternMap.keys():
-            ct.add(k)
+            copy = PatternSlim(0)
+            copy.usage = k.usage
+            copy.support = k.support
+            copy.elements = k.elements
+            ct.patternMap[copy] = self.patternMap[k]
         return ct

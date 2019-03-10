@@ -6,6 +6,42 @@ Created on Sun Mar  3 19:14:36 2019
 """
 
 from src.SLIM.slimalgo import slim
+from src.Files import Files
+from src.SLIM.slimalgo import DatabaseSlim
+
+
+def test_iter0_file():
+
+    file = Files("iris")
+    database = DatabaseSlim(file.list_int)
+    expected = database.make_standard_code_table()
+    res = slim("iris", 0)
+    print(res)
+    assert res == expected
+
+
+def test_iter1_file():
+    file = Files("iris")
+    database = DatabaseSlim(file.list_int)
+    sct = database.make_standard_code_table()
+    Files.to_file(sct, "expected_iris_sct")
+    res = slim("iris", 1)
+    Files.to_file(res, "res_test_iter1_iris")
+    print(res)
+    
+
+
+def test_iter1_file_correct():
+    file = Files("iris")
+    database = DatabaseSlim(file.list_int)
+    sct = database.make_standard_code_table()
+    res = slim("iris", 1)
+    print(res)
+
+
+def test_itern_file():
+    res = slim("iris", 100)
+    print(res)
 
 
 def test_iter0_empty():
@@ -38,7 +74,7 @@ def test_iter1_default():
 def test_itern_nofail():
 
     db = []
-    res = slim(db, 10000)
+    res = slim(db, 100)
     assert True is True
 
 
@@ -57,4 +93,4 @@ def test_itern_hard():
     print(res)
 
 
-test_itern_easy()
+test_iter1_file()

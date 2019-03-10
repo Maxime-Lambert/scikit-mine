@@ -4,6 +4,7 @@ from src.database import Database
 from src.CodeTable import CodeTable
 from src.Transaction import Transaction
 from src.Pattern import Pattern
+from src.Files import Files
 
 
 class CodeTableSlim(CodeTable):
@@ -148,9 +149,8 @@ class PatternSlim(Pattern):
 
     def __repr__(self):
         str = ""
-        str += "pattern : " + repr(self.elements)
-        str += " usage : " + repr(self.usage)
-        str += " usagelist : " + repr(self.usage_list)
+        for k in self.elements:
+            str += repr(k) + " "
         return str
 
     def union(self, pattern):
@@ -226,13 +226,14 @@ def generate_candidat(code_table):
     return candidates_list
 
 
-def slim(db, max_iter):
+def slim(filename, max_iter):
     """
     Parameters
     ----------
 
     """
-    database = DatabaseSlim(db)
+    file = Files(filename)
+    database = DatabaseSlim(file.list_int)
     standard_code_table = database.make_standard_code_table()
     code_table = standard_code_table.copy()
     ct_has_improved = True
@@ -249,14 +250,14 @@ def slim(db, max_iter):
             candidate = candidate_list[indice_candidat]
             code_table_temp = code_table.copy()
             code_table_temp.add(candidate, None)
-            is_code_table_best = code_table.best_code_table(code_table_temp, db,
+            is_code_table_best = code_table.best_code_table(code_table_temp, database,
                                                          standard_code_table)
 
             indice_candidat += 1
             ct_has_improved = not is_code_table_best
             if not is_code_table_best:
                 code_table = code_table_temp
-            code_table.post_prune(db, standard_code_table)
+            code_table.post_prune(database, standard_code_table)
             print(code_table)
         iter += 1
     return code_table

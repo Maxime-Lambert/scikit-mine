@@ -20,6 +20,7 @@ def test_iter0_default():
     res = slim(db, 0)
     print(res)
 
+
 def test_iter1_empty():
     db = []
     res = slim(db, 1)
@@ -30,8 +31,30 @@ def test_iter1_default():
 
     db = [[2, 1, 3, 4], [1, 2, 4], [1, 2, 4], [1, 2, 4],
           [2, 4], [2, 4], [1], [1], [3]]
-    res = slim(db, 1000)
+    res = slim(db, 1)
     print(res)
 
 
-test_iter1_default()
+def test_itern_nofail():
+
+    db = []
+    res = slim(db, 10000)
+    assert True is True
+
+
+def test_itern_easy():
+    db = [[1, 2, 3, 4], [1, 2, 3], [1, 2, 3], [1, 2, 3], [1, 2, 3],
+          [1, 2, 3], [1, 2, 3], [2, 3], [4, 1], [4, 1], [4, 1], [4, 1], [4]]
+    res = slim(db, 10000)
+    print(res)
+
+
+def test_itern_hard():
+    # cette base de donnée doit être une base de donnée officielle
+    # il faut ensuite comparer les résultats avec le SLIM officiel
+    db = []
+    res = slim(db, 10000)
+    print(res)
+
+
+test_itern_easy()

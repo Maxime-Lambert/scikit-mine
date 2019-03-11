@@ -5,6 +5,7 @@ from src.CodeTable import CodeTable
 from src.Transaction import Transaction
 from src.Pattern import Pattern
 from src.Files import Files
+from src.SLIM.codetableslim import Convert
 
 
 class CodeTableSlim(CodeTable):
@@ -55,8 +56,7 @@ class CodeTableSlim(CodeTable):
             :return: The Patterns from patternmap ordered
             :rtype: List<Pattern_Slim>
         """
-        return sorted(self.patternMap.keys(), key=lambda p: (-len(p.elements),
-                                                             p.usage),
+        return sorted(self.patternMap.keys(), key=lambda p: p.usage,
                       reverse=True)
 
     def copy(self):
@@ -252,7 +252,6 @@ def slim(filename, max_iter):
     ct_has_improved = True
     iter = 0
     while (ct_has_improved) and (iter < max_iter):
-        print(standard_code_table)
         ct_has_improved = False
         candidate_list = generate_candidat(code_table)
         candidate_list = sorted(candidate_list, key=lambda p: (p.usage),
@@ -274,4 +273,6 @@ def slim(filename, max_iter):
                 code_table = code_table_temp
             # print(code_table)
         iter += 1
+    Files.to_file(code_table, "res_"+filename)
+    Convert.to_code_table_slim("res_"+filename, standard_code_table)
     return code_table

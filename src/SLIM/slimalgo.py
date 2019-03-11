@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import math
 from src.database import Database
 from src.CodeTable import CodeTable
 from src.Transaction import Transaction
@@ -237,6 +238,48 @@ def generate_candidat(code_table):
             indice_pattern_y += 1
         indice_pattern_x += 1
     return candidates_list
+
+
+def estimateGain(code_table, pattern1, pattern2, sct):
+    xy_prim = pattern1.union(pattern2)
+    code_table_temp = code_table.copy()
+    code_table_temp.add(xy_prim, None)
+    s = code_table.usage_sum()
+    s_prim = s - xy_prim.usage
+    code1 = code_table[pattern1]
+    code2 = code_table[pattern2]
+    code1_prim = code_table_temp[pattern1]
+    code2_prim = code_table_temp[pattern2]
+    cote1 = s*math.log(s) - s_prim*math.log(s_prim)
+    cote1 += xy_prim.usage*math.log(xy_prim.usage)
+    cote1 -= (code1*math.log(code1) - code1_prim*math.log(code1_prim))
+    cote1 -= (code2*math.log(code2) - code2_prim*math.log(code2_prim))
+    encoded_union = 0
+    for x in xy_prim.elements:
+        for pattern, codelength in sct.patternMap.items():
+            if pattern.elements == x:
+                encoded_union += codelength
+    cote2 = math.log(xy_prim.usage)
+    cote2 -= encoded_union
+    cote2 += len(code_table)*math.log(s)
+    cote2 -= len(code_table_temp)*math.log(s_prim)
+    cote2 += math.log(code1) - math.log(code1_prim)
+    cote2 += math.log(code2) - math.log(code2_prim)
+    encoded_pattern1 = 0
+    for x in pattern1.elements:
+        for pattern, codelength in sct.patternMap.items():
+            if pattern.elements == x:
+                encoded_pattern1 += codelength
+    encoded_pattern2 = 0
+    for x in pattern2.elements:
+        for pattern, codelength in sct.patternMap.items():
+            if pattern.elements == x:
+                encoded_pattern2 += codelength
+    cote2 += math.log(code1_prim) - encoded_pattern1
+    cote2 += math.log(code2_prim) - encoded_pattern2
+    cote2 += encoded_pattern1 - math.log(code1)
+    cote2 += encoded_pattern2 - math.log(code2)
+    return cote1 + cote2
 
 
 def slim(filename, max_iter):

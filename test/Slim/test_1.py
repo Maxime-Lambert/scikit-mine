@@ -28,7 +28,6 @@ def test_iter1_file():
     res = slim("iris", 1)
     Files.to_file(res, "res_test_iter1_iris")
     print(res)
-    
 
 
 def test_iter1_file_correct():
@@ -39,9 +38,14 @@ def test_iter1_file_correct():
     print(res)
 
 
+def test_itern_file_correct():
+    res = slim("iris", 10000)
+    Files.to_file(res, "res_test_itern_iris")
+
+
 def test_itern_file():
     res = slim("iris", 100)
-    print(res)
+    Files.to_file(res, "res_test_itern_iris")
 
 
 def test_iter0_empty():
@@ -93,4 +97,4 @@ def test_itern_hard():
     print(res)
 
 
-test_iter1_file()
+test_itern_file_correct()

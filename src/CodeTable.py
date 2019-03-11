@@ -12,11 +12,18 @@ class CodeTable:
         Its attribute is patternMap
     """
 
-    def __init__(self):
+    def __init__(self, patternMap):
         """
-            Creates a Codetable with an empty PatternMap
+            Creates a Codetable with an empty PatternMap if the given
+            patternMap is None, and with the patternMap if it is not
+            None
+            :param patternMap: the patternMap you want to initiate with
+            :ptype patternMap: Map <Pattern,Double>
         """
-        self.patternMap = {}
+        if patternMap is None:
+            self.patternMap = {}
+        else:
+            self.patternMap = patternMap.copy()
 
     def __eq__(self, ct):
         return self.patternMap == ct.patternMap
@@ -60,7 +67,10 @@ class CodeTable:
     def add(self, pattern_to_add):
         """
             Add a Pattern to the Codetable, if it's already present it adds
-            1 to its usage else it's put in
+            1 to its usage and support else it's put in
+            If the pattern_to_add has at least 2 elements (in this context)
+            it means it comes from at least 2 other patterns so we subtract
+            usage and usage list from them
 
             :param pattern_to_add: The pattern you want to add to the Codetable
             :type pattern_to_add: Pattern
@@ -77,7 +87,7 @@ class CodeTable:
                 if pattern is not pattern_to_add:
                     if pattern.elements.issubset(pattern_to_add.elements):
                         pattern.usage_list -= pattern_to_add.usage_list
-                        pattern.usage -= len(pattern.usage_list)
+                        pattern.usage = len(pattern.usage_list)
         self.calculate_code_length()
 
     def remove(self, pattern_to_remove):
@@ -111,6 +121,7 @@ class CodeTable:
     def usage_sum(self):
         """
             Gives the sum of all the pattern's usage in the Codetable
+
             This function is used locally
 
             :return: The sum of all usages
@@ -125,6 +136,7 @@ class CodeTable:
         """
             Gives each pattern in the Codetable a corresponding code length to
             encode the database
+
             This function is used locally
         """
         us_sum = self.usage_sum()
@@ -132,11 +144,12 @@ class CodeTable:
             if pattern.usage == 0:
                 self.patternMap[pattern] = 0
             else:
-                self.patternMap[pattern] = (-math.log2(pattern.usage/us_sum))
+                self.patternMap[pattern] = (-math.log(pattern.usage/us_sum))
 
     def database_encoded_length(self):
         """
             Gives the size of the database encoded with the Codetable
+
             This function is used locally
 
             :return: The size of the database encoded with the Codetable
@@ -148,17 +161,10 @@ class CodeTable:
         return i
 
     def codetable_length(self, sct):
-        # Je pense qu'il faut prendre en compte d'autres choses en plus
-        # pour la taille :
-        # typiquement le nombre de patterns et pas uniquement leur longueur
-        # ex: tu as 2 patterns de longueur 5 (10 +2), c'est plus intéressant
-        # que 5 patterns de longueur 2 (10 + 5) je pense
-        # c'est le principe de MDL un peu (miser sur un nb réduit de patterns),
-        # mais cela se discute certainement
-        # notamment en fonction de l'influence que ça
-        # a sur la database_encoded_length
+        # nombre de pattern ?
         """
             Gives the size of the current Codetable encoded
+
             This function is used locally
 
             :param sct: The standard code table of the database
@@ -168,14 +174,16 @@ class CodeTable:
         """
         i = 0
         for pattern, codelength in self.patternMap.items():
-            for singleton in pattern.elements:
-                for patterns, codelengths in sct.patternMap.items():
-                    if patterns.elements == singleton:
-                        i += codelengths
-            i += codelength
+            if not pattern.usage == 0:
+                for singleton in pattern.elements:
+                    for patterns, codelengths in sct.patternMap.items():
+                        if patterns.elements == singleton:
+                            i += codelengths
+                i += codelength
         return i
 
-    def best_code_table(self, ct, data, sct):  # data to be removed?
+    def best_code_table(self, ct, data, sct):
+        # data to be removed?
         """
             Compare the size of the database encoded with two different
             Codetables
@@ -186,7 +194,7 @@ class CodeTable:
             :type ct: Codetable
             :type data: Database
             :type sct: Codetable
-            :return: The Codetable which encodes best the database
+            :return: True if self encodes best the data, else False
             :rtype: boolean
 
         """
@@ -200,6 +208,9 @@ class CodeTable:
         """
             Checks whether the Codetable is better with some of its elements
             deleted
+
+            Right now, post_prune isn't implemented yet. The only thing it does
+            is delete pattern with usages = 0
 
             :param data: The database concerned
             :param sct: The standard code table of the database
@@ -218,7 +229,13 @@ class CodeTable:
         return self
 
     def copy(self):
-        ct = CodeTable()
+        """
+            Makes a copy of any CodeTable
+
+            :return: The copy of self
+            :rtype: CodeTable
+        """
+        ct = CodeTable(None)
         for k in self.patternMap.keys():
             copy = PatternSlim(0)
             copy.usage = k.usage

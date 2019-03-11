@@ -15,13 +15,6 @@ class CodeTableSlim(CodeTable):
 
         Its attribute is patternMap
     """
-    patternMap = {}
-
-    def __init__(self):
-        """
-            Creates a CodeTable_Slim with an empty PatternMap
-        """
-        self.patternMap = {}
 
     def add(self, pattern_to_add, transaction):
         """
@@ -66,7 +59,13 @@ class CodeTableSlim(CodeTable):
                       reverse=True)
 
     def copy(self):
-        ct = CodeTableSlim()
+        """
+            Makes a copy of any CodeTableSlim
+
+            :return: The copy of self
+            :rtype: CodeTableSlim
+        """
+        ct = CodeTableSlim(None)
         for k in self.patternMap.keys():
             copy = PatternSlim(0)
             copy.usage = k.usage
@@ -100,7 +99,7 @@ class DatabaseSlim(Database):
 
     def make_standard_code_table(self):
         """Make and return the standard code table of the database."""
-        sct = CodeTableSlim()  # map pattern code
+        sct = CodeTableSlim(None)  # map pattern code
         # On ajoute les singletons de la base à la SCT
         for trans in self.transactions:
             for item in trans:
@@ -139,6 +138,12 @@ class PatternSlim(Pattern):
         self.usage_list = set()
 
     def copy(self):
+        """
+            Makes a copy of any PatternSlim
+
+            :return: The copy of self
+            :rtype: PatternSlim
+        """
         copy = PatternSlim(0)
         copy.usage = self.usage
         copy.support = self.support
@@ -146,12 +151,18 @@ class PatternSlim(Pattern):
         copy.usage_list = self.usage_list.copy()
         return copy
 
-
     def __repr__(self):
-        str = ""
+        """
+            Gives a string representation of a PatternSlim
+
+            :return: A String representing the PatternSlim
+            :rtype: String
+        """
+        res = ""
         for k in self.elements:
-            str += repr(k) + " "
-        return str
+            res += repr(k) + " "
+        res += "("+str(self.usage)+","+str(self.support)+")"
+        return res
 
     def union(self, pattern):
         """
@@ -170,6 +181,7 @@ class PatternSlim(Pattern):
 
     def getusage(self):
         return self.usage
+
     def add_usagelist(self, transaction):
         """
             Add a transaction to the current usage_list
@@ -239,6 +251,7 @@ def slim(filename, max_iter):
     ct_has_improved = True
     iter = 0
     while (ct_has_improved) and (iter < max_iter):
+        print(standard_code_table)
         ct_has_improved = False
         candidate_list = generate_candidat(code_table)
         candidate_list = sorted(candidate_list, key=lambda p: (p.usage),
@@ -246,18 +259,18 @@ def slim(filename, max_iter):
     # ------------- Improve CT -------------#
         indice_candidat = 0
         while (indice_candidat < len(candidate_list)) and not(ct_has_improved):
-            print("je regarde pour ajouter"+repr(candidate_list[indice_candidat]))
+            # print("je regarde pour ajouter"+
+            # repr(candidate_list[indice_candidat]))
             candidate = candidate_list[indice_candidat]
             code_table_temp = code_table.copy()
             code_table_temp.add(candidate, None)
-            is_code_table_best = code_table.best_code_table(code_table_temp, database,
-                                                         standard_code_table)
+            is_ct_best = code_table.best_code_table(code_table_temp, database,
+                                                    standard_code_table)
 
             indice_candidat += 1
-            ct_has_improved = not is_code_table_best
-            if not is_code_table_best:
+            ct_has_improved = not is_ct_best
+            if ct_has_improved:
                 code_table = code_table_temp
-            code_table.post_prune(database, standard_code_table)
-            print(code_table)
+            # print(code_table)
         iter += 1
     return code_table

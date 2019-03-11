@@ -55,7 +55,8 @@ class CodeTableSlim(CodeTable):
             :return: The Patterns from patternmap ordered
             :rtype: List<Pattern_Slim>
         """
-        return sorted(self.patternMap.keys(), key=lambda p: p.usage,
+        return sorted(self.patternMap.keys(), key=lambda p: (-len(p.elements),
+                                                             p.usage),
                       reverse=True)
 
     def copy(self):

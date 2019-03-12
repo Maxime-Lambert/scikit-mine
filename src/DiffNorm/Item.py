@@ -1,4 +1,4 @@
-from src.DiffNorm.ItemSet import *
+from src.DiffNorm.ItemSet import ItemSet
 
 
 class Item:

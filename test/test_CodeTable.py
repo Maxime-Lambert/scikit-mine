@@ -27,6 +27,19 @@ def ct_full():
     return ct
 
 
+@pytest.fixture()
+def sct():
+    sct = CodeTable()
+    sct.add(Pattern([1]))
+    sct.add(Pattern([2]))
+    sct.add(Pattern([3]))
+    sct.add(Pattern([4]))
+    sct.add(Pattern([5]))
+    sct.add(Pattern([8]))
+    sct.add(Pattern([9]))
+    return sct
+
+
 def test_contains(ct_full):
     assert p2 in ct_full.patternMap.keys()
     assert p3 not in ct_full.patternMap.keys()
@@ -45,7 +58,6 @@ def test_add_1(ct):
 def test_add_2(ct_full):
     ct_full.add(p1)  # add a pattern for the second time [1, 2, 3]
     assert p1 in ct_full.patternMap.keys()
-    assert ct_full.patternMap[p1] == 1
     assert p1.usage == 2
     assert p1.support == 2  # maybe useless
 
@@ -54,15 +66,16 @@ def test_remove(ct_full):
     ct_full.remove(p1)
     assert p1 not in ct_full.patternMap.keys()
 
+
 def test_order_by_standard_cover_order(ct_full):
     pass
 
 
 def test_usage_sum(ct, ct_full):
     assert ct.usage_sum() == 0
-    assert ct_full.usage_sum() == 2
-    ct_full.add(p1)  # adding 1 usage for pattern p1
     assert ct_full.usage_sum() == 3
+    ct_full.add(p1)  # adding 1 usage for pattern p1
+    assert ct_full.usage_sum() == 4
     ct_full.remove(p2)
     ct_full.remove(p1)
     assert ct_full.usage_sum() == 0
@@ -78,7 +91,9 @@ def test_calculate_code_length(ct_full):
 def test_database_encoded_length(ct, ct_full):
     assert ct.database_encoded_length() == 0
     ct_full.add(p1)
-    assert ct_full.database_encoded_length() == ((ct_full.patternMap[p1]*2) + (ct_full.patternMap[p2]*1))
+    assert p1.usage == 4  # To be corrected
+    assert p2.usage == 1
+    assert ct_full.database_encoded_length() == ((ct_full.patternMap[p1]*p1.usage) + (ct_full.patternMap[p2]*p2.usage))
 
 
 def test_codetable_length(ct_full, ct, sct):  # TODO: Create Standard Code Table sct, wrong length numbers
@@ -93,9 +108,10 @@ def test_codetable_length(ct_full, ct, sct):  # TODO: Create Standard Code Table
 
 
 def test_best_code_table(ct, ct_full, sct):  # TODO : to be completed with sct and with a second better example
-    # data = Database()
-    # assert ct_full.best_code_table(ct, data, sct) == ct_full  # simple example
-    pass
+    assert ct_full.best_code_table(ct, data, sct) == ct_full  # simple example
+    ct_full2 = ct_full.copy()
+    ct_full.add(p1)
+    assert ct_full.best_code_table(ct_full2, data, sct) == ct_full2
 
 
 def test_post_prune(ct):  # TODO

@@ -1,4 +1,4 @@
-from random import *
+from random import seed, randint
 from os import path
 
 db_num = 3

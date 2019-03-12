@@ -55,7 +55,8 @@ class CodeTable:
     def update_t_data(self):
         tid = 0
         for transaction in self.database:
-            self.t_data[int(str(self.database.id) + str(tid))] = self.calculate_cover(transaction)
+            self.t_data[int(str(self.database.id) + str(tid))] = \
+                self.calculate_cover(transaction)
             tid += 1
 
     def set_encoded_db_size(self, size):
@@ -111,7 +112,8 @@ class CodeTable:
     def calculate_cover(self, transaction):
         for pattern in self.patterns:
             if transaction >= pattern:
-                return pattern.fuse(self.calculate_cover(ItemSet(transaction) - ItemSet(pattern)))
+                return pattern.fuse(self.calculate_cover(ItemSet(transaction)
+                                                         - ItemSet(pattern)))
         return ItemSet([])
 
     def try_add(self, candidate):
@@ -145,7 +147,8 @@ class CodeTable:
         self.rollback_usages()
 
     def sort_in_sco(self):
-        self.patterns.sort(key=lambda x: (len(x), self.get_support(x), str(x)), reverse=True)
+        self.patterns.sort(key=lambda x: (len(x), self.get_support(x),
+                                          str(x)), reverse=True)
 
     def add(self, pattern):
         if pattern not in self.patterns:

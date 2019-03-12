@@ -1,4 +1,5 @@
 from src.DiffNorm.ItemSet import ItemSet
+from src.DiffNorm.Item import Item
 from os import path
 
 
@@ -16,7 +17,8 @@ class DataBase:
         lines = file.readlines()
         for line in lines:
             transacations = line.split(" ")
-            self.transactions.append(ItemSet([Item(int(item)) for item in transacations]))
+            self.transactions.append(ItemSet([Item(int(item))
+                                              for item in transacations]))
         self.db_card = len(self.transactions)
 
     def __repr__(self):

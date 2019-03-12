@@ -17,10 +17,7 @@ class Sequence:
         return res
 
     def __len__(self):
-        res = 0
-        for item in self.list_item:
-            res += 1
-        return res
+        return len(self.list_item)
 
     def __iter__(self):
         return iter(self.list_item)
@@ -32,6 +29,14 @@ class Sequence:
         except IndexError:
             self.index = 0
             raise StopIteration
+
+    def __eq__(self, other):
+        if not isinstance(other, Sequence):
+            return False
+        return self.list_item == other.list_item
+
+    def __str__(self):
+        return str(self.list_item)
 
     def append(self, item):
         self.list_item += [item]
@@ -45,7 +50,6 @@ class Sequence:
 
     def set_usage(self, usage):
         self.usage = usage
-
 
     def set_gap(self, gap):
         self.gap = gap

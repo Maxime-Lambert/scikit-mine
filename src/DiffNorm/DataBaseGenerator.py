@@ -1,25 +1,25 @@
 from random import *
 from os import path
 
+data_directory_path = "../../test/data/DiffNorm/"
+dn_dir = path.dirname(__file__)
+abs_file_path = path.join(dn_dir, data_directory_path)
 db_num = 3
 u = "1 2 3"
-i_len = 12
-tr_max_len = 3
+i_len = 15
+tr_max_len = 5
 tr_min_len = 3
-db_min_len = 200
-db_max_len = 300
+db_min_len = 700
+db_max_len = 1000
 patt_min_len = int(i_len/3)
 patt_max_len = 3 * patt_min_len
-patt_min_num = 1
-patt_max_num = 1
+patt_min_num = 2
+patt_max_num = 2
 
 idx = 1
 all_db = ""
 while idx < db_num + 1:
     seed()
-    data_directory_path = "../../test/data/DiffNorm/"
-    dn_dir = path.dirname(__file__)
-    abs_file_path = path.join(dn_dir, data_directory_path)
     patterns = []
     id_patt_num = 0
     while id_patt_num < randint(patt_min_num, patt_max_num):

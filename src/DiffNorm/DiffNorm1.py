@@ -10,7 +10,7 @@ class DiffNorm1:
 
     alphabet_id = -1
     # Minimum usage to filter the candidates before adding them to potential candidates
-    min_usage = 50
+    min_usage = 150
     # Candidate will be added if he reduces the cost of encoded size of a database for at least 1 bit
     min_gain = 1.0
 
@@ -239,9 +239,21 @@ class DiffNorm1:
         """print("HERE IS W:")
         print(w)
         print("FOR CANDIDATE: ")
-        print(self.current_candidate)
-        print(" ")"""
+        print(self.current_candidate)"""
         w_id = 0
+        u_copy = self.u.copy()
+        u_copy.sort(key=lambda x: (w[self.u.index(x)], len(x), str(x)), reverse=True)
+        j = 0
+        while j < len(u_copy):
+            if w[self.u.index(u_copy[j])] > self.min_gain:
+                for i in u_copy[j]:
+                    other_j = j + 1
+                    while other_j < len(u_copy):
+                        if i in u_copy[other_j]:
+                            w[self.u.index(u_copy[other_j])] -=\
+                                (self.coding_sets_i[i].old_db_size - self.coding_sets_i[i].encoded_db_size)
+                        other_j += 1
+            j += 1
         for j in self.u:
             if len(j) > 1:
                 if w[w_id] > self.min_gain:
@@ -336,47 +348,6 @@ class DiffNorm1:
                     if pattern.old_usage > pattern.usage and pattern not in candidates and len(pattern) > 1:
                         candidates.append(pattern)
                 candidates.sort(key=lambda x: x.old_usage - x.usage, reverse=True)
-        """for cs in self.coding_sets_i:
-            candidates = []
-            for pattern in cs:
-                if pattern.old_usage > pattern.usage and len(pattern) > 1:
-                    candidates.append(pattern)
-            candidates.sort(key=lambda x: x.old_usage - x.usage, reverse=True)
-            while candidates:
-                candidate = candidates.pop(0)
-                j = 0
-                while j < len(self.coding_set_patterns1):
-                    if candidate in self.coding_set_patterns1[j]:
-                        total_diff = 0.0
-                        for c_i in self.coding_set_patterns1[j].coding_sets:
-                            old_db_size = c_i.calculate_db_encoded_size()
-                            c_i.try_del(candidate)
-                            new_db_size = c_i.calculate_db_encoded_size()
-                            total_diff += old_db_size - new_db_size
-                        if total_diff > 0:
-                            self.coding_set_patterns1[j].try_del(candidate)
-                            cs_to_del_candidate = self.coding_set_patterns1[j].get_cs_ids()
-                            for sj in self.coding_set_patterns1:
-                                if candidate in sj:
-                                    for cs_id in sj.get_cs_ids():
-                                        if cs_id in cs_to_del_candidate:
-                                            cs_to_del_candidate.remove(cs_id)
-                            for cs_id in self.coding_set_patterns1[j].get_cs_ids():
-                                if cs_id not in cs_to_del_candidate:
-                                    self.coding_sets_i[cs_id].try_add(candidate)
-                            for cs_id in cs_to_del_candidate:
-                                self.coding_sets_i[cs_id].set_encoded_db_size(
-                                    self.coding_sets_i[cs_id].calculate_db_encoded_size())
-                            self.reestimate_gain()
-                            self.candidates.sort(key=lambda z: z.get_est_gain(), reverse=True)
-                        else:
-                            for c_i in self.coding_set_patterns1[j].coding_sets:
-                                c_i.try_add(candidate)
-                    j += 1
-                for pattern in cs:
-                    if pattern.old_usage > pattern.usage and pattern not in candidates and len(pattern) > 1:
-                        candidates.append(pattern)
-                candidates.sort(key=lambda x: x.old_usage - x.usage, reverse=True)"""
 
     def run(self):
         self.init_alphabet()

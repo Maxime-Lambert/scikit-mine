@@ -1,4 +1,4 @@
-from src.DiffNorm.DiffNorm1 import *
+from src.DiffNorm.DiffNorm1 import DiffNorm1
 
 
 if __name__ == '__main__':
@@ -106,4 +106,3 @@ if __name__ == '__main__':
 
     ct1.pp()
     ct2.pp()"""
-

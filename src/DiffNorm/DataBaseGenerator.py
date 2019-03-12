@@ -1,4 +1,4 @@
-from random import *
+from random import seed, randint
 from os import path
 
 data_directory_path = "../../test/data/DiffNorm/"

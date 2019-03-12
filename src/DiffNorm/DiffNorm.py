@@ -1,9 +1,11 @@
-from src.DiffNorm.CodeTable import *
-from src.DiffNorm.DataBase import *
-from src.DiffNorm.Pattern import *
-from src.DiffNorm.DiffNormUtils import *
-from src.DiffNorm.PatternSet import *
+from src.DiffNorm.CodeTable import CodeTable
+from src.DiffNorm.DataBase import DataBase
+from src.DiffNorm.Pattern import Pattern
+from src.DiffNorm.DiffNormUtils import universal_code_len, log_gamma
+from src.DiffNorm.PatternSet import PatternSet
+from src.DiffNorm.PatternSet import ItemSet
 from os import path
+from math import log2
 
 
 class DiffNorm:

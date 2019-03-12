@@ -206,7 +206,7 @@ class PatternSlim(Pattern):
         return len(self.elements)
 
 
-def generate_candidat(code_table):
+def generate_candidat(code_table,sct):
     """Generate a list of candidates from a code table.
 
     Parameters
@@ -233,6 +233,8 @@ def generate_candidat(code_table):
             y_current = ct[indice_pattern_y]
             x_y_current = x_current.union(y_current)
             if best_usage <= x_y_current.usage:
+                print(x_y_current)
+                print(str(estimateGain(code_table, x_current, y_current, sct)))
                 candidates_list.append(x_y_current)
                 best_usage = x_y_current.usage
             indice_pattern_y += 1
@@ -250,10 +252,16 @@ def estimateGain(code_table, pattern1, pattern2, sct):
     code2 = code_table[pattern2]
     code1_prim = code_table_temp[pattern1]
     code2_prim = code_table_temp[pattern2]
+    log_1_prim = 0
+    if not code1_prim == 0:
+        log_1_prim = math.log(code1_prim)
+    log_2_prim = 0
+    if not code2_prim == 0:
+        log_2_prim = math.log(code2_prim)
     cote1 = s*math.log(s) - s_prim*math.log(s_prim)
     cote1 += xy_prim.usage*math.log(xy_prim.usage)
-    cote1 -= (code1*math.log(code1) - code1_prim*math.log(code1_prim))
-    cote1 -= (code2*math.log(code2) - code2_prim*math.log(code2_prim))
+    cote1 -= (code1*math.log(code1) - code1_prim*log_1_prim)
+    cote1 -= (code2*math.log(code2) - code2_prim*log_2_prim)
     encoded_union = 0
     for x in xy_prim.elements:
         for pattern, codelength in sct.patternMap.items():
@@ -263,8 +271,8 @@ def estimateGain(code_table, pattern1, pattern2, sct):
     cote2 -= encoded_union
     cote2 += len(code_table)*math.log(s)
     cote2 -= len(code_table_temp)*math.log(s_prim)
-    cote2 += math.log(code1) - math.log(code1_prim)
-    cote2 += math.log(code2) - math.log(code2_prim)
+    cote2 += math.log(code1) - log_1_prim
+    cote2 += math.log(code2) - log_2_prim
     encoded_pattern1 = 0
     for x in pattern1.elements:
         for pattern, codelength in sct.patternMap.items():
@@ -275,8 +283,8 @@ def estimateGain(code_table, pattern1, pattern2, sct):
         for pattern, codelength in sct.patternMap.items():
             if pattern.elements == x:
                 encoded_pattern2 += codelength
-    cote2 += math.log(code1_prim) - encoded_pattern1
-    cote2 += math.log(code2_prim) - encoded_pattern2
+    cote2 += log_1_prim - encoded_pattern1
+    cote2 += log_2_prim - encoded_pattern2
     cote2 += encoded_pattern1 - math.log(code1)
     cote2 += encoded_pattern2 - math.log(code2)
     return cote1 + cote2
@@ -296,7 +304,7 @@ def slim(filename, max_iter):
     iter = 0
     while (ct_has_improved) and (iter < max_iter):
         ct_has_improved = False
-        candidate_list = generate_candidat(code_table)
+        candidate_list = generate_candidat(code_table, standard_code_table)
         candidate_list = sorted(candidate_list, key=lambda p: (p.usage),
                                 reverse=True)
     # ------------- Improve CT -------------#

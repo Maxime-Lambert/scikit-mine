@@ -37,7 +37,7 @@ class CodeTable:
         """
         res = ""
         for pattern in self.order_by_standard_cover_order():
-            res += "pattern : " + str(pattern) + " #USG : "
+            res += "pattern : " + str(pattern.elements) + " #USG : "
             res += str(pattern.usage) + " "
             res += "#CODELEN : " + str(self.patternMap[pattern]) + "\n"
         return res
@@ -59,7 +59,7 @@ class CodeTable:
             :rtype: double
         """
         self.calculate_code_length()
-        for pattern, codelength in self.patternMap:
+        for pattern, codelength in self.patternMap.items():
             if pattern == item:
                 return codelength
         return None

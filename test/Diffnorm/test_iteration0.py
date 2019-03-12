@@ -14,6 +14,9 @@ def test_iteration0_empty():
     assert b is True  # to check if DiffNorm hasn't failed
 
 
+# add a test to check the format of the config files
+
+
 def test_iteration0_easy():
     b = True
     try:

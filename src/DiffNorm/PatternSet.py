@@ -1,4 +1,6 @@
-from src.DiffNorm.CodeTable import *
+from src.DiffNorm.ItemSet import ItemSet
+from src.DiffNorm.DiffNormUtils import universal_code_len
+from math import log2
 
 
 class PatternSet:

@@ -1,5 +1,5 @@
-from src.DiffNorm.ItemSet import *
-from src.DiffNorm.DiffNormUtils import *
+from src.DiffNorm.ItemSet import ItemSet
+from src.DiffNorm.DiffNormUtils import log_gamma, calc_log_double_factorial
 
 
 class CodeTable:

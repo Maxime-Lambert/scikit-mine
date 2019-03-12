@@ -4,7 +4,7 @@ from src.DiffNorm.DiffNorm import DiffNorm
 
 @pytest.fixture()
 def d():
-    d = DiffNorm("all", "u")  # TEMPORARY
+    d = DiffNorm("easy_all", "easy_u")  # TEMPORARY
     return d
 
 

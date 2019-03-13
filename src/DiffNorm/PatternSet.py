@@ -70,7 +70,8 @@ class PatternSet:
     def calculate_cover(self, transaction):
         for pattern in self.patterns:
             if transaction >= pattern:
-                return pattern.fuse(self.calculate_cover(ItemSet(transaction) - ItemSet(pattern)))
+                return pattern.fuse(self.calculate_cover(
+                    ItemSet(transaction) - ItemSet(pattern)))
         return ItemSet([])
 
     def calculate_patternset_diff_encoded_size(self, pattern):
@@ -81,7 +82,9 @@ class PatternSet:
         cs_sum_of_diff = 0.0
         for cs in self.coding_sets:
             cs_sum_of_diff += cs.old_db_size - cs.encoded_db_size
-        return old_sj_card_size - new_sj_card_size - pattern_size + freq + cs_sum_of_diff
+        return \
+            old_sj_card_size - new_sj_card_size - pattern_size \
+            + freq + cs_sum_of_diff
 
     def try_add(self, candidate):
         self.add(candidate.copy())
@@ -96,7 +99,8 @@ class PatternSet:
         self.size -= 1
 
     def sort_in_sco(self):
-        self.patterns.sort(key=lambda x: (len(x), self.get_support(x), str(x)), reverse=True)
+        self.patterns.sort(
+            key=lambda x: (len(x), self.get_support(x), str(x)), reverse=True)
 
     def add(self, pattern):
         if pattern not in self.patterns:

@@ -1,4 +1,3 @@
-import pytest
 from src.DiffNorm.DiffNorm import DiffNorm
 
 

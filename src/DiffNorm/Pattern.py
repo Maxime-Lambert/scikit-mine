@@ -29,8 +29,10 @@ class Pattern(ItemSet):
             if self.items == other.items:
                 if (self.left_cs_id == self.right_cs_id == -1) or \
                    (other.left_cs_id == other.right_cs_id == -1) or \
-                   (self.sj_id == other.sj_id and self.left_cs_id == other.left_cs_id and
-                   self.right_cs_id == other.right_cs_id):
+                   (
+                           self.sj_id == other.sj_id and
+                           self.left_cs_id == other.left_cs_id and
+                           self.right_cs_id == other.right_cs_id):
                         return True
             """return \
                 self.items == other.items and \
@@ -40,10 +42,13 @@ class Pattern(ItemSet):
             return False
 
     def __repr__(self):
-        return repr(self.items) + " | " + repr(self.left_cs_id) + " | " + repr(self.right_cs_id)
+        return \
+            repr(self.items) + " | " + repr(self.left_cs_id) \
+            + " | " + repr(self.right_cs_id)
 
     def copy(self):
-        copy = Pattern(self.left_is, self.right_is, self.left_cs_id, self.right_cs_id, self.sj_id)
+        copy = Pattern(self.left_is, self.right_is, self.left_cs_id,
+                       self.right_cs_id, self.sj_id)
         return copy
 
     def set_est_gain(self, gain):

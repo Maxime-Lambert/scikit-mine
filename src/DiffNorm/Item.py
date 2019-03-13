@@ -1,4 +1,4 @@
-from src.DiffNorm.ItemSet import ItemSet
+#  from src.DiffNorm.ItemSet import ItemSet
 
 
 class Item:
@@ -19,7 +19,8 @@ class Item:
         return hash(self.integer)
 
     def __ge__(self, other):
-        if isinstance(other, ItemSet):
+        """if isinstance(other, ItemSet):
             return other.contains(self)
         else:
-            return False
+            return False"""
+        return False

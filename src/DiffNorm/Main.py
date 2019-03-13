@@ -93,9 +93,12 @@ if __name__ == '__main__':
             usage_old_cs - usage_old_left - usage_old_right + \
             usage_new_right + usage_new_left + usage_new_cand
         db_gain = \
-            log_gamma(usage_old_cs + constant * len_old_cs) - log_gamma(usage_new_cs + constant * len_new_cs) + \
-            log_gamma(usage_new_left + constant) - log_gamma(usage_old_left + constant) + \
-            log_gamma(usage_new_right + constant) - log_gamma(usage_old_right + constant) + \
+            log_gamma(usage_old_cs + constant * len_old_cs) 
+            - log_gamma(usage_new_cs + constant * len_new_cs) + \
+            log_gamma(usage_new_left + constant) 
+            - log_gamma(usage_old_left + constant) + \
+            log_gamma(usage_new_right + constant) 
+            - log_gamma(usage_old_right + constant) + \
             log_gamma(usage_new_cand + constant) - log_gamma(constant) + \
             log_gamma(constant * len_new_cs) - log_gamma(constant * len_old_cs)
         p.set_est_gain(db_gain)

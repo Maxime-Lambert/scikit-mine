@@ -29,19 +29,21 @@ class SQS:
 
     def run(self):
         changes = True
+        list_window = []
         print(self.data)
         for sequence in self.data:
-            print(sequence)
             sequence.set_usage(self.find_usage(sequence, self.data))
+            print("sequence : " + str(sequence) + " a un usage de " + str(sequence.usage))
         for pattern in self.list_pattern:
             print("pattern : ")
             print(pattern)
             if len(pattern) > 0:
-                list_window = self.find_windows(pattern, self.data)
+                list_window.append(self.find_windows(pattern, self.data))
+                print(list_window)
                 pattern.set_usage(len(list_window))
                 pattern.set_gap(len(pattern) - 1)
         w = self.merge(list_window)
-
+        print(w)
         #while changes:
             #a = self.align(w)
 

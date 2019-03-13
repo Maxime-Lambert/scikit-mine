@@ -1,10 +1,10 @@
-jambon pain beurre
-jambon pain beurre
-jambon pain
-jambon pain
-jambon beurre cornichon
-jambon beurre cornichon
-beurre cornichon
-beurre cornichon
-cornichon
-cornichon
+1 2 3 4 5 6 7
+1 2 3 4 5 6 7
+1 2 3 4 5 6 7
+1 2 3 4 5 6 7
+1 2 3 4 5 6 7
+1 2 3 4 5 6 7
+2 4 6 8
+2 4 6 8
+2 4 6 8
+2 4 6 8

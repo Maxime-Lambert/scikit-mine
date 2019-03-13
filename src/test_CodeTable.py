@@ -14,3 +14,11 @@ test = [[1, 2, 3, 4], [1, 2, 3], [1, 2, 3], [1, 2, 3],
 sct = db.standard_code_table()
 
 print(repr(sct))"""
+
+for x in l:
+        if map.has_key(x):
+                for k, v in map.items():
+                        if k == x :
+                                k.inc()
+        else:
+                map[x] = 0

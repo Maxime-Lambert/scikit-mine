@@ -1,6 +1,7 @@
-from src.Files import *
-from src.SQS.Sqs_database import *
-from src.SQS.sqs_v2 import *
+from src.Files import Files
+from src.SQS.Sqs_database import SqsDatabase
+from src.SQS.Sequence import Sequence
+from src.SQS.sqs_v2 import SQS
 import os
 
 if __name__ == '__main__':

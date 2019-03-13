@@ -14,13 +14,13 @@ def sqs_search(data):
         f = []
         for pattern in ct:
             f.append(estimate(pattern, a, data))
-        f.sort()
+        #f.sort()
 
-    for pattern in f:
-        if l(data, pattern + p_array + ct) < l(data, p_array + ct):
-            p_array = prune(p_array + pattern , data, False)
-            if(p_array.contains(pattern)):
-                scan_for_gaps(pattern + gap_event)
+        for pattern in f:
+            if l(data, pattern + p_array + ct) < l(data, p_array + ct):
+                p_array = prune(p_array + pattern , data, False)
+                if(p_array.contains(pattern)):
+                    scan_for_gaps(pattern + gap_event)
     p_array = prune(p_array,data,True)
     return p_array
 

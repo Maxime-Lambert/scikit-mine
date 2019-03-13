@@ -35,7 +35,8 @@ class CodeTable:
             :return: A String representing the Codetable
             :rtype: String
         """
-        res = ""
+        res = "nbPattern : "+str(len(self))
+        res += " (D | CT) : " + str(self.database_encoded_length()) + "\n"
         for pattern in self.order_by_standard_cover_order():
             res += "pattern : " + str(pattern.elements) + " #USG : "
             res += str(pattern.usage) + " "

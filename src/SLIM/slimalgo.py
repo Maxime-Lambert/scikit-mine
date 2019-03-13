@@ -72,7 +72,7 @@ class CodeTableSlim(CodeTable):
             copy = PatternSlim(0)
             copy.usage = k.usage
             copy.support = k.support
-            copy.usage_list = k.usage_list
+            copy.usage_list = k.usage_list.copy()
             copy.elements = k.elements
             ct.patternMap[copy] = self.patternMap[k]
         return ct
@@ -166,6 +166,17 @@ class PatternSlim(Pattern):
         res += "("+str(self.usage)+","+str(self.support)+")"
         return res
 
+    def toString(self):
+        """
+            Gives a string representation of a PatternSlim
+
+            :return: A String representing the PatternSlim
+            :rtype: String
+        """
+        res = repr(self.elements) + " #USG : " + str(self.usage)
+        res += " #USGLIST : " + repr(self.usage_list)
+        return res
+
     def union(self, pattern):
         """
             Merged two patterns into one bigger
@@ -233,25 +244,28 @@ def generate_candidat(code_table,sct):
             y_current = ct[indice_pattern_y]
             x_y_current = x_current.union(y_current)
             if best_usage <= x_y_current.usage:
-                print(x_y_current)
-                print(str(estimateGain(code_table, x_current, y_current, sct)))
-                candidates_list.append(x_y_current)
-                best_usage = x_y_current.usage
+                if estimateGain(code_table, x_current, y_current, sct) > 0:
+                    candidates_list.append(x_y_current)
+                    best_usage = x_y_current.usage
             indice_pattern_y += 1
         indice_pattern_x += 1
     return candidates_list
 
 
-def estimateGain(code_table, pattern1, pattern2, sct):
-    xy_prim = pattern1.union(pattern2)
-    code_table_temp = code_table.copy()
+def estimateGain(code_table, pattern1, pattern2, standardct):
+    p1 = pattern1.copy()
+    p2 = pattern2.copy()
+    ct = code_table.copy()
+    sct = standardct.copy()
+    xy_prim = p1.union(p2)
+    code_table_temp = ct.copy()
     code_table_temp.add(xy_prim, None)
-    s = code_table.usage_sum()
+    s = ct.usage_sum()
     s_prim = s - xy_prim.usage
-    code1 = code_table[pattern1]
-    code2 = code_table[pattern2]
-    code1_prim = code_table_temp[pattern1]
-    code2_prim = code_table_temp[pattern2]
+    code1 = ct[p1]
+    code2 = ct[p2]
+    code1_prim = code_table_temp[p1]
+    code2_prim = code_table_temp[p2]
     log_1_prim = 0
     if not code1_prim == 0:
         log_1_prim = math.log(code1_prim)
@@ -269,17 +283,17 @@ def estimateGain(code_table, pattern1, pattern2, sct):
                 encoded_union += codelength
     cote2 = math.log(xy_prim.usage)
     cote2 -= encoded_union
-    cote2 += len(code_table)*math.log(s)
+    cote2 += len(ct)*math.log(s)
     cote2 -= len(code_table_temp)*math.log(s_prim)
     cote2 += math.log(code1) - log_1_prim
     cote2 += math.log(code2) - log_2_prim
     encoded_pattern1 = 0
-    for x in pattern1.elements:
+    for x in p1.elements:
         for pattern, codelength in sct.patternMap.items():
             if pattern.elements == x:
                 encoded_pattern1 += codelength
     encoded_pattern2 = 0
-    for x in pattern2.elements:
+    for x in p2.elements:
         for pattern, codelength in sct.patternMap.items():
             if pattern.elements == x:
                 encoded_pattern2 += codelength
@@ -310,8 +324,6 @@ def slim(filename, max_iter):
     # ------------- Improve CT -------------#
         indice_candidat = 0
         while (indice_candidat < len(candidate_list)) and not(ct_has_improved):
-            # print("je regarde pour ajouter"+
-            # repr(candidate_list[indice_candidat]))
             candidate = candidate_list[indice_candidat]
             code_table_temp = code_table.copy()
             code_table_temp.add(candidate, None)
@@ -322,7 +334,6 @@ def slim(filename, max_iter):
             ct_has_improved = not is_ct_best
             if ct_has_improved:
                 code_table = code_table_temp
-            # print(code_table)
         iter += 1
     Files.to_file(code_table, "res_"+filename)
     Convert.to_code_table_slim("res_"+filename, standard_code_table)

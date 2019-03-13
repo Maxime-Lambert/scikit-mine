@@ -17,14 +17,7 @@ def test_generate_candidate_default_sct():
     database = DatabaseSlim(db)
     standard_code_table = database.make_standard_code_table()
     # code_table = standard_code_table.copy()
-    res = slimalgo.generate_candidat(standard_code_table)
-    p = PatternSlim([1,2])
-    p2  = PatternSlim([2,4])
-    expected = []
-    expected.append(p)
-    expected.append(p2)
-    print(res == expected)
-    for p in expected:
-        print(p)
+    res = slimalgo.generate_candidat(standard_code_table,standard_code_table)
+    print(res)
 
 test_generate_candidate_default_sct()

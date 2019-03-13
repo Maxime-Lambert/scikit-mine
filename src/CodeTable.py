@@ -116,7 +116,7 @@ class CodeTable:
             :rtype: List<Pattern>
         """
         return sorted(self.patternMap.keys(),
-                      key=lambda p: (-len(p.elements), -p.support, str(p)))
+                      key=lambda p: (-len(p.elements), -p.support, int))
 
     def usage_sum(self):
         """

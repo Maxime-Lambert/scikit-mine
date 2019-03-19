@@ -53,6 +53,7 @@ class CodeTableSlim(CodeTable):
             :rtype: List<Pattern_Slim>
         """
         return sorted(self.patternMap.keys(), key=lambda p: (p.usage,
+                                                             len(p.elements),
                                                              int),
                       reverse=True)
 
@@ -159,6 +160,7 @@ class PatternSlim(Pattern):
         self.elements = set()
         self.elements.add(item)
         self.usage_list = set()
+        self.gain = 0
 
     def copy(self):
         """
@@ -265,7 +267,8 @@ def generate_candidat(code_table, sct):
             y_current = ct[indice_pattern_y]
             x_y_current = x_current.union(y_current)
             if best_usage <= x_y_current.usage:
-                if estimateGain(code_table, x_current, y_current, sct) > 0:
+                x_y_current.gain = estimateGain(code_table, x_current, y_current, sct)
+                if x_y_current.gain > 0:
                     candidates_list.append(x_y_current)
                     best_usage = x_y_current.usage
             indice_pattern_y += 1
@@ -340,7 +343,7 @@ def slim(filename, max_iter):
     while (ct_has_improved) and (iter < max_iter):
         ct_has_improved = False
         candidate_list = generate_candidat(code_table, standard_code_table)
-        candidate_list = sorted(candidate_list, key=lambda p: (p.usage),
+        candidate_list = sorted(candidate_list, key=lambda p: (p.gain),
                                 reverse=True)
     # ------------- Improve CT -------------#
         indice_candidat = 0

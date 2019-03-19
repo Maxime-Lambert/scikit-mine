@@ -13,7 +13,8 @@ class Convert:
         counter = 0
         conversion = {}
         first = True
-        it = sorted(sct.patternMap.keys(), key=lambda p: (-p.support, str(p)))
+        it = sorted(sct.patternMap.keys(), key=lambda p: (-p.support, int))
+        print(it)
         for pattern in it:
             for y in pattern.elements:
                 conversion[str(y)] = counter

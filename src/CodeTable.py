@@ -98,8 +98,8 @@ class CodeTable:
         """
         if pattern_to_remove in self.patternMap:
             del self.patternMap[pattern_to_remove]
-        self.calcul_usage()
-        self.calculate_code_length()
+            self.calcul_usage()
+            self.calculate_code_length()
 
     def different_usages(self, ct):
         res = []

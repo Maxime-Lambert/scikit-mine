@@ -343,7 +343,7 @@ def slim(filename, max_iter):
     while (ct_has_improved) and (iter < max_iter):
         ct_has_improved = False
         candidate_list = generate_candidat(code_table, standard_code_table)
-        candidate_list = sorted(candidate_list, key=lambda p: (p.gain),
+        candidate_list = sorted(candidate_list, key=lambda p: (p.usage),
                                 reverse=True)
     # ------------- Improve CT -------------#
         indice_candidat = 0
@@ -360,7 +360,7 @@ def slim(filename, max_iter):
                 to_prune = code_table.different_usages(code_table_temp)
                 code_table = code_table_temp
                 code_table = code_table.post_prune(standard_code_table,
-                                                   to_prune)
+                                                  to_prune)
         iter += 1
     Files.to_file(code_table, "res_"+filename)
     Convert.to_code_table_slim("res_"+filename, standard_code_table)

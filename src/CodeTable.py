@@ -188,7 +188,7 @@ class CodeTable:
             if not pattern.usage == 0:
                 for singleton in pattern.elements:
                     for patterns, codelengths in sct.patternMap.items():
-                        if patterns.elements == singleton:
+                        if list(patterns.elements)[0] == singleton:
                             i += codelengths
                 i += codelength
         return i

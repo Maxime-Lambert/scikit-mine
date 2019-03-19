@@ -42,7 +42,7 @@ def test_cover2_default_sct():
     database = DatabaseSlim(db)
     print(database)
     standard_code_table = database.make_standard_code_table()
-    standard_code_table.calcul_usage(database)
+    standard_code_table.calcul_usage()
     code_table = standard_code_table.copy()
     candidate_list = slimalgo.generate_candidat(code_table, standard_code_table)
     candidate_list = sorted(candidate_list, key=lambda p: (p.usage),
@@ -51,12 +51,12 @@ def test_cover2_default_sct():
     print("CT")
     print(code_table)
     print(">>>>>>>>>>>>>>>>>>>>>>>>")
-    code_table.calcul_usage(database)
+    code_table.calcul_usage()
     print(code_table)
     print("STANDARD")
     print(standard_code_table)
     for e in standard_code_table.patternMap.keys():
-        print(e.usagelist)
+        print(e.usage_list)
 
 
 test_cover2_default_sct()

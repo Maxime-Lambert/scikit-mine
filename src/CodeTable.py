@@ -12,7 +12,7 @@ class CodeTable:
         Its attribute is patternMap
     """
 
-    def __init__(self, patternMap):
+    def __init__(self, patternMap, database):
         """
             Creates a Codetable with an empty PatternMap if the given
             patternMap is None, and with the patternMap if it is not
@@ -24,6 +24,7 @@ class CodeTable:
             self.patternMap = {}
         else:
             self.patternMap = patternMap.copy()
+        self.data = database
 
     def __eq__(self, ct):
         return self.patternMap == ct.patternMap
@@ -36,7 +37,8 @@ class CodeTable:
             :rtype: String
         """
         res = "nbPattern : "+str(len(self))
-        res += " (D | CT) : " + str(self.database_encoded_length()) + "\n"
+        x = self.database_encoded_length()
+        res += " L(D | CT) : " + str(x) + "\n"
         for pattern in self.order_by_standard_cover_order():
             res += "pattern : " + str(pattern.elements) + " #USG : "
             res += str(pattern.usage) + " "
@@ -84,11 +86,7 @@ class CodeTable:
         else:
             self.patternMap[pattern_to_add] = 0
         if len(pattern_to_add.elements) > 1:
-            for pattern in self.patternMap.keys():
-                if pattern is not pattern_to_add:
-                    if pattern.elements.issubset(pattern_to_add.elements):
-                        pattern.usage_list -= pattern_to_add.usage_list
-                        pattern.usage = len(pattern.usage_list)
+            self.calcul_usage()
         self.calculate_code_length()
 
     def remove(self, pattern_to_remove):
@@ -98,9 +96,21 @@ class CodeTable:
             :param pattern: The pattern you want to remove from the Codetable
             :type pattern: Pattern
         """
-        if pattern in self.patternMap:
-            del self.patternMap[pattern]
+        if pattern_to_remove in self.patternMap:
+            del self.patternMap[pattern_to_remove]
+        self.calcul_usage()
         self.calculate_code_length()
+
+    def different_usages(self, ct):
+        res = []
+        for pattern in self.patternMap.keys():
+            if len(pattern.elements) > 1:
+                if pattern in ct.patternMap.keys():
+                    for pattern2 in ct.patternMap.keys():
+                        if pattern == pattern2:
+                            if not pattern.usage == pattern2.usage:
+                                res.append(pattern)
+        return res
 
     def order_by_standard_cover_order(self):
         """
@@ -183,8 +193,37 @@ class CodeTable:
                 i += codelength
         return i
 
-    def best_code_table(self, ct, data, sct):
-        # data to be removed?
+    def calcul_usage(self):
+        """Update usage of pattern for database db in the code table.
+
+        Parameters
+        ----------
+        db : Database to "cover"
+
+        """
+        keys = self.order_by_standard_cover_order()
+        # reset usage
+        for p in keys:
+            p.usage = 0
+        curitemcovered = set()
+        for trans in self.data:
+            it = 0
+            # if trans is not completely covered
+            while len(trans) != len(curitemcovered) and it < len(self):
+                pattern = keys[it]
+                # if pattern's item have not been seen yet and
+                # they are all in trans
+                if not len(pattern.elements & curitemcovered) == len(pattern):
+                    if len(pattern.elements & trans) == len(pattern):
+                        # increase usage du pattern and add covered items in
+                        # the covered items list
+                        pattern.usage += 1
+                        for item in pattern:
+                            curitemcovered.add(item)
+                it += 1
+            curitemcovered.clear()
+
+    def best_code_table(self, ct, sct):
         """
             Compare the size of the database encoded with two different
             Codetables
@@ -201,11 +240,11 @@ class CodeTable:
         """
         compct = ct.codetable_length(sct)+ct.database_encoded_length()
         compself = self.codetable_length(sct)+self.database_encoded_length()
-        if compct > compself:
+        if compself < compct:
             return True
         return False
 
-    def post_prune(self, data, sct):
+    def post_prune(self, sct, pattern_list):
         """
             Checks whether the Codetable is better with some of its elements
             deleted
@@ -220,13 +259,11 @@ class CodeTable:
             :return: The Codetable without useless elements
             :rtype: Codetable
         """
-        copy = {}
-        for pattern in self.patternMap.keys():
-            if not pattern.usage == 0:
-                copy[pattern] = self.patternMap[pattern]
-        self.patternMap.clear()
-        for pattern in copy.keys():
-            self.patternMap[pattern] = copy[pattern]
+        for pattern in pattern_list:
+            copy = self.copy()
+            copy.remove(pattern)
+            if not self.best_code_table(copy, sct):
+                self = copy.copy()
         return self
 
     def copy(self):
@@ -236,7 +273,7 @@ class CodeTable:
             :return: The copy of self
             :rtype: CodeTable
         """
-        ct = CodeTable(None)
+        ct = CodeTable(None, self.data)
         for k in self.patternMap.keys():
             copy = PatternSlim(0)
             copy.usage = k.usage

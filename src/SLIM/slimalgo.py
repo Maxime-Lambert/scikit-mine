@@ -42,11 +42,7 @@ class CodeTableSlim(CodeTable):
                 pattern_to_add.usage_list.add(transaction)
             self.patternMap[pattern_to_add] = 0
         if len(pattern_to_add.elements) > 1:
-            for pattern in self.patternMap.keys():
-                if pattern is not pattern_to_add:
-                    if pattern.elements.issubset(pattern_to_add.elements):
-                        pattern.usage_list -= pattern_to_add.usage_list
-                        pattern.usage = len(pattern.usage_list)
+            self.calcul_usage()
         self.calculate_code_length()
 
     def order_by_usage(self):
@@ -56,7 +52,8 @@ class CodeTableSlim(CodeTable):
             :return: The Patterns from patternmap ordered
             :rtype: List<Pattern_Slim>
         """
-        return sorted(self.patternMap.keys(), key=lambda p: p.usage,
+        return sorted(self.patternMap.keys(), key=lambda p: (p.usage,
+                                                             int),
                       reverse=True)
 
     def copy(self):
@@ -66,7 +63,7 @@ class CodeTableSlim(CodeTable):
             :return: The copy of self
             :rtype: CodeTableSlim
         """
-        ct = CodeTableSlim(None)
+        ct = CodeTableSlim(None, self.data)
         for k in self.patternMap.keys():
             copy = PatternSlim(0)
             copy.usage = k.usage
@@ -76,7 +73,7 @@ class CodeTableSlim(CodeTable):
             ct.patternMap[copy] = self.patternMap[k]
         return ct
 
-    def calcul_usage(self, db):
+    def calcul_usage(self):
         """Update usage of pattern for database db in the code table.
 
         Parameters
@@ -84,28 +81,29 @@ class CodeTableSlim(CodeTable):
         db : Database to "cover"
 
         """
-        keys = list(self.patternMap.keys())
+        keys = self.order_by_standard_cover_order()
         # reset usage
         for p in keys:
             p.usage = 0
-            p.usagelist=set()
+            p.usage_list.clear()
         curitemcovered = set()
-        print(db)
-        for trans in db:
+        for trans in self.data:
             it = 0
             # if trans is not completely covered
             while len(trans) != len(curitemcovered) and it < len(self):
-                print(trans,"it",it,"covered:",curitemcovered)
                 pattern = keys[it]
-                # if pattern's item have not been seen yet and they are all in trans
-                if len(pattern.elements.intersection(curitemcovered)) != len(pattern) and len(pattern.elements.intersection(trans)) == len(pattern):
-                    # increase usage du pattern and add covered items in the covered items list
-                    pattern.usage += 1
-                    pattern.usagelist.add(trans)
-                    for item in pattern:
-                        curitemcovered.add(item)
+                # if pattern's item have not been seen yet and
+                # they are all in trans
+                if not len(pattern.elements & curitemcovered) == len(pattern):
+                    if len(pattern.elements & set(trans)) == len(pattern):
+                        # increase usage du pattern and add covered items in
+                        # the covered items list
+                        pattern.usage += 1
+                        pattern.usage_list.add(trans)
+                        for item in pattern:
+                            curitemcovered.add(item)
                 it += 1
-            
+
             curitemcovered.clear()
 
 
@@ -124,7 +122,7 @@ class DatabaseSlim(Database):
 
     def make_standard_code_table(self):
         """Make and return the standard code table of the database."""
-        sct = CodeTableSlim(None)  # map pattern code
+        sct = CodeTableSlim(None, self.data_collection)  # map pattern code
         # On ajoute les singletons de la base à la SCT
         for trans in self.data_collection:
             for item in trans:
@@ -350,13 +348,16 @@ def slim(filename, max_iter):
             candidate = candidate_list[indice_candidat]
             code_table_temp = code_table.copy()
             code_table_temp.add(candidate, None)
-            is_ct_best = code_table.best_code_table(code_table_temp, database,
+            is_ct_best = code_table.best_code_table(code_table_temp,
                                                     standard_code_table)
 
             indice_candidat += 1
             ct_has_improved = not is_ct_best
             if ct_has_improved:
+                to_prune = code_table.different_usages(code_table_temp)
                 code_table = code_table_temp
+                code_table = code_table.post_prune(standard_code_table,
+                                                   to_prune)
         iter += 1
     Files.to_file(code_table, "res_"+filename)
     Convert.to_code_table_slim("res_"+filename, standard_code_table)

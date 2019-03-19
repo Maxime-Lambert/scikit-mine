@@ -3,7 +3,6 @@
 import math
 from src.database import Database
 from src.CodeTable import CodeTable
-from src.Transaction import Transaction
 from src.Pattern import Pattern
 from src.Files import Files
 from src.SLIM.codetableslim import Convert
@@ -77,6 +76,38 @@ class CodeTableSlim(CodeTable):
             ct.patternMap[copy] = self.patternMap[k]
         return ct
 
+    def calcul_usage(self, db):
+        """Update usage of pattern for database db in the code table.
+
+        Parameters
+        ----------
+        db : Database to "cover"
+
+        """
+        keys = list(self.patternMap.keys())
+        # reset usage
+        for p in keys:
+            p.usage = 0
+            p.usagelist=set()
+        curitemcovered = set()
+        print(db)
+        for trans in db:
+            it = 0
+            # if trans is not completely covered
+            while len(trans) != len(curitemcovered) and it < len(self):
+                print(trans,"it",it,"covered:",curitemcovered)
+                pattern = keys[it]
+                # if pattern's item have not been seen yet and they are all in trans
+                if len(pattern.elements.intersection(curitemcovered)) != len(pattern) and len(pattern.elements.intersection(trans)) == len(pattern):
+                    # increase usage du pattern and add covered items in the covered items list
+                    pattern.usage += 1
+                    pattern.usagelist.add(trans)
+                    for item in pattern:
+                        curitemcovered.add(item)
+                it += 1
+            
+            curitemcovered.clear()
+
 
 class DatabaseSlim(Database):
     """Database class
@@ -91,19 +122,11 @@ class DatabaseSlim(Database):
     data_list: ItemCollection list
     """
 
-    def __init__(self, transaction_set):
-        self.transactions = []
-        for itemset in transaction_set:
-            trans = Transaction(itemset.copy())
-            self.transactions.append(trans)
-        self.index = 0
-        self.db_card = len(transaction_set)
-
     def make_standard_code_table(self):
         """Make and return the standard code table of the database."""
         sct = CodeTableSlim(None)  # map pattern code
         # On ajoute les singletons de la base à la SCT
-        for trans in self.transactions:
+        for trans in self.data_collection:
             for item in trans:
                 pattern = PatternSlim(item)
                 sct.add(pattern, trans)
@@ -217,7 +240,7 @@ class PatternSlim(Pattern):
         return len(self.elements)
 
 
-def generate_candidat(code_table,sct):
+def generate_candidat(code_table, sct):
     """Generate a list of candidates from a code table.
 
     Parameters

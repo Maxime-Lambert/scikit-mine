@@ -25,6 +25,9 @@ class Transaction:
 
     def __add__(self, transaction):
         return self.items + transaction.items
+    
+    def __len__(self):
+        return len(self.items)
 
     def __iter__(self):
         return iter(self.items)

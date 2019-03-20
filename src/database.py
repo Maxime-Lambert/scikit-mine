@@ -24,9 +24,9 @@ class Database:
     ----------
     data_list: ItemCollection list
     """
-    data_collection = []
 
     def __init__(self, data_list):
+        self.data_collection = []
         for item_list in data_list:
             transaction = Transaction(item_list)
             self.data_collection.append(transaction)

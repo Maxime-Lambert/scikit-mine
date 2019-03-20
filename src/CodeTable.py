@@ -104,12 +104,11 @@ class CodeTable:
     def different_usages(self, ct):
         res = []
         for pattern in self.patternMap.keys():
-            if len(pattern.elements) > 1:
-                if pattern in ct.patternMap.keys():
-                    for pattern2 in ct.patternMap.keys():
-                        if pattern == pattern2:
-                            if not pattern.usage == pattern2.usage:
-                                res.append(pattern)
+            if pattern in ct.patternMap.keys():
+                for pattern2 in ct.patternMap.keys():
+                    if pattern == pattern2:
+                        if not pattern.usage == pattern2.usage:
+                            res.append(pattern)
         return res
 
     def order_by_standard_cover_order(self):
@@ -138,10 +137,10 @@ class CodeTable:
             :return: The sum of all usages
             :rtype: double
         """
-        sum = 0
+        us_sum = 0
         for pattern in self.patternMap.keys():
-            sum += pattern.usage
-        return sum
+            us_sum += pattern.usage
+        return us_sum
 
     def calculate_code_length(self):
         """

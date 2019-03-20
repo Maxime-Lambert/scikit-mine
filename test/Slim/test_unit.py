@@ -7,6 +7,7 @@ Created on Tue Mar  5 17:25:04 2019
 
 from src.SLIM import slimalgo
 from src.SLIM.slimalgo import DatabaseSlim
+from src.Files import Files
 from src.SLIM.slimalgo import PatternSlim
 from src.SLIM.slimalgo import CodeTableSlim
 
@@ -23,6 +24,12 @@ def test_get_support():
     assert b == 6
     assert c == 2
     assert d == 6
+    
+def test_get_support_iris():
+    file = Files("iris")
+    database = DatabaseSlim(file.list_int)
+    a = database.get_support(PatternSlim(6))
+    assert a == 67
     
 def test_generate_candidate_sct():
 
@@ -72,4 +79,4 @@ def test_cover2_default_sct():
         print(e.usage_list)
 
 
-test_get_support()
+test_get_support_iris()

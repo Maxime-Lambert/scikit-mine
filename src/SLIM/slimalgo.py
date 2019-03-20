@@ -131,6 +131,14 @@ class DatabaseSlim(Database):
                 sct.add(pattern, trans)
         return sct
 
+    def get_support(self, pattern):
+        support = 0
+        for trans in self.data_collection:
+            inter = set(trans.items).intersection(pattern.elements)
+            print(inter)
+            if inter == pattern.elements:
+                support +=1
+        return support   
 
 class PatternSlim(Pattern):
 

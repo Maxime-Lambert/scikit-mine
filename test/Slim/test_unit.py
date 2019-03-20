@@ -11,6 +11,19 @@ from src.SLIM.slimalgo import PatternSlim
 from src.SLIM.slimalgo import CodeTableSlim
 
 
+def test_get_support():
+    db = [[2, 1, 3, 4], [1, 2, 4], [1, 2, 4], [1, 2, 4],
+          [2, 4], [2, 4], [1], [1], [3]]
+    database = DatabaseSlim(db)
+    a = database.get_support(PatternSlim(1))
+    b = database.get_support(PatternSlim(2))
+    c = database.get_support(PatternSlim(3))
+    d = database.get_support(PatternSlim(4))
+    assert a == 6
+    assert b == 6
+    assert c == 2
+    assert d == 6
+    
 def test_generate_candidate_sct():
 
     db = [[2, 1, 3, 4], [1, 2, 4], [1, 2, 4], [1, 2, 4],
@@ -59,4 +72,4 @@ def test_cover2_default_sct():
         print(e.usage_list)
 
 
-test_cover2_default_sct()
+test_get_support()

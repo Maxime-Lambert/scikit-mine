@@ -9,16 +9,18 @@ class CodeTable:
         The Double represents the size of the byte array that will
         be used to encode the database corresponding to this
 
-        Its attribute is patternMap
+        Its attribute's name is patternMap
     """
 
     def __init__(self, patternMap, database):
         """
             Creates a Codetable with an empty PatternMap if the given
-            patternMap is None, and with the patternMap if it is not
-            None
+            patternMap is None, else with the given patternMap
+
             :param patternMap: the patternMap you want to initiate with
-            :ptype patternMap: Map <Pattern,Double>
+            :param database: the database corresponding to this codetable
+            :ptype database: Database
+            :ptype patternMap: Dictionnary <Pattern,Double>
         """
         if patternMap is None:
             self.patternMap = {}
@@ -27,6 +29,15 @@ class CodeTable:
         self.data = database
 
     def __eq__(self, ct):
+        """
+            Gives the equality between two codetables which means if their
+            respective patternMap are equal
+
+            :param ct: The Codetable you want to compare self to
+            :ptype ct: Codetable
+            :return: True if both codetables are equal else False
+            :rtype: Boolean
+        """
         return self.patternMap == ct.patternMap
 
     def __repr__(self):
@@ -47,33 +58,30 @@ class CodeTable:
 
     def __len__(self):
         """
-            Says the number of patterns contained in the Codetable
+            Gives the number of patterns contained in the Codetable
 
             :return: the number of patterns contained in the Codetable
             :rtype: int
         """
         return len(self.patternMap)
 
-    def __getitem__(self, item):
+    def __getitem__(self, pattern_to_find):
         """
-            Gets the corresponding code length to a pattern
+            Gives the corresponding code length to a pattern
 
-            :return: the number of patterns contained in the Codetable
-            :rtype: double
+            If the pattern isn't in the patternMap returns None
+
+            :return: the code length corresponding to the pattern_to_find
+            :rtype: double | None
         """
-        self.calculate_code_length()
         for pattern, codelength in self.patternMap.items():
-            if pattern == item:
+            if pattern == pattern_to_find:
                 return codelength
         return None
 
     def add(self, pattern_to_add):
         """
-            Add a Pattern to the Codetable, if it's already present it adds
-            1 to its usage and support else it's put in
-            If the pattern_to_add has at least 2 elements (in this context)
-            it means it comes from at least 2 other patterns so we subtract
-            usage and usage list from them
+            Adds a Pattern to the Codetable.
 
             :param pattern_to_add: The pattern you want to add to the Codetable
             :type pattern_to_add: Pattern
@@ -91,7 +99,7 @@ class CodeTable:
 
     def remove(self, pattern_to_remove):
         """
-            Remove a Pattern from the Codetable
+            Removes a Pattern from the Codetable
 
             :param pattern: The pattern you want to remove from the Codetable
             :type pattern: Pattern
@@ -102,6 +110,15 @@ class CodeTable:
             self.calculate_code_length()
 
     def different_usages(self, ct):
+        """
+            Gives a list of all patterns with different usage present in self
+            and in ct
+
+            :param ct: The codetable you want to compare patterns to
+            :type ct: Codetable
+            :return: The list of patterns from self with different usages in ct
+            :rtype: List<Pattern>
+        """
         res = []
         for pattern in self.patternMap.keys():
             if pattern in ct.patternMap.keys():

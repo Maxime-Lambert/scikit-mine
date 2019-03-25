@@ -427,7 +427,7 @@ def slim(filename, max_iter):
                                                   to_prune)
                 comp2 = code_table.codetable_length(standard_code_table)
                 comp2 += code_table.database_encoded_length()
-                #print("Accepted : "+repr(candidate)+" ["+str(comp2)+", "+str(comp)+", "+str(candidate.gain)+", "+str(nb_candidat)+"]")
+.                #print("Accepted : "+repr(candidate)+" ["+str(comp2)+", "+str(comp)+", "+str(candidate.gain)+", "+str(nb_candidat)+"]")
             else:
                 comp2 = code_table_temp.codetable_length(standard_code_table)
                 comp2 += code_table_temp.database_encoded_length()

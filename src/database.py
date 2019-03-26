@@ -13,16 +13,14 @@ from src.Transaction import Transaction
 
 
 class Database:
-    """Database class
+    """
+        Get a model of the data. The model is construct from
+        frequent itemset following MDL principle.
 
-    Parameters
-    ----------
-    int_data_collection : list of integer list
-    elements to put in the database
-
-    Attributes
-    ----------
-    data_list: ItemCollection list
+        :param filename: name of data file to treat
+        :param max_iter: number of iteration maximum
+        :return: The CodeTableSlim as a model of data
+        :rtype: CodeTableSlim
     """
 
     def __init__(self, data_list):
@@ -34,7 +32,13 @@ class Database:
         self.db_card = len(data_list)
 
     def make_standard_code_table(self):
-        """Make and return the standard code table of the database."""
+        """
+            Make the standard code table of the database, i.e. Code table
+            composed of singleton item of database
+
+            :return: The Standard code table
+            :rtype: CodeTableSlim
+        """
         sct = CodeTable()  # map pattern code
         # On ajoute les singletons de la base à la SCT
         for trans in self.data_collection:

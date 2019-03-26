@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import math
+from src import Pattern
 
 
 class CodeTable:
@@ -210,12 +211,9 @@ class CodeTable:
         return i
 
     def calcul_usage(self):
-        """Update usage of pattern for database db in the code table.
-
-        Parameters
-        ----------
-        db : Database to "cover"
-
+        """
+            Update usage and usage_list of patterns for database db
+            in the code table.
         """
         keys = self.order_by_standard_cover_order()
         # reset usage
@@ -291,7 +289,7 @@ class CodeTable:
         """
         ct = CodeTable(None, self.data)
         for k in self.patternMap.keys():
-            copy = PatternSlim(0)
+            copy = Pattern(0)
             copy.usage = k.usage
             copy.support = k.support
             copy.elements = k.elements

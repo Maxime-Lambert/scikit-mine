@@ -52,9 +52,8 @@ class CodeTableSlim(CodeTable):
             :return: The Patterns from patternmap ordered
             :rtype: List<Pattern_Slim>
         """
-        return sorted(self.patternMap.keys(), key=lambda p: (p.usage,
-                                                             len(p.elements),
-                                                             int),
+        return sorted(self.patternMap.keys(),
+                      key=lambda p: (p.usage, len(p.elements), int),
                       reverse=True)
 
     def copy(self):
@@ -65,28 +64,25 @@ class CodeTableSlim(CodeTable):
             :rtype: CodeTableSlim
         """
         ct = CodeTableSlim(None, self.data)
-        for k in self.patternMap.keys():
+        for pattern in self.patternMap.keys():
             copy = PatternSlim(0)
-            copy.usage = k.usage
-            copy.support = k.support
-            copy.usage_list = k.usage_list.copy()
-            copy.elements = k.elements
-            ct.patternMap[copy] = self.patternMap[k]
+            copy.usage = pattern.usage
+            copy.support = pattern.support
+            copy.usage_list = pattern.usage_list.copy()
+            copy.elements = pattern.elements
+            ct.patternMap[copy] = self.patternMap[pattern]
         return ct
 
+    # Cover # ajouter un index à partir duquel on recalcul?
     def calcul_usage(self):
-        """Update usage of pattern for database db in the code table.
-
-        Parameters
-        ----------
-        db : Database to "cover"
-
+        """
+            Update usage and usage_list of pattern in the code table.
         """
         keys = self.order_by_standard_cover_order()
-        # reset usage
-        for p in keys:
-            p.usage = 0
-            p.usage_list.clear()
+        # reset usage and usage_list
+        for pattern in keys:
+            pattern.usage = 0
+            pattern.usage_list.clear()
         curitemcovered = set()
         for trans in self.data:
             it = 0
@@ -109,16 +105,12 @@ class CodeTableSlim(CodeTable):
 
 
 class DatabaseSlim(Database):
-    """Database class
+    """
+        A CodeTable_Slim is consisted of a Dictionnary Pattern_Slim -> Double
+        The Double represents the size of the byte array that will
+        be used to encode the database corresponding to this
 
-    Parameters
-    ----------
-    int_data_collection : list of integer list
-    elements to put in the database
-
-    Attributes
-    ----------
-    data_list: ItemCollection list
+        Its attribute is patternMap
     """
 
     def make_standard_code_table(self):
@@ -137,8 +129,9 @@ class DatabaseSlim(Database):
             inter = set(trans.items).intersection(pattern.elements)
             print(inter)
             if inter == pattern.elements:
-                support +=1
+                support += 1
         return support
+
 
 class PatternSlim(Pattern):
 
@@ -275,7 +268,7 @@ def generate_candidat(code_table, sct):
             y_current = ct[indice_pattern_y]
             x_y_current = x_current.union(y_current)
             if best_usage <= x_y_current.usage:
-                x_y_current.gain = estimateGain(code_table, x_current, y_current, sct)
+                x_y_current.gain = estimateGain(code_table,x_current,y_current, sct)
                 candidates_list.append(x_y_current)
                 best_usage = x_y_current.usage
             indice_pattern_y += 1
@@ -296,6 +289,7 @@ def estimateGain(code_table, pattern1, pattern2, standardct):
     ct_temp.add(xy_prim, None)
     s = ct.usage_sum()
     s_prim = s - xy_prim.usage
+    """ Cette section ne sert à rien actuellement
     code1 = ct[p1]
     code2 = ct[p2]
     code1_prim = ct_temp[p1]
@@ -306,6 +300,7 @@ def estimateGain(code_table, pattern1, pattern2, standardct):
     log_2_prim = 0
     if not code2_prim == 0:
         log_2_prim = math.log(code2_prim)
+    """
     diff_usg = ct.different_usages(ct_temp)
     diff_usg2 = ct_temp.different_usages(ct)
     diff_usg_c_0 = []
@@ -385,9 +380,13 @@ def estimateGain(code_table, pattern1, pattern2, standardct):
 
 def slim(filename, max_iter):
     """
-    Parameters
-    ----------
+        Get a model of the data. The model is construct from
+        frequent itemset following MDL principle.
 
+        :param filename: name of data file to treat
+        :param max_iter: number of iteration maximum
+        :return: The CodeTableSlim as a model of data
+        :rtype: CodeTableSlim
     """
     file = Files(filename)
     database = DatabaseSlim(file.list_int)
@@ -413,9 +412,9 @@ def slim(filename, max_iter):
 
             indice_candidat += 1
             ct_has_improved = not is_ct_best
-
-            comp = code_table.codetable_length(standard_code_table)
-            comp += code_table.database_encoded_length()
+            # Pour les print ?
+            # comp = code_table.codetable_length(standard_code_table)
+            # comp += code_table.database_encoded_length()
             if ct_has_improved:
                 test = code_table.different_usages(code_table_temp)
                 to_prune = []
@@ -424,14 +423,16 @@ def slim(filename, max_iter):
                         to_prune.append(pat)
                 code_table = code_table_temp
                 code_table = code_table.post_prune(standard_code_table,
-                                                  to_prune)
-                comp2 = code_table.codetable_length(standard_code_table)
-                comp2 += code_table.database_encoded_length()
-.                #print("Accepted : "+repr(candidate)+" ["+str(comp2)+", "+str(comp)+", "+str(candidate.gain)+", "+str(nb_candidat)+"]")
-            else:
+                                                   to_prune)
+                # Pour les prints ?
+                # comp2 = code_table.codetable_length(standard_code_table)
+                # comp2 += code_table.database_encoded_length()
+                # print("Accepted : "+repr(candidate)+" ["+str(comp2)+", "+str(comp)+", "+str(candidate.gain)+", "+str(nb_candidat)+"]")
+            else:  # a enlever?
+                # Pour les prints ?
                 comp2 = code_table_temp.codetable_length(standard_code_table)
                 comp2 += code_table_temp.database_encoded_length()
-                #print("Rejected : "+repr(candidate)+" ["+str(comp2)+", "+str(comp)+", "+str(candidate.gain)+", "+str(nb_candidat)+"]")
+                # print("Rejected : "+repr(candidate)+" ["+str(comp2)+", "+str(comp)+", "+str(candidate.gain)+", "+str(nb_candidat)+"]")
         iter += 1
     Files.to_file(code_table, "res_"+filename)
     Convert.to_code_table_slim("res_"+filename, standard_code_table)

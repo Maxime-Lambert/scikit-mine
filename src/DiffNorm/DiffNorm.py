@@ -191,7 +191,7 @@ class DiffNorm:
     # Estimate candidate's usage for an arbitrary coding set
     def estimate_max_usage(self, candidate):
         max_usage = 0
-        if candidate.left_cs_id == candidate.right_cs_id == self.alphabet_id:
+        if candidate.sj_id == candidate.right_cs_id == self.alphabet_id:
             for cs_left in self.coding_sets_i:
                 for cs_right in self.coding_sets_i:
                     usages_left = cs_left.gather_usages(candidate.left_is)
@@ -229,7 +229,7 @@ class DiffNorm:
         candidate_len = universal_code_len(len(candidate))
         freq_x_in_all_db = self.get_freq_in_all(candidate)
         estimate_diff_sj = candidate_len + freq_x_in_all_db
-        if candidate.left_cs_id == candidate.right_cs_id == self.alphabet_id:
+        if candidate.sj_id == candidate.right_cs_id == self.alphabet_id:
             for j in self.u:
                 gain_sj = estimate_diff_sj
                 for i in j:
@@ -632,15 +632,8 @@ class DiffNorm:
             print(c)"""
 
     def pp_db(self):
-        """for database in self.databases:
-            database.pp()"""
         print("NИNИNИNИNИNИNИ alphabet NИИNИNИNИNИNИN")
         print(self.alphabet)
-        """print("NИNИNИNИNИNИИ candidates NИИNИNИNИNИNИ")
-        for x in self.candidates:
-            if x.max_gain > -10:
-                print(repr(x) + " | " + repr(x.left_cs_id) + " | " + 
-                repr(x.right_cs_id) + " | " + repr(x.max_gain))"""
         for cs in self.coding_sets_i:
             cs.pp()
         print("@@@@@@@@@@@@@@@ model @@@@@@@@@@@@@@@")

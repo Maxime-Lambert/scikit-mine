@@ -2,60 +2,76 @@ from src.DiffNorm.ItemSet import ItemSet
 
 
 class Pattern(ItemSet):
+    """Pattern.
 
-    def __init__(self, left_is, right_is, left_cs_id, right_cs_id, sj_id):
+    Pattern herits from ItemSet, making it more suitable
+    to represent candidate pattern (a candidate is a structure
+    that we consider to add to a code table).
+
+    todo:
+        Make smarter inheritance from ItemSet.
+
+    Parameters
+    ----------
+    left_is : ItemSet object
+        List of items of this pattern/transaction.
+    right_is : ItemSet object
+        List of items of this pattern/transaction.
+    sj_id : int
+        List of items of this pattern/transaction.
+
+    Attributes
+    ----------
+    max_gain : int
+        Maximal estimated gain of this candidate.
+    left_is : ItemSet
+        Left parent of this itemset, X in X | Y.
+    right_is : ItemSet
+        Right parent of this itemset, Y in X | Y.
+    items : set of int
+        List of items of this pattern.
+    max_usage: int
+        Maximal estimated usage of this candidate.
+    """
+
+    def __init__(self, left_is, right_is, sj_id):
         self.max_gain = 0
         self.left_is = left_is
         self.right_is = right_is
-        self.left_cs_id = left_cs_id
-        self.right_cs_id = right_cs_id
         self.items = left_is | right_is
         self.sj_id = sj_id
         self.max_usage = 0
-        """pid = ""
-        pid += repr(left_cs_id) + ":"
-        for x in left_is:
-            pid += repr(x) + ","
-        pid = pid[:-1]
-        pid += "|"
-        pid += repr(left_cs_id) + ":"
-        for x in right_is:
-            pid += repr(x) + ","
-        pid = pid[:-1]
-        self.id = pid"""
 
     def __eq__(self, other):
         if isinstance(other, Pattern):
-            if self.items == other.items:
-                if (self.left_cs_id == self.right_cs_id == -1) or \
-                   (other.left_cs_id == other.right_cs_id == -1) or \
-                   (
-                           self.sj_id == other.sj_id and
-                           self.left_cs_id == other.left_cs_id and
-                           self.right_cs_id == other.right_cs_id):
-                        return True
-            """return \
-                self.items == other.items and \
-                self.left_cs_id == other.left_cs_id \
-                and self.right_cs_id == self.right_cs_id"""
+            if self.items == other.items and \
+               self.sj_id == other.sj_id:
+                    return True
         else:
             return False
 
     def __repr__(self):
         return \
-            repr(self.items) + " | " + repr(self.left_cs_id) \
-            + " | " + repr(self.right_cs_id)
+            repr(self.items) + " | " + repr(self.sj_id)
 
     def copy(self):
-        copy = Pattern(self.left_is, self.right_is, self.left_cs_id,
-                       self.right_cs_id, self.sj_id)
+        """Returns a clone of self
+        """
+        copy = Pattern(self.left_is, self.right_is, self.sj_id)
         return copy
 
     def set_est_gain(self, gain):
+        """Setter for gain.
+
+        Parameters
+        ----------
+        gain : float
+            New gain of this pattern.
+        """
         self.max_gain = gain
 
     def get_est_gain(self):
+        """Returns gain of this pattern.
+        Getter.
+        """
         return self.max_gain
-
-    def verify_same_ct(self):
-        return self.left_cs_id == self.right_cs_id

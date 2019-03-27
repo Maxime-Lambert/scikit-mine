@@ -1,23 +1,17 @@
-
-
 class Sequence:
 
     list_item = []
     usage = 0
-    gap = 0
 
-    def __init__(self, element):
+    def __init__(self, sequence_int):
         self.index = 0
-        self.list_item = set(element)
+        self.list_item = sequence_int
 
     def __str__(self):
         res = ""
         for item in self.list_item:
             res += str(item) + " "
         return res
-
-    def __len__(self):
-        return len(self.list_item)
 
     def __iter__(self):
         return iter(self.list_item)
@@ -38,21 +32,5 @@ class Sequence:
     def __str__(self):
         return str(self.list_item)
 
-    def append(self, item):
-        self.list_item += [item]
-
-    def remove(self, item):
-        res = []
-        for it in self.list_item:
-            if it != item:
-                res += [it]
-        self.list_item = res
-
     def set_usage(self, usage):
         self.usage = usage
-
-    def set_gap(self, gap):
-        self.gap = gap
-
-    def get_usage(self):
-        return self.usage

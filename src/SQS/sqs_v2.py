@@ -1,3 +1,6 @@
+from src.SQS.Window import Window
+
+
 class SQS:
 
     def __init__(self, data, list_pattern):
@@ -14,36 +17,42 @@ class SQS:
     def find_windows(self, pattern, data):
         res = []
         for sequence in data:
-            if pattern in sequence:
-                res += [pattern]
+            if pattern == sequence:
+                res += [Window(0, pattern)]
         return res
 
     def align(self, window):
         pass
 
-    def merge(self, window):
+    def merge(self, list_window):
         res = []
-        for item in window:
-            res += [item]
+        for window in list_window:
+            res.append(window[0])
+        return res
+
+    def new_list(self, list_window):
+        res = []
+        for window in list_window:
+            res.append(window[0])
         return res
 
     def run(self):
         changes = True
         list_window = []
-        print(self.data)
         for sequence in self.data:
             sequence.set_usage(self.find_usage(sequence, self.data))
-            print("sequence : " + str(sequence) + " a un usage de " + str(sequence.usage))
         for pattern in self.list_pattern:
-            print("pattern : ")
-            print(pattern)
             if len(pattern) > 0:
                 list_window.append(self.find_windows(pattern, self.data))
-                print(list_window)
                 pattern.set_usage(len(list_window))
                 pattern.set_gap(len(pattern) - 1)
-        w = self.merge(list_window)
-        print(w)
+        print("list_window : " + str(list_window))
+
+        z = self.merge(list_window)
+        print(z)
+        for win in z:
+            print(win)
+            print("z : " + str(win) + " usage : " + str(win.get_cost()))
         #while changes:
             #a = self.align(w)
 

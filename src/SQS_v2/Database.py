@@ -1,4 +1,4 @@
-from src.Sequence import Sequence
+from src.SQS_v2.Sequence import Sequence
 
 
 class Database:

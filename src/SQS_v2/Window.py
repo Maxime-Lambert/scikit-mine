@@ -1,4 +1,4 @@
-from src.Pattern import Pattern
+from src.SQS_v2.Pattern import Pattern
 
 
 class Window(Pattern):

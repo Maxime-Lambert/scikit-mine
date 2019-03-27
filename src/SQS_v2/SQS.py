@@ -1,6 +1,6 @@
-from src.CodeTable import CodeTable
-from src.Alignement import Alignement
-from src.Pattern import Pattern
+from src.SQS_v2.CodeTable import CodeTable
+from src.SQS_v2.Alignement import Alignement
+from src.SQS_v2.Pattern import Pattern
 
 
 class SQS:

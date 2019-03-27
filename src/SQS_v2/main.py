@@ -1,9 +1,12 @@
 from src.Files import Files
-from src.Database import Database
-from src.SQS import SQS
+from src.SQS_v2.Database import Database
+from src.SQS_v2.SQS import SQS
+import os
 
 if __name__ == "__main__":
-    my_file = Files("monfichier")
+    absolute_path = os.path.dirname(os.path.abspath(__file__))
+    file_path = absolute_path + "/../../test/data/SQS/monfichier"
+    my_file = Files(file_path)
     database = Database(my_file.list_int)
     sqs = SQS(database)
     sqs.search()

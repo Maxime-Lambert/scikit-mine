@@ -2,6 +2,7 @@ from src.CodeTable import CodeTable
 from src.Alignement import Alignement
 from src.Pattern import Pattern
 
+
 class SQS:
 
     changes = True

@@ -1,7 +1,4 @@
-
-
 class Sequence:
-
     list_item = []
     usage = 0
     gap = 0

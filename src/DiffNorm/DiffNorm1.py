@@ -9,13 +9,83 @@ from math import log2
 
 
 class DiffNorm1:
+    """DiffNorm algorithme.
+
+    DiffNorm algorithme class, main loop class
+    where all the functions are called.
+
+    todo:
+        Get the file reading in another class. Maybe implement kernel classes.
+        Implement other feateurs from the research papers, like indexing candidates to
+        consider them adding only in the codetables from which they were created and e.t.c.
+
+    Parameters
+    ----------
+    nom_db: String
+        Name of the file(with extension) whith the names of all
+        databases that will be treated by this algorithme. Their names are
+        separated by empty spaces and no new line in the end of file.
+        Exemple:
+            db1 db2 db3
+    nom_u: String
+        Name of the file(with extension) with the indexes of the databases
+        to be grouped together. Indexing starts from 1. Indexes will
+        be separated by empty spaces and  no new line in the end of file.
+        Exemple:
+            1 2 3
+            1 2
+        This will create S1 with (D1, D2, D3) and S2 with (D1, D2)
+
+    Attributes
+    ----------
+    alphabet_id : int
+        Global variable. Token of id of the alphabet I.
+    min_usage : int
+        Global variable. Minimun usage, used to filter low
+        usage candidates.
+        todo:
+            Pass it in the parameters.
+    min_gain : float
+        Global variable. Minimum gain in bits. If a candidate
+        reduces the size of the model for atleast 1 bit it's accepted.
+    index : int
+        Iterator over the contents of this table.
+    usage : int
+        Usage of a code table is sum of usages of its' elements.
+    size : int
+        Number of elements in this code table.
+    num_iterations : int
+        Number of iterations done.
+    candidates : list of Pattern objects.
+        List of candidates to consider adding to the model.
+    rejected_candidates : list of Pattern objects
+        List of previously rejected candidates.
+    accepted_candidates : list of Pattern objects
+        List of previously accepted candidates.
+    databases : list of DataBase objects
+        List of ALL databases.
+    coding_sets_i : list of CodeTable objects
+        List of ALL coding sets (Ci = I + all Sj, that i in j).
+    coding_set_patterns1 : list of PatternSet objects
+        List of ALL Sj/ pattern sets.
+    u : list of int
+        List of index sets, by default contains individual
+        indexes of databases.
+    alphabet : list of ItemSet objects
+        List of all single items found in all the transactions
+        of all the databases.
+    current_candidate : Pattern object
+        Current candidate that is being considered to add.
+    all_db_card : int
+        Sum of cardinalities of all databases.
+    candidate_accepted : bool
+        Boolean indicating whether previous candidate was accepted.
+    commit_sj_id : list of int
+        List of indexes of Sj where previous candidate was accepted.
+    """
 
     alphabet_id = -1
-    # Minimum usage to filter the candidates
-    # before adding them to potential candidates
     min_usage = 150
-    # Candidate will be added if he reduces
-    # the cost of encoded size of a database for at least 1 bit
     min_gain = 1.0
 
     def __init__(self, nom_db, nom_u):
@@ -27,18 +97,13 @@ class DiffNorm1:
         self.rejected_candidates = []
         self.accepted_candidates = []
         self.databases = []
-        # List of Ci
         self.coding_sets_i = []
-        # List of Sj
         self.coding_set_patterns1 = []
-        # Groups of i from Ci to form j from Sj
         self.u = []
         self.alphabet = []
         self.current_candidate = None
-        # |D cursive|
         self.all_db_card = 0
         self.candidate_accepted = False
-        # List of Sj where previous candidate was added in the last loop
         self.commit_sj_id = []
 
         file_db = open(abs_file_path + nom_db, "r")
@@ -258,10 +323,6 @@ class DiffNorm1:
     def add_to_chosen(self, w):
         self.candidate_accepted = False
         self.commit_sj_id = []
-        """print("HERE IS W:")
-        print(w)
-        print("FOR CANDIDATE: ")
-        print(self.current_candidate)"""
         w_id = 0
         u_copy = self.u.copy()
         u_copy.sort(
@@ -369,10 +430,6 @@ class DiffNorm1:
                             universal_code_len(len(candidate)) \
                             - self.get_freq_in_all(candidate) \
                             + sub_db_split_diff
-                """print("TOTAL DIFF")
-                print(total_diff)
-                print("FOR CAND")
-                print(candidate)"""
                 if total_diff > 0:
                     for s_j in self.coding_set_patterns1:
                         if candidate in s_j:
@@ -404,8 +461,6 @@ class DiffNorm1:
             self.add_to_chosen(w)
             self.num_iterations += 1
             if self.candidate_accepted:
-                """print("ADDED")
-                print(self.commit_sj_id)"""
                 self.prune()
                 for candidate in self.candidates:
                     self.estimate_gain(candidate)
@@ -421,6 +476,6 @@ class DiffNorm1:
         print(self.alphabet)
         for cs in self.coding_sets_i:
             cs.pp()
-        print("@@@@@@@@@@@@@@@ model @@@@@@@@@@@@@@@")
+        print("NИNИNИNИNИNИNИN model NИNИИNИNИNИNИNИ")
         for sj in self.coding_set_patterns1:
             sj.pp()

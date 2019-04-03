@@ -5,7 +5,7 @@ from src.DiffNorm.DiffNormUtils import log_gamma, calc_log_double_factorial
 class CodeTable:
     """Code table/ coding set/ Ci.
 
-    Unique structure assigned to each individual database Di. Stores items
+    Structure assigned to each individual database Di. Stores items
     from the alphabet I and all the patterns related to Di,
     i.e. all x, who are in Sj and i in j.
 
@@ -30,8 +30,7 @@ class CodeTable:
         List of items of the alphabet I and all the patterns related to
         the database associated to this code table.
     i : int
-        Index of this code table, i like in Ci or Di. Used to make the output
-        more humanlike.
+        Index of this code table, i like in Ci or Di.
     t_data : dict
         Cover of all transactions of Di. To each key = tid (transaction index)
         we associate its' cover (patterns and items of this code table used to

@@ -199,7 +199,7 @@ class PatternSlim(Pattern):
         res += " #USGLIST : " + repr(self.usage_list)
         return res
 
-    def union(self, pattern):
+    def union(self, pattern, data):
         """
             Merged two patterns into one bigger
             :param pattern: the pattern you want to merge self with
@@ -211,7 +211,7 @@ class PatternSlim(Pattern):
         p.elements = self.elements | pattern.elements
         p.usage_list = self.usage_list & pattern.usage_list
         p.usage = len(p.usage_list)
-        p.support = p.usage
+        p.support = data.get_support(p)
         return p
 
     def getusage(self):
@@ -239,7 +239,7 @@ class PatternSlim(Pattern):
         return len(self.elements)
 
 
-def generate_candidat(code_table, sct, memory):
+def generate_candidat(code_table, sct, memory, data):
     """Generate a list of candidates from a code table.
 
     Parameters
@@ -278,18 +278,18 @@ def generate_candidat(code_table, sct, memory):
         indice_pattern_y = indice_pattern_x + 1
         while indice_pattern_y < len(ct):
             y_current = ct[indice_pattern_y]
-            x_y_current = x_current.union(y_current)
+            x_y_current = x_current.union(y_current, data)
             if x_y_current not in candidates_list:
                 if x_y_current.usage > 0:
                     x_y_current.gain = estimateGain(code_table, x_current,
-                                                    y_current, sct)
+                                                    y_current, sct, data)
                     candidates_list.append(x_y_current)
             indice_pattern_y += 1
         indice_pattern_x += 1
     return candidates_list
 
 
-def estimateGain(code_table, pattern1, pattern2, standardct):
+def estimateGain(code_table, pattern1, pattern2, standardct, data):
     # copy of parameters
     p1 = pattern1.copy()
     p2 = pattern2.copy()
@@ -297,7 +297,7 @@ def estimateGain(code_table, pattern1, pattern2, standardct):
     sct = standardct.copy()
 
     # init of usefull variables
-    xy_prim = p1.union(p2)
+    xy_prim = p1.union(p2, data)
     ct_temp = ct.copy()
     ct_temp.add(xy_prim, None)
     s = ct.usage_sum()
@@ -415,7 +415,7 @@ def slim(filename, max_iter):
     while (ct_has_improved) and (iter < max_iter):
         ct_has_improved = False
         candidate_list = generate_candidat(code_table, standard_code_table,
-                                           candidate_list)
+                                           candidate_list, database)
         candidate_list = sorted(candidate_list, key=lambda p: (p.usage),
                                 reverse=True)
     # ------------- Improve CT -------------#
@@ -444,6 +444,9 @@ def slim(filename, max_iter):
                 comp2 = code_table.codetable_length(standard_code_table)
                 comp2 += code_table.database_encoded_length()
                 candidate_list = removeList(candidate_list, candidate.elements)
+                if candidate.elements == {3, 7}:
+                    for x in code_table.patternMap.keys():
+                        print(repr(x))
                 print("Accepted : "+repr(candidate)+" ["+str(comp2)+", "+str(comp)+", "+str(candidate.gain)+", "+str(nb_candidat)+"]")
             else:
                 comp2 = code_table_temp.codetable_length(standard_code_table)

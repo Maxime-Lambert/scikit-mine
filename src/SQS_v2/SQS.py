@@ -81,6 +81,16 @@ class SQS:
         return alignement
 
     def estimate(self, pattern, alignement):
+        """
+            Estimate take a pattern, its internal database and an alignement
+            to find a pattern with a better length than the one
+            provided in the parameter
+
+            :param pattern: pattern looked upon
+            :param alignement: Alignement considered
+            :return: The pattern with the minimum length
+            :rtype: pattern
+        """
         pass
         """ vx = {}
         wx = {}
@@ -104,6 +114,15 @@ class SQS:
            # t_min = arg_min(T)"""
 
     def prune(self, list_pattern, full):
+        """
+            Prune sort the list of patterns and at the same time,
+            search in an iterative way if the list is the most optimal
+
+            :param list_pattern: list of patterns looked upon
+            :param full: Execute a total search instead of an heuristic one
+            :return: The optimal list of patterns
+            :rtype: list_pattern
+        """
         for pattern in list_pattern:
             print("prune")
             codetable = self.codetable.codetable_from_sqs(self.list_pattern_from_estimate)
@@ -117,6 +136,14 @@ class SQS:
         return list_pattern
 
     def align(self, tabwindow):
+        """
+            From a list of windows provided, create the most optimal list of window
+            disjoint between each other included in the original list.
+
+            :param tabwindow: List of windows for the search
+            :return: The list of mutually dijoint windows with an optimal gain
+            :rtype: list_window
+        """
         print(tabwindow)
         if tabwindow is None:
             return

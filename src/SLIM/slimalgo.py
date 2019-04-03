@@ -91,7 +91,7 @@ class CodeTableSlim(CodeTable):
                 pattern = keys[it]
                 # if pattern's item have not been seen yet and
                 # they are all in trans
-                if not len(pattern.elements & curitemcovered) == len(pattern):
+                if len(pattern.elements & curitemcovered) == 0:
                     if len(pattern.elements & set(trans)) == len(pattern):
                         # increase usage du pattern and add covered items in
                         # the covered items list
@@ -239,7 +239,7 @@ class PatternSlim(Pattern):
         return len(self.elements)
 
 
-def generate_candidat(code_table, sct, memory, data):
+def generate_candidat(code_table, sct, memory, data, done):
     """Generate a list of candidates from a code table.
 
     Parameters
@@ -280,10 +280,11 @@ def generate_candidat(code_table, sct, memory, data):
             y_current = ct[indice_pattern_y]
             x_y_current = x_current.union(y_current, data)
             if x_y_current not in candidates_list:
-                if x_y_current.usage > 0:
-                    x_y_current.gain = estimateGain(code_table, x_current,
-                                                    y_current, sct, data)
-                    candidates_list.append(x_y_current)
+                if x_y_current not in done:
+                    if x_y_current.usage > 0:
+                        x_y_current.gain = estimateGain(code_table, x_current,
+                                                        y_current, sct, data)
+                        candidates_list.append(x_y_current)
             indice_pattern_y += 1
         indice_pattern_x += 1
     return candidates_list
@@ -340,7 +341,8 @@ def estimateGain(code_table, pattern1, pattern2, standardct, data):
                 encoded_union += codelength
 
     cote1 = (s*math.log(s) - s_prim*math.log(s_prim))
-    cote1 += (xy_prim.usage*math.log(xy_prim.usage))
+    if xy_prim.usage > 0:
+        cote1 += (xy_prim.usage*math.log(xy_prim.usage))
 
     for x in diff_usg:
         if not x.usage == 0:
@@ -350,7 +352,8 @@ def estimateGain(code_table, pattern1, pattern2, standardct, data):
             cote1 -= y.usage*math.log(y.usage)
 
     cote2 = 0
-    cote2 += math.log(xy_prim.usage)
+    if xy_prim.usage > 0:
+        cote2 += math.log(xy_prim.usage)
     cote2 -= encoded_union
     cote2 += len(ct)*math.log(s)
     cote2 -= len(ct_temp)*math.log(s_prim)
@@ -409,14 +412,19 @@ def slim(filename, max_iter):
     standard_code_table = database.make_standard_code_table()
     code_table = standard_code_table.copy()
     candidate_list = []
+    done = []
     ct_has_improved = True
     iter = 0
     nb_candidat = 0
     while (ct_has_improved) and (iter < max_iter):
+        for x in done:
+            if x in candidate_list:
+                candidate_list.remove(x)
         ct_has_improved = False
         candidate_list = generate_candidat(code_table, standard_code_table,
-                                           candidate_list, database)
-        candidate_list = sorted(candidate_list, key=lambda p: (p.usage),
+                                           candidate_list, database, done)
+        candidate_list = sorted(candidate_list,
+                                key=lambda p: (p.usage,p.gain),
                                 reverse=True)
     # ------------- Improve CT -------------#
         indice_candidat = 0
@@ -432,6 +440,7 @@ def slim(filename, max_iter):
             ct_has_improved = not is_ct_best
             comp = code_table.codetable_length(standard_code_table)
             comp += code_table.database_encoded_length()
+            done.append(candidate)
             if ct_has_improved:
                 test = code_table.different_usages(code_table_temp)
                 to_prune = []
@@ -444,9 +453,6 @@ def slim(filename, max_iter):
                 comp2 = code_table.codetable_length(standard_code_table)
                 comp2 += code_table.database_encoded_length()
                 candidate_list = removeList(candidate_list, candidate.elements)
-                if candidate.elements == {3, 7}:
-                    for x in code_table.patternMap.keys():
-                        print(repr(x))
                 print("Accepted : "+repr(candidate)+" ["+str(comp2)+", "+str(comp)+", "+str(candidate.gain)+", "+str(nb_candidat)+"]")
             else:
                 comp2 = code_table_temp.codetable_length(standard_code_table)

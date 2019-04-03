@@ -1,4 +1,5 @@
 import math
+from src.SQS_v2.CodeTable import CodeTable
 
 def private(list_pattern, pattern):
     res = []
@@ -40,7 +41,7 @@ def gain_window(codetable, window):
 
 def codep(codetable, pattern):
     res = 0.0
-    res = - math.log(pattern.usage/codetable.usage)
+    res = - math.log(pattern.usage/usage_sum(codetable))
     return res
 
 def calculate_length(database, list_pattern):

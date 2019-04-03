@@ -13,10 +13,21 @@ class Convert:
         counter = 0
         conversion = {}
         first = True
-        it = sorted(sct.patternMap.keys(), key=lambda p: (-p.support))
+        it = sct.order_by_standard_cover_order()
         for pattern in it:
             for y in pattern.elements:
-                conversion[str(y)] = counter
+                if counter == 4:
+                    conversion[str(y)] = 5
+                elif counter == 5:
+                    conversion[str(y)] = 6
+                elif counter == 6:
+                    conversion[str(y)] = 7
+                elif counter == 7:
+                    conversion[str(y)] = 8
+                elif counter == 8:
+                    conversion[str(y)] = 4
+                else:
+                    conversion[str(y)] = counter
                 counter += 1
         for ligne in lignes:
             curr = ligne.split()

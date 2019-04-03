@@ -172,7 +172,7 @@ class CodeTable:
             if pattern.usage == 0:
                 self.patternMap[pattern] = 0
             else:
-                self.patternMap[pattern] = (-math.log(pattern.usage/us_sum))
+                self.patternMap[pattern] = (-math.log2(pattern.usage/us_sum))
 
     def database_encoded_length(self):
         """
@@ -189,7 +189,6 @@ class CodeTable:
         return i
 
     def codetable_length(self, sct):
-        # nombre de pattern ?
         """
             Gives the size of the current Codetable encoded
 
@@ -243,10 +242,8 @@ class CodeTable:
             Codetables
 
             :param ct: The other Codetable you want to compare to
-            :param data: The database concerned
             :param sct: The standard code table of the database
             :type ct: Codetable
-            :type data: Database
             :type sct: Codetable
             :return: True if self encodes best the data, else False
             :rtype: boolean

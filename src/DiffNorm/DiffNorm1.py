@@ -97,8 +97,8 @@ class DiffNorm1:
                 cs.add(itemset.copy())
             cs.sort_in_sco()
             cs.update_t_data()
-            cs.update_usage()
             cs.update_usages()
+            cs.update_usage()
             sj = PatternSet([cs], self.databases, j)
             sj.sort_in_sco()
             self.coding_set_patterns1.append(sj)
@@ -208,8 +208,8 @@ class DiffNorm1:
     """Create and check if the candidate hasn't been already created, 
     rejected or accepted, 
     filter low usage candidates and estimate their gain"""
-    def create_candidate(self, left, right, left_cs_id, right_cs_id, sj_id):
-        new_candidate = Pattern(left, right, left_cs_id, right_cs_id, sj_id)
+    def create_candidate(self, left, right, sj_id):
+        new_candidate = Pattern(left, right, sj_id)
         if not (self.already_generated(new_candidate)
                 or self.already_rejected(new_candidate)
                 or self.already_accepted(new_candidate)):
@@ -229,7 +229,7 @@ class DiffNorm1:
                 y_id = x_id + 1
                 while y_id < len(self.alphabet):
                     self.create_candidate(self.alphabet[x_id],
-                                          self.alphabet[y_id], 0, 0, 0)
+                                          self.alphabet[y_id], 0)
                     y_id += 1
                 x_id += 1
         else:
@@ -239,11 +239,11 @@ class DiffNorm1:
                 for y in self.alphabet:
                     if y not in self.current_candidate:
                         self.create_candidate(self.current_candidate,
-                                              y, 0, 0, 0)
+                                              y, 0)
                 for y in self.coding_set_patterns1[j].patterns:
                     if y != self.current_candidate:
                         self.create_candidate(self.current_candidate,
-                                              y, 0, 0, 0)
+                                              y, 0)
         self.candidates.sort(key=lambda z: z.get_est_gain(), reverse=True)
 
     """Add the candidate to all concerned Sj, i.e. if the candidate is I x I 

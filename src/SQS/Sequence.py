@@ -1,7 +1,4 @@
-
-
 class Sequence:
-
     list_item = []
     usage = 0
     gap = 0
@@ -53,3 +50,6 @@ class Sequence:
 
     def set_gap(self, gap):
         self.gap = gap
+
+    def get_usage(self):
+        return self.usage

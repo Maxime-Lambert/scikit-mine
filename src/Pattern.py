@@ -24,7 +24,7 @@ class Pattern:
 
     def __iter__(self):
         """Returns iterator over the transactions in the pattern."""
-        return self.elements
+        return iter(self.elements)
 
     def __next__(self):
         """
@@ -39,6 +39,8 @@ class Pattern:
         self.index += 1
         return result
 
+    def __len__(self):
+        return len(self.elements)
     def __repr__(self):
         """
             Return a String representation of the pattern

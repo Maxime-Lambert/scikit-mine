@@ -77,7 +77,6 @@ def test_iter1_default():
 
 
 def test_itern_nofail():
-
     db = []
     res = slim(db, 100)
     assert True is True

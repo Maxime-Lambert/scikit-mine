@@ -1,3 +1,6 @@
+"""Support class, containing precalculated formulas
+mentioned in the research papers of DiffNorm.
+"""
 from math import log2, sqrt
 
 

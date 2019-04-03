@@ -8,12 +8,12 @@ class Convert:
 
     def to_code_table_slim(filename, sct):
         entree = open(filename+".txt", "r")
-        sortie = open(filename+"slim.txt", "w")
+        sortie = open(filename+"_slim.txt", "w")
         lignes = entree.readlines()
         counter = 0
         conversion = {}
         first = True
-        it = sorted(sct.patternMap.keys(), key=lambda p: (-p.support, str(p)))
+        it = sorted(sct.patternMap.keys(), key=lambda p: (-p.support))
         for pattern in it:
             for y in pattern.elements:
                 conversion[str(y)] = counter

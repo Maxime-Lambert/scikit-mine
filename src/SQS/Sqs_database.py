@@ -10,4 +10,3 @@ class SqsDatabase(Database):
         for data in data_list:
             sequence = Sequence(data)
             self.data_collection.append(sequence)
-

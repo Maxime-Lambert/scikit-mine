@@ -108,7 +108,7 @@ class PatternSet:
             self.size += 1
 
     def pp(self):
-        print()
         print("NИNИNИNИNИNИN S" + repr(self.j) + " NИNИNИNИNИNИNИ")
         for x in self.patterns:
             print(x)
+        print()

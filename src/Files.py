@@ -1,14 +1,14 @@
 class Files:
     """docstring for Fichier"""
-    list_string = []
-    list_int = []
-    dico = {}
 
     def __init__(self, nom):
         file = open(nom + ".txt", "r")
         lignes = file.readlines()
         tmp = []
         tab = []
+        self.list_string = []
+        self.list_int = []
+        self.dico = {}
 
         for ligne in lignes:
             tmp = []

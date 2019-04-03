@@ -5,6 +5,7 @@ class Window(Pattern):
 
     cost = 0
     optcost = 0
+    optimalwindow = None
 
     def __init__(self, pattern):
         self.pattern = pattern

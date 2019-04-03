@@ -1,3 +1,5 @@
+from typing import re
+
 from src.Transaction import *
 
 
@@ -98,3 +100,6 @@ class Pattern:
             :return: void
         """
         self.support += 1
+
+    def get_elements(self):
+        return self.elements

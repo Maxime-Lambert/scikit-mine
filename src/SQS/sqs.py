@@ -12,6 +12,7 @@ def sqs(data, patterns):
     while changes:
         a = align(w)
 
+
     return a
 
 
@@ -24,7 +25,6 @@ def find_usage(sequence, data):
 
 
 def find_windows(pattern, data):
-    pass
 
 
 def align(window):

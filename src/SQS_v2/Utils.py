@@ -1,3 +1,5 @@
+import math
+
 def private(list_pattern, pattern):
     res = []
     if pattern not in list_pattern:
@@ -22,6 +24,23 @@ def merge(self, list_window):
 def gain(self, align):
     pass
 
+def gainwindow (self, window):
+    """
+    gain(w) = − L(codep(X)) − (j − i − |X|)L(codeg(X))
+    − (|X| − 1)L(coden(X)) + SOMME(∈X)  L(codep(x))
+    """
+    res = 0.0
+    res -= self.codep(window.pattern)
+    # res -= codeg(window.pattern) * (window.indexstart - window.indexend - len(window.pattern))
+    # res -= coden(window.pattern) * (len(window.pattern) - 1)
+    for patterns in window.pattern:
+        res += self.codep(patterns)
+    return res
+
+def codep (self, pattern):
+    res = 0.0
+    res = - math.log(pattern.usage/codetable.usage)
+    return res
 
 def calculate_length(database, list_pattern):
     pass

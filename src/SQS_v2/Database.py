@@ -1,4 +1,6 @@
 from src.SQS_v2.Sequence import Sequence
+from src.SQS_v2.CodeTable import CodeTable
+from src.SQS_v2.Pattern import Pattern
 
 
 class Database:
@@ -20,3 +22,24 @@ class Database:
         except IndexError:
             self.index = 0
             raise StopIteration
+
+    def make_standard_code_table(self):
+        """
+            Make the standard code table of the database, i.e. Code table
+            composed of singleton item of database
+
+            :return: The Standard code table
+            :rtype: CodeTableSQS
+        """
+        tmp = {}
+        #sct = CodeTable(self)  # map pattern code
+        # On ajoute les singletons de la base à la SCT
+        for sequences in self.list_sequence:
+            for item in sequences:
+                pattern = Pattern([item])
+                if pattern in tmp:
+                    tmp[pattern] += 1
+                else:
+                    tmp[pattern] = 1
+        sct = CodeTable(tmp, self)
+        return sct

@@ -7,11 +7,8 @@ class Sequence:
         self.index = 0
         self.list_item = sequence_int
 
-    def __str__(self):
-        res = ""
-        for item in self.list_item:
-            res += str(item) + " "
-        return res
+    def __repr__(self):
+        return str(self.list_item)
 
     def __iter__(self):
         return iter(self.list_item)

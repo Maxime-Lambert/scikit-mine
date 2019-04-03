@@ -17,11 +17,11 @@ def sum_gain(self, alignement):
     return res
 
 
-def merge(self, list_window):
+def merge(database, list_window):
     pass
 
 
-def gain(self, align):
+def gain(database, align):
     pass
 
 def gainwindow (self, window):
@@ -43,16 +43,28 @@ def codep (self, pattern):
     return res
 
 def calculate_length(database, list_pattern):
-    pass
+    return 0
 
 
 def calculate_length_codetable(codetable):
     pass
 
 
-def find_usage(self, sequence):
+def find_usage(database, sequence):
     res = 0
-    for seq in self.database:
+    for seq in database:
         if seq == sequence:
             res += 1
+    return res
+
+
+def end_index_next_window(alignement, pattern):
+    pass
+
+
+def arg_min(T):
+    res = T[0]
+    for t in T:
+        if t < res:
+            res = t
     return res

@@ -23,6 +23,7 @@ class CodeTable:
             :ptype database: Database
             :ptype patternMap: Dictionnary <Pattern,Double>
         """
+        print(type(patternMap))
         if patternMap is None:
             self.patternMap = {}
         else:

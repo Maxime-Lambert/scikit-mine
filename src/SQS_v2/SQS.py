@@ -63,8 +63,28 @@ class SQS:
                     list_pattern = list_pattern_private_x
         return list_pattern
 
-    def align(self, list_window):
-        pass
+    def align(self, tabwindow):
+        if tabwindow[0] is None:
+            return
+        taboptimal = []
+        if (tabwindow[0].cost > 0) & tabwindow[0].pat.active:
+            tabwindow[0].optcost = tabwindow[0].cost
+        else:
+            tabwindow[0].optcost = 0
+        n = tabwindow[0]
+        for window in tabwindow[1:]:
+            c = 0
+            if next(n):
+                c = next(n).optimalgain
+            if self.gain(n)+c > window.optimalgain | window.pat.active is False:
+                n.optimalgain=self.gain(n)+c
+                n.optimalwindow=n
+            else:
+                n.optimalgain = self.gain(window)
+                n.optimalwindow = window
+            taboptimal.append(n)
+            n = window
+        return taboptimal
 
     def find_windows(self, pattern):
         pass

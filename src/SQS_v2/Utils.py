@@ -24,20 +24,21 @@ def merge(database, list_window):
 def gain(database, align):
     pass
 
-def gainwindow (self, window):
+
+def gain_window(codetable, window):
     """
     gain(w) = − L(codep(X)) − (j − i − |X|)L(codeg(X))
     − (|X| − 1)L(coden(X)) + SOMME(∈X)  L(codep(x))
     """
     res = 0.0
-    res -= self.codep(window.pattern)
+    res -= codep(codetable, window.pattern)
     # res -= codeg(window.pattern) * (window.indexstart - window.indexend - len(window.pattern))
     # res -= coden(window.pattern) * (len(window.pattern) - 1)
     for patterns in window.pattern:
-        res += self.codep(patterns)
+        res += codep(codetable, patterns)
     return res
 
-def codep (self, pattern):
+def codep(codetable, pattern):
     res = 0.0
     res = - math.log(pattern.usage/codetable.usage)
     return res

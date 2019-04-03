@@ -10,6 +10,12 @@ class SQS:
     changes = True
 
     def __init__(self, database):
+        """
+            Initialize the algorithm with its database,
+            and set all its internal parameters to their initial states
+
+            :param database: name of the database used
+        """
         self.database = database
         self.codetable = self.database.make_standard_code_table()
         print("#######CodeTable######")
@@ -18,6 +24,14 @@ class SQS:
         self.alignement = Alignement(0, 0, Pattern([]))
 
     def search(self):
+        """
+            Main function of the algorithm SQS_SEARCH
+            Use the internal database that was initialized
+            to return a set of interesting patterns for data mining
+
+            :return: The set of relevant patterns
+            :rtype: set_pattern
+        """
         list_patern = []
         self.alignement = self.run([])
         #while self.changes:
@@ -38,6 +52,13 @@ class SQS:
         return list_patern
 
     def run(self, set_pattern):
+        """
+            Function ???
+
+            :param set_pattern: set of pattern used
+            :return: The Alignement of the sequence
+            :rtype: Alignement
+        """
         changes = True
 
         list_window = []
@@ -109,11 +130,11 @@ class SQS:
             c = 0
             if next(n):
                 c = next(n).optimalgain
-            if gain_window(self.codetable, n)+c > window.optimalgain | window.pat.active is False:
-                n.optimalgain=gain_window(self.codetable, n)+c
+            if gain_window(self.codetable, n)+c > window.optcost | window.pat.active is False:
+                n.optcost=gain_window(self.codetable, n)+c
                 n.optimalwindow=n
             else:
-                n.optimalgain = gain_window(self.codetable, window)
+                n.optcost = gain_window(self.codetable, window)
                 n.optimalwindow = window
             taboptimal.append(n)
             n = window

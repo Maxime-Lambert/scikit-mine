@@ -2,11 +2,13 @@ from src.SQS_v2.CodeTable import CodeTable
 from src.SQS_v2.Alignement import Alignement
 from src.SQS_v2.Database import Database
 from src.SQS_v2.Pattern import Pattern
-from src.SQS_v2.Utils import merge, private, sum_gain, calculate_length, calculate_length_codetable, find_usage, end_index_next_window, arg_min
+from src.SQS_v2.Window import Window
+from src.SQS_v2.Utils import merge, private, sum_gain, calculate_length, calculate_length_codetable, find_usage, \
+    end_index_next_window, arg_min
+import math
 
 
 class SQS:
-
     changes = True
 
     def __init__(self, database):
@@ -18,7 +20,7 @@ class SQS:
     def search(self):
         list_patern = []
         self.alignement = self.run([])
-        #while self.changes:
+        # while self.changes:
         list_patern_old = list_patern.copy()
         self.list_pattern_from_estimate = []
         for pattern in self.codetable.patternMap.keys():
@@ -48,7 +50,7 @@ class SQS:
                 list_window.append(self.find_windows(pattern))
                 pattern.set_usage(len(list_window))
         list_window_merged = merge(self.database, list_window)
-        #while changes:
+        # while changes:
         old_alignement = alignement
         alignement = self.align(list_window_merged)
         if alignement == old_alignement:
@@ -78,9 +80,6 @@ class SQS:
         #while T != []:
            # t_min = arg_min(T)"""
 
-
-
-
     def prune(self, list_pattern, full):
         for pattern in list_pattern:
             print("prune")
@@ -89,7 +88,8 @@ class SQS:
             g = sum_gain(self.alignement)
             if full or g < calculate_length_codetable(codetable) - calculate_length_codetable(codetable_except_x):
                 list_pattern_private_x = private(list_pattern, pattern)
-                if calculate_length(self.database, list_pattern_private_x) < calculate_length(self.database, list_pattern):
+                if calculate_length(self.database, list_pattern_private_x) < calculate_length(self.database,
+                                                                                              list_pattern):
                     list_pattern = list_pattern_private_x
         return list_pattern
 
@@ -106,9 +106,9 @@ class SQS:
             c = 0
             if next(n):
                 c = next(n).optimalgain
-            if self.gain(n)+c > window.optimalgain | window.pat.active is False:
-                n.optimalgain=self.gain(n)+c
-                n.optimalwindow=n
+            if self.gain(n) + c > window.optimalgain | window.pat.active is False:
+                n.optimalgain = self.gain(n) + c
+                n.optimalwindow = n
             else:
                 n.optimalgain = self.gain(window)
                 n.optimalwindow = window
@@ -116,5 +116,59 @@ class SQS:
             n = window
         return taboptimal
 
+    def find_windows_in_sequence(self, pattern, sequence, index):
+        list_window = []
+        f = {}
+        b = {}
+        Q = []
+        li = sequence.list_item
+
+        for v in pattern.elements:
+            if not v in li:
+                return []
+            f[v] = li.index(v)
+            b[v] = -1
+            Q.append(v)
+
+        for k in li:
+            f[k] = li.index(k)
+            b[k] = -1
+
+        while True:
+            while len(Q) > 0:
+                v = Q[0]
+                Q.remove(v)
+                matches = (idx for idx, val in enumerate(li) if val == v)
+                for i in matches:
+                    if i > b[v]:
+                        f[v] = i
+                        break
+                if f[v] is None:
+                    return list_window
+                w = li[li.index(v) +1]
+                b[w] = (max(int(b[w]), int(f[v])))
+                if b[w] >= f[w] and w not in Q:
+                    Q.append(w)
+            print(f.values())
+            maximum = max(f, key=f.get)  # Just use 'min' instead of 'max' for minimum.
+            minimum = min(f, key=f.get)  # Just use 'min' instead of 'max' for minimum.
+            # if f[maximum] - f[minimum] > window_size:
+            if len(list_window)>0:
+                if f[maximum] == list_window[len(list_window) - 1].last:
+                    list_window.pop()
+            list_window.append(Window(pattern, f[minimum], f[maximum], index))
+            v = min(f, key=f.get)
+            b[v] = f[v]
+            Q.append(v)
+
     def find_windows(self, pattern):
-        pass
+        list_window = []
+        f = {}
+        b = {}
+        Q = []
+        i = 0;
+
+        for sequence in self.database.list_sequence:
+            list_window.append(self.find_windows_in_sequence(pattern, sequence, i))
+            i += 1;
+        return list_window

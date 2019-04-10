@@ -273,7 +273,7 @@ class CodeTable:
     def pp(self):
         """Pretty-printer
         """
-        print("NИNИNИNИNИNИN ct de " + self.database.name + " NИNИNИNИNИNИNИ")
+        print("NИNИNИNИNИNИN CT of " + self.database.name + " NИNИNИNИNИNИNИ")
         print()
         print("Initial encoded size")
         print(self.initial_encoded_size)
@@ -283,3 +283,13 @@ class CodeTable:
         for x in self.patterns:
             print(repr(x) + " " + repr(len(self.gather_usages(x))))
         print()
+
+    def to_string(self):
+        string = "NИNИNИNИNИNИN CT of " + self.database.name + " NИNИNИNИNИNИNИ" + "\n"
+        string += "Initial encoded size" + "\n"
+        string += repr(self.initial_encoded_size) + "\n"
+        string += "Final encoded size" + "\n"
+        string += repr(self.final_encoded_size) + "\n"
+        for x in self.patterns:
+            string += repr(x) + " " + repr(len(self.gather_usages(x))) + "\n"
+        return string

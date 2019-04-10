@@ -51,8 +51,7 @@ class Pattern(ItemSet):
             return False
 
     def __repr__(self):
-        return \
-            repr(self.items) + " | " + repr(self.sj_id)
+        return repr(self.items)
 
     def copy(self):
         """Returns a clone of self

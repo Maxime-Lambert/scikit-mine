@@ -204,3 +204,9 @@ class PatternSet:
         for x in self.patterns:
             print(x)
         print()
+
+    def to_string(self):
+        string = "NИNИNИNИNИNИN S" + repr(self.j) + " NИNИNИNИNИNИNИ" + "\n"
+        for x in self.patterns:
+            string += repr(x) + "\n"
+        return string

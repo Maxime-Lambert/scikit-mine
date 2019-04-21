@@ -96,7 +96,6 @@ class CodeTable:
             self.patternMap[pattern_to_add] = 0
         if len(pattern_to_add.elements) > 1:
             self.calcul_usage()
-        self.calculate_code_length()
 
     def remove(self, pattern_to_remove):
         """
@@ -108,7 +107,6 @@ class CodeTable:
         if pattern_to_remove in self.patternMap:
             del self.patternMap[pattern_to_remove]
             self.calcul_usage()
-            self.calculate_code_length()
 
     def different_usages(self, ct):
         """
@@ -273,6 +271,7 @@ class CodeTable:
         for pattern in pattern_list:
             copy = self.copy()
             copy.remove(pattern)
+            copy.calculate_code_length()
             if not self.best_code_table(copy, sct):
                 self = copy.copy()
         return self

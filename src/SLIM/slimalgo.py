@@ -5,7 +5,6 @@ from src.database import Database
 from src.CodeTable import CodeTable
 from src.Pattern import Pattern
 from src.Files import Files
-from src.SLIM.codetableslim import Convert
 
 
 class CodeTableSlim(CodeTable):
@@ -266,13 +265,13 @@ def generate_candidat(code_table, sct, memory, data, done, mt):
                 pat = x_current.elements | y_current.elements
                 if len(pat) <= mt:
                     x_y_current = x_current.union(y_current, data)
-                    if x_y_current not in candidates_list:
-                        if x_y_current not in done:
-                            if x_y_current.usage > 0:
-                                x_y_current.gain = estimateGain(code_table,
-                                                                x_current,
-                                                                y_current, sct,
-                                                                data)
+                    if x_y_current.usage > 0:
+                        if x_y_current not in candidates_list:
+                            if x_y_current not in done:
+                                # x_y_current.gain = estimateGain(code_table,
+                                #                                 x_current,
+                                #                                 y_current, sct,
+                                #                                 data)
                                 candidates_list.append(x_y_current)
                 indice_pattern_y += 1
         indice_pattern_x += 1
@@ -408,9 +407,9 @@ def slim(filename, max_iter):
     candidate_list = []
     done = []
     ct_has_improved = True
-    iter = 0
+    i = 0
     nb_candidat = 0
-    while (ct_has_improved) and (iter < max_iter):
+    while (ct_has_improved) and (i < max_iter):
         for x in done:
             if x in candidate_list:
                 candidate_list.remove(x)
@@ -418,18 +417,19 @@ def slim(filename, max_iter):
         candidate_list = generate_candidat(code_table, standard_code_table,
                                            candidate_list, database, done, mt)
         candidate_list = sorted(candidate_list,
-                                key=lambda p: (p.gain),
+                                key=lambda p: (p.usage),
                                 reverse=True)
     # ------------- Improve CT -------------#
         indice_candidat = 0
+        code_table.calculate_code_length()
         while (indice_candidat < len(candidate_list)) and not(ct_has_improved):
-            nb_candidat += 1
+            # nb_candidat += 1
             candidate = candidate_list[indice_candidat]
             code_table_temp = code_table.copy()
             code_table_temp.add(candidate, None)
+            code_table_temp.calculate_code_length()
             is_ct_best = code_table.best_code_table(code_table_temp,
                                                     standard_code_table)
-
             indice_candidat += 1
             ct_has_improved = not is_ct_best
             # only used to print candidates slim-like
@@ -437,9 +437,9 @@ def slim(filename, max_iter):
             # comp += code_table.database_encoded_length()
             done.append(candidate)
             if ct_has_improved:
-                test = code_table.different_usages(code_table_temp)
+                diff = code_table.different_usages(code_table_temp)
                 to_prune = []
-                for pat in test:
+                for pat in diff:
                     if len(pat) > 1:
                         to_prune.append(pat)
                 code_table = code_table_temp
@@ -453,7 +453,6 @@ def slim(filename, max_iter):
                 # comp2 = code_table_temp.codetable_length(standard_code_table)
                 # comp2 += code_table_temp.database_encoded_length()
                 # print("Rejected : "+repr(candidate)+" ["+str(comp2)+", "+str(comp)+", "+str(candidate.gain)+", "+str(nb_candidat)+"]")
-        iter += 1
-    Files.to_file(code_table, "res_"+filename)
-    # Convert.to_code_table_slim("res_"+filename, standard_code_table)
+        i += 1
+    file.to_file(code_table, "C:\Users\asus\Documents\GitHub\scikit_learn.pattern_mining\test\data\SLIM\Results\", "res_"+filename)
     return code_table

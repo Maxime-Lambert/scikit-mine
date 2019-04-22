@@ -454,5 +454,8 @@ def slim(filename, max_iter):
                 # comp2 += code_table_temp.database_encoded_length()
                 # print("Rejected : "+repr(candidate)+" ["+str(comp2)+", "+str(comp)+", "+str(candidate.gain)+", "+str(nb_candidat)+"]")
         i += 1
-    file.to_file(code_table, "C:\Users\asus\Documents\GitHub\scikit_learn.pattern_mining\test\data\SLIM\Results\", "res_"+filename)
+    file.to_file(code_table, "res_"+filename)
+    size = code_table.database_encoded_length()
+    size += code_table.codetable_length(standard_code_table)
+    print("Encoded length of model and database : "+str(size)+" bits \n")
     return code_table

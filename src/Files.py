@@ -45,9 +45,9 @@ class Files:
                 return key
         return 0
 
-    def to_file(self, ct, dirname, filename):
+    def to_file(self, ct, filename):
         first = True
-        f = open(dirname+filename+".txt", "w")
+        f = open(filename+".txt", "w")
         for k in ct.order_by_standard_cover_order():
             res = ""
             for x in k.elements:

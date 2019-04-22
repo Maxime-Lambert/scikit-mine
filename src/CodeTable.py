@@ -48,13 +48,12 @@ class CodeTable:
             :return: A String representing the Codetable
             :rtype: String
         """
-        res = "nbPattern : "+str(len(self))
-        x = self.database_encoded_length()
-        res += " L(D | CT) : " + str(x) + "\n"
+        res = ""
         for pattern in self.order_by_standard_cover_order():
-            res += "pattern : " + str(pattern.elements) + " #USG : "
-            res += str(pattern.usage) + " "
-            res += "#CODELEN : " + str(self.patternMap[pattern]) + "\n"
+            res += str(pattern.elements) + "  #USG : "
+            res += str(pattern.usage) + " " + "  #SUP : "
+            res += str(pattern.support) + " "
+            res += " #CODELEN : " + str(self.patternMap[pattern]) + "\n"
         return res
 
     def __len__(self):

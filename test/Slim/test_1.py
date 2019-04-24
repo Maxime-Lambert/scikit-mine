@@ -46,7 +46,7 @@ def test_itern_file_correct():
 
 
 def test_itern_file():
-    res = slim("iris", 100)
+    res = slim("breast", 100)
     Files.to_file(res, "res_test_itern_iris")
     codetableslim.to_code_table_slim("res_test_itern_iris",)
 

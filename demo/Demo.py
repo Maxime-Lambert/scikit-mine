@@ -26,6 +26,7 @@ def diffnorm():
         d.run()
 
 
-# slim_iris()
+slim_iris()
 # slim_ticket()
-diffnorm()
+# diffnorm()
+

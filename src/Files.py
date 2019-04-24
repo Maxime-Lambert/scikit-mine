@@ -49,9 +49,10 @@ class Files:
         first = True
         f = open(filename+".txt", "w")
         for k in ct.order_by_standard_cover_order():
+            l = []
             res = ""
-            for x in sorted(k.elements, key=lambda p : (int(p))):
-                res += str(self.dico[x])+" "
+            for x in k.elements:
+                l.append(self.dico[x])
             res += "("+str(k.usage)+","+str(k.support)+")"
             if first:
                 f.write(res)

@@ -1,0 +1,61 @@
+N»N»N»N»N»N»N»N Code Tables N»N»»N»N»N»N»N»
+N»N»N»N»N»N»N CT of easy_db1 N»N»N»N»N»N»N»
+Initial encoded size
+67.60969410744525
+Final encoded size
+41.6506537091587
+{1, 2, 3} 4
+{1, 2} 1
+{2} 1
+{1} 0
+{3} 0
+{6} 2
+{4} 2
+{5} 1
+{8} 0
+{7} 0
+
+N»N»N»N»N»N»N CT of easy_db2 N»N»N»N»N»N»N»
+Initial encoded size
+59.31769164907716
+Final encoded size
+27.59158810886649
+{1, 2, 6} 6
+{1, 2} 0
+{6} 1
+{1} 1
+{2} 0
+{3} 1
+{8} 0
+{7} 0
+{5} 0
+{4} 0
+
+N»N»N»N»N»N»N CT of easy_db3 N»N»N»N»N»N»N»
+Initial encoded size
+46.2197822969351
+Final encoded size
+38.408227292330245
+{8, 7} 4
+{7} 3
+{8} 0
+{6} 2
+{4} 1
+{3} 1
+{5} 0
+{2} 0
+{1} 0
+
+N»N»N»N»N»N»N» Pattern Sets »N»»N»N»N»N»N»
+N»N»N»N»N»N»N S0 N»N»N»N»N»N»N»
+{1, 2, 3}
+
+N»N»N»N»N»N»N S1 N»N»N»N»N»N»N»
+{1, 2, 6}
+
+N»N»N»N»N»N»N S2 N»N»N»N»N»N»N»
+{8, 7}
+
+N»N»N»N»N»N»N S3 N»N»N»N»N»N»N»
+{1, 2}
+

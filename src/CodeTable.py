@@ -23,7 +23,6 @@ class CodeTable:
             :ptype database: Database
             :ptype patternMap: Dictionnary <Pattern,Double>
         """
-        print(type(patternMap))
         if patternMap is None:
             self.patternMap = {}
         else:
@@ -49,13 +48,12 @@ class CodeTable:
             :return: A String representing the Codetable
             :rtype: String
         """
-        res = "nbPattern : "+str(len(self))
-        x = self.database_encoded_length()
-        res += " L(D | CT) : " + str(x) + "\n"
+        res = ""
         for pattern in self.order_by_standard_cover_order():
-            res += "pattern : " + str(pattern.elements) + " #USG : "
-            res += str(pattern.usage) + " "
-            res += "#CODELEN : " + str(self.patternMap[pattern]) + "\n"
+            res += str(pattern.elements) + "  #USG : "
+            res += str(pattern.usage) + " " + "  #SUP : "
+            res += str(pattern.support) + " "
+            res += " #CODELEN : " + str(self.patternMap[pattern]) + "\n"
         return res
 
     def __len__(self):
@@ -97,7 +95,6 @@ class CodeTable:
             self.patternMap[pattern_to_add] = 0
         if len(pattern_to_add.elements) > 1:
             self.calcul_usage()
-        self.calculate_code_length()
 
     def remove(self, pattern_to_remove):
         """
@@ -109,7 +106,6 @@ class CodeTable:
         if pattern_to_remove in self.patternMap:
             del self.patternMap[pattern_to_remove]
             self.calcul_usage()
-            self.calculate_code_length()
 
     def different_usages(self, ct):
         """
@@ -173,7 +169,7 @@ class CodeTable:
             if pattern.usage == 0:
                 self.patternMap[pattern] = 0
             else:
-                self.patternMap[pattern] = (-math.log(pattern.usage/us_sum))
+                self.patternMap[pattern] = (-math.log2(pattern.usage/us_sum))
 
     def database_encoded_length(self):
         """
@@ -190,7 +186,6 @@ class CodeTable:
         return i
 
     def codetable_length(self, sct):
-        # nombre de pattern ?
         """
             Gives the size of the current Codetable encoded
 
@@ -244,10 +239,8 @@ class CodeTable:
             Codetables
 
             :param ct: The other Codetable you want to compare to
-            :param data: The database concerned
             :param sct: The standard code table of the database
             :type ct: Codetable
-            :type data: Database
             :type sct: Codetable
             :return: True if self encodes best the data, else False
             :rtype: boolean
@@ -277,6 +270,7 @@ class CodeTable:
         for pattern in pattern_list:
             copy = self.copy()
             copy.remove(pattern)
+            copy.calculate_code_length()
             if not self.best_code_table(copy, sct):
                 self = copy.copy()
         return self

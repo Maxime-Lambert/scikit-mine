@@ -1,0 +1,65 @@
+N»N»N»N»N»N»N»N Code Tables N»N»»N»N»N»N»N»
+N»N»N»N»N»N»N CT of dbd N»N»N»N»N»N»N»
+Initial encoded size
+5373.148155883358
+Final encoded size
+146.23076378904943
+{1, 2, 3, 4, 5} 448
+{1, 2, 4, 5} 0
+{1, 2} 0
+{5} 0
+{4} 0
+{3} 0
+{2} 0
+{1} 0
+{7} 6
+{6} 6
+{8} 1
+
+N»N»N»N»N»N»N CT of db N»N»N»N»N»N»N»
+Initial encoded size
+645.3835968505983
+Final encoded size
+78.10615437944875
+{1, 2, 3, 4, 5} 42
+{1, 2, 4, 5} 2
+{1, 2} 3
+{2} 0
+{1} 0
+{4} 1
+{5} 0
+{3} 0
+{8} 0
+{7} 0
+{6} 0
+
+N»N»N»N»N»N»N CT of dbdd N»N»N»N»N»N»N»
+Initial encoded size
+155.21790373963424
+Final encoded size
+124.30497018502636
+{3, 4} 3
+{1, 2} 3
+{6} 15
+{7} 12
+{8} 9
+{4} 0
+{3} 0
+{2} 0
+{1} 0
+{5} 0
+
+N»N»N»N»N»N»N» Pattern Sets »N»»N»N»N»N»N»
+N»N»N»N»N»N»N S0 N»N»N»N»N»N»N»
+
+N»N»N»N»N»N»N S1 N»N»N»N»N»N»N»
+
+N»N»N»N»N»N»N S2 N»N»N»N»N»N»N»
+{3, 4}
+{1, 2}
+
+N»N»N»N»N»N»N S3 N»N»N»N»N»N»N»
+{1, 2, 3, 4, 5}
+{1, 2, 4, 5}
+{1, 2}
+

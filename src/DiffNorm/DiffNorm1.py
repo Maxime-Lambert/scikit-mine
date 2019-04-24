@@ -9,39 +9,98 @@ from math import log2
 
 
 class DiffNorm1:
+    """DiffNorm algorithme.
 
-    alphabet_id = -1
-    # Minimum usage to filter the candidates
-    # before adding them to potential candidates
-    min_usage = 150
-    # Candidate will be added if he reduces
-    # the cost of encoded size of a database for at least 1 bit
-    min_gain = 1.0
+    DiffNorm algorithme class, main loop class
+    where all the functions are called.
+
+    todo:
+        Get the file reading in another class. Implement kernel classes.
+        Implement other feateurs from the research papers, like indexing candidates to
+        consider them adding only in the codetables in which they were created and e.t.c.
+
+    Parameters
+    ----------
+    nom_db: String
+        Name of the file(with extension) whith the names of all
+        databases that will be treated by this algorithme. Their names are
+        separated by empty spaces and no new line in the end of file.
+        Exemple:
+            db1 db2 db3
+    nom_u: String
+        Name of the file(with extension) with the indexes of the databases
+        to be grouped together. Indexing starts from 1. Indexes will
+        be separated by empty spaces and  no new line in the end of file.
+        Exemple:
+            1 2 3
+            1 2
+        This will create S1 with (D1, D2, D3) and S2 with (D1, D2)
+
+    Attributes
+    ----------
+    alphabet_id : int
+        Token of id of the alphabet I.
+    min_usage : int
+        Minimun usage, used to filter low
+        usage candidates.
+        todo:
+            Pass it in the parameters.
+    min_gain : float
+        Minimum gain in bits. If a candidate
+        reduces the size of the model for atleast 1 bit it's accepted.
+    num_iterations : int
+        Number of iterations done.
+    candidates : list of Pattern objects.
+        List of candidates to consider adding to the model.
+    rejected_candidates : list of Pattern objects
+        List of previously rejected candidates.
+    accepted_candidates : list of Pattern objects
+        List of previously accepted candidates.
+    databases : list of DataBase objects
+        List of ALL databases.
+    coding_sets_i : list of CodeTable objects
+        List of ALL coding sets (Ci = I + all Sj, that i in j).
+    coding_set_patterns1 : list of PatternSet objects
+        List of ALL Sj/ pattern sets.
+    u : list of int
+        List of index sets, by default contains individual
+        indexes of databases.
+    alphabet : list of ItemSet objects
+        List of all single items found in all the transactions
+        of all the databases.
+    current_candidate : Pattern object
+        Current candidate that is being considered to add.
+    all_db_card : int
+        Sum of cardinalities of all databases.
+    candidate_accepted : bool
+        Boolean indicating whether previous candidate was accepted.
+    commit_sj_id : list of int
+        List of indexes of Sj where previous candidate was accepted.
+    """
 
     def __init__(self, nom_db, nom_u):
-        data_directory_path = "../../test/data/DiffNorm/"
+        data_directory_path = "../../demo/"
         dn_dir = path.dirname(__file__)
-        abs_file_path = path.join(dn_dir, data_directory_path)
+        self.abs_file_path = path.join(dn_dir, data_directory_path)
+        self.result_name = nom_db
+        self.alphabet_id = -1
+        self.min_usage = 150
+        self.min_gain = 1.0
         self.num_iterations = 0
         self.candidates = []
         self.rejected_candidates = []
         self.accepted_candidates = []
         self.databases = []
-        # List of Ci
         self.coding_sets_i = []
-        # List of Sj
         self.coding_set_patterns1 = []
-        # Groups of i from Ci to form j from Sj
         self.u = []
         self.alphabet = []
         self.current_candidate = None
-        # |D cursive|
         self.all_db_card = 0
         self.candidate_accepted = False
-        # List of Sj where previous candidate was added in the last loop
         self.commit_sj_id = []
 
-        file_db = open(abs_file_path + nom_db, "r")
+        file_db = open(self.abs_file_path + nom_db, "r")
         databases = file_db.readline().split(" ")
         db_id = 0
         for database in databases:
@@ -52,7 +111,7 @@ class DiffNorm1:
             self.all_db_card += new_db.db_card
             db_id += 1
 
-        file_u = open(abs_file_path + nom_u, "r")
+        file_u = open(self.abs_file_path + nom_u, "r")
         groupes = file_u.readlines()
         for line in groupes:
             if line[-1:] == '\n':
@@ -69,6 +128,10 @@ class DiffNorm1:
     # Initialize the alphabet I by going through all the transactions
     # and saving all unique items = Standard Code Table
     def init_alphabet(self):
+        """Initializes of the alphabet. We go through
+        all databases and seek for the items never seen before.
+        If on is found it's added to the alphabet.
+        """
         for database in self.databases:
             for transaction in database:
                 for item in transaction:
@@ -77,20 +140,32 @@ class DiffNorm1:
                         self.alphabet.append(candidate)
 
     def set_initial_encoded_size(self):
+        """Initializes the initial encoded size of all
+        coding sets.
+        """
         for cs in self.coding_sets_i:
             cs.initial_encoded_size = cs.encoded_db_size
 
     def set_final_encoded_size(self):
+        """Initializes the final encoded size of all
+        coding sets.
+        """
         for cs in self.coding_sets_i:
             cs.final_encoded_size = cs.encoded_db_size
 
-    # For all Di in D cursive calculate and store L(Di|Ci).
     def calc_db_sizes_all(self):
+        """Call to calculate the encoded size of all
+        coding sets.
+        """
         for cs in self.coding_sets_i:
             cs.set_encoded_db_size(cs.calculate_db_encoded_size())
 
     # Initialize all Ci with the items of I and sorting it in SCO
     def init_all_ct_i(self):
+        """Initializes all coding sets with items of the alphabet
+        and sorts them in SCO. Also intializes list U with the
+        indexes of coding set groups.
+        """
         j = 0
         for cs in self.coding_sets_i:
             for itemset in self.alphabet:
@@ -116,21 +191,54 @@ class DiffNorm1:
                 j += 1
 
     def load_next_candidate(self):
+        """Loads next candidate from the list of candidates.
+        """
         self.current_candidate = self.candidates.pop(0)
 
     def already_generated(self, candidate):
+        """Returns a boolean to indicate whether is in
+        the list of candidates to consider(= if it was already generated).
+
+        Parameters
+        ----------
+        candidate : Pattern object
+            Candidate to check presense.
+        """
         return candidate in self.candidates
 
     def already_rejected(self, candidate):
+        """Returns a boolean to indicate whether is in
+        the list of rejected candidates(= if it was already rejected).
+
+        Parameters
+        ----------
+        candidate : Pattern object
+            Candidate to check presense.
+        """
         return candidate in self.rejected_candidates
 
     def already_accepted(self, candidate):
+        """Returns a boolean to indicate whether is in
+        the list of accepted candidates(= if it was already accepted).
+
+        Parameters
+        ----------
+        candidate : Pattern object
+            Candidate to check presense.
+        """
         return candidate in self.accepted_candidates
 
-    #  Calculate delta ^L(Sj + X union Y)
-    #  + sum(delta ^Lprime(Di|Ci + X union Y)
-    #  aka estimation of candidates gain in Ci
     def estimate_db_gain(self, candidate, coding_set_id):
+        """Returns estimation of candidates database gain,
+        delta ^L(Sj + X union Y) + sum(delta ^Lprime(Di|Ci + X union Y).
+
+        Parameters
+        ----------
+        candidate : Pattern object
+            Candidate which estimated gain we want to know.
+        coding_set_id : CodeTable object
+            Coding set in which we consider adding the pattern.
+        """
         constant = 0.5
         coding_set = self.coding_sets_i[coding_set_id]
         len_old_cs = coding_set.size
@@ -156,8 +264,15 @@ class DiffNorm1:
             log_gamma(constant * len_new_cs) - log_gamma(constant * len_old_cs)
         return db_gain
 
-    #  Calculate sum(log(freq_in_D_cursive(x)))
     def get_freq_in_all(self, pattern):
+        """Returns frequency of a pattern over all databases,
+        sum(log(freq_in_D_cursive(x))).
+
+        Parameters
+        ----------
+        pattern : Pattern object
+            Candidate which frequency we want to know.
+        """
         freq = 0.0
         for item in pattern:
             support = 0
@@ -166,17 +281,32 @@ class DiffNorm1:
             freq += log2(support / self.all_db_card)
         return freq
 
-    # Estimate candidate's usage for a known coding set:
-    # union of usages of left and right parent of this pattern
     def estimate_max_usage_for_known_cs(self, candidate, cs_id):
+        """Returns estimation of candidates usage in a known Ci.
+        Union of usages of left and right parent of this pattern.
+
+        Parameters
+        ----------
+        candidate : Pattern object
+            Candidate which estimated usage we want to know.
+        cs_id : int
+            Id of the coding set in which we want to estimate usage.
+        """
         usages_left = \
             self.coding_sets_i[cs_id].gather_usages(candidate.left_is)
         usages_right = \
             self.coding_sets_i[cs_id].gather_usages(candidate.right_is)
         return len(usages_left & usages_right)
 
-    # Estimate candidate's usage for an arbitrary coding set
     def estimate_max_usage(self, candidate):
+        """Returns maximal estimation of candidates usage.
+        Calculating the usage in all coding sets and returning the max.
+
+        Parameters
+        ----------
+        candidate : Pattern object
+            Candidate which estimated usage we want to know.
+        """
         max_usage = 0
         for cs_left in self.coding_sets_i:
             for cs_right in self.coding_sets_i:
@@ -187,9 +317,15 @@ class DiffNorm1:
                     max_usage = usage
         return max_usage
 
-    #  Estimate candidate's gain for Sj: delta ^L(Sj + X union Y)
-    #  + sum of estimate_db_gain for all Ci in the Sj
     def estimate_gain(self, candidate):
+        """Returns estimation of candidates Sj gain,
+        delta ^L(Sj + X union Y) + sum of estimate_db_gain for all Ci in the Sj.
+
+        Parameters
+        ----------
+        candidate : Pattern object
+            Candidate which estimated gain we want to know.
+        """
         total_gain = 0.0
         candidate_len = universal_code_len(len(candidate))
         freq_x_in_all_db = self.get_freq_in_all(candidate)
@@ -205,10 +341,19 @@ class DiffNorm1:
         for candidate in self.candidates:
             self.estimate_gain(candidate)
 
-    """Create and check if the candidate hasn't been already created, 
-    rejected or accepted, 
-    filter low usage candidates and estimate their gain"""
     def create_candidate(self, left, right, sj_id):
+        """Create and check if the candidate hasn't been already created,
+        rejected or accepted, filter low usage candidates and estimate their gain.
+
+        Parameters
+        ----------
+        left : ItemSet object
+            Left parent of candidate to be created.
+        right : ItemSet object
+            Right parent of candidate to be created.
+        sj_id : int
+            Sj id, j, from which this candidate comes from.
+        """
         new_candidate = Pattern(left, right, sj_id)
         if not (self.already_generated(new_candidate)
                 or self.already_rejected(new_candidate)
@@ -219,8 +364,13 @@ class DiffNorm1:
             else:
                 self.rejected_candidates.append(new_candidate)
 
-    #  Generate a list of candidates to consider
     def generate_candidates(self):
+        """Candidate generation.
+        First step is to generate candidates from alphabet I, since
+        the code tables are empty in the begining. For following
+        iterations we go through the elements of Sj's and permute them
+        with the previously added candidate.
+        """
         # At first we generate candidates in I x I,
         # these candidates can be accepted in any Sj.
         if self.num_iterations == 0:
@@ -244,24 +394,27 @@ class DiffNorm1:
                     if y != self.current_candidate:
                         self.create_candidate(self.current_candidate,
                                               y, 0)
+        # In the end we sort the candidates by their estimated gain.
         self.candidates.sort(key=lambda z: z.get_est_gain(), reverse=True)
 
-    """Add the candidate to all concerned Sj, i.e. if the candidate is I x I 
-    then he can be added anywhere, but if it's
-    Sj x I or Sj x Sj, it can be added only in Sj"""
     def add_candidate_to_all(self):
+        """Adds candidate to all coding sets and
+        calculates their encoded size.
+        """
         for c_i in self.coding_sets_i:
             c_i.try_add(self.current_candidate)
         self.calc_db_sizes_all()
 
-    # Filter the candidate by minimum gain
     def add_to_chosen(self, w):
+        """Remove candidate from all Sj, where gain is inferior
+        to self.min_gain.
+
+        Parameters
+        ----------
+        w : list of float
+            Contains actual gains of the candidate in all Sj"""
         self.candidate_accepted = False
         self.commit_sj_id = []
-        """print("HERE IS W:")
-        print(w)
-        print("FOR CANDIDATE: ")
-        print(self.current_candidate)"""
         w_id = 0
         u_copy = self.u.copy()
         u_copy.sort(
@@ -273,7 +426,7 @@ class DiffNorm1:
                     other_j = j + 1
                     while other_j < len(u_copy):
                         if i in u_copy[other_j]:
-                            w[self.u.index(u_copy[other_j])] -=\
+                            w[self.u.index(u_copy[other_j])] -= \
                                 (self.coding_sets_i[i].old_db_size
                                  - self.coding_sets_i[i].encoded_db_size)
                         other_j += 1
@@ -330,8 +483,10 @@ class DiffNorm1:
                                 self.current_candidate)
             w_id += 1
 
-    # Calculate ∆L(D, S ⊕j Z) for all Sj
     def check_gain_in_each(self):
+        """Returns list of actual gains of current candidate in all Sj.
+        ∆L(D, S ⊕j Z) for all Sj.
+        """
         gain = []
         for j in self.coding_set_patterns1:
             gain.append(j.calculate_patternset_diff_encoded_size(
@@ -339,6 +494,8 @@ class DiffNorm1:
         return gain
 
     def prune(self):
+        """Prune algorithme.
+        Implemented as described in DiffNorm research papers."""
         for ci in self.coding_sets_i:
             candidates = []
             for pattern in ci:
@@ -369,10 +526,6 @@ class DiffNorm1:
                             universal_code_len(len(candidate)) \
                             - self.get_freq_in_all(candidate) \
                             + sub_db_split_diff
-                """print("TOTAL DIFF")
-                print(total_diff)
-                print("FOR CAND")
-                print(candidate)"""
                 if total_diff > 0:
                     for s_j in self.coding_set_patterns1:
                         if candidate in s_j:
@@ -390,9 +543,21 @@ class DiffNorm1:
                             pattern not in candidates and len(pattern) > 1:
                         candidates.append(pattern)
                 candidates.sort(
-                    key=lambda x: x.old_usage - x.usage, reverse=True)
+                        key=lambda x: x.old_usage - x.usage, reverse=True)
 
     def run(self):
+        """DiffNorm run loop.
+        Before entering the loop steps:
+            1. Initialize alphabet.
+            2. Initialize coding sets.
+            3. Generate first batch of candidates.
+        In loop steps:
+            1. Load new candidate.
+            2. Add current candidate to all Sj.
+            3. Calculate actual gain in all Sj.
+            4. Remove candidate from Sj, where gain is low.
+            5. If candidate is added - prune and generate new candidates.
+        """
         self.init_alphabet()
         self.init_all_ct_i()
         self.generate_candidates()
@@ -404,23 +569,32 @@ class DiffNorm1:
             self.add_to_chosen(w)
             self.num_iterations += 1
             if self.candidate_accepted:
-                """print("ADDED")
-                print(self.commit_sj_id)"""
                 self.prune()
-                for candidate in self.candidates:
-                    self.estimate_gain(candidate)
                 self.reestimate_gain()
                 self.generate_candidates()
             else:
                 self.rejected_candidates.append(self.current_candidate)
         self.set_final_encoded_size()
         self.pp_db()
+        self.write_to_disk()
 
     def pp_db(self):
-        print("NИNИNИNИNИNИNИ alphabet NИИNИNИNИNИNИN")
+        """Pretty-printer
+        """
+        print("<@@@@@@@@ alphabet @@@@@@@@>")
         print(self.alphabet)
         for cs in self.coding_sets_i:
             cs.pp()
-        print("@@@@@@@@@@@@@@@ model @@@@@@@@@@@@@@@")
+        print("<@@@@@@@@ model @@@@@@@@>")
         for sj in self.coding_set_patterns1:
             sj.pp()
+
+    def write_to_disk(self):
+        result = open(self.abs_file_path + 'result_' +
+                      self.result_name, "w+")
+        result.write("<@@@@@@@@ Code Tables @@@@@@@@>" + "\n")
+        for cs in self.coding_sets_i:
+            result.write(cs.to_string() + "\n")
+        result.write("<@@@@@@@@ Pattern Sets @@@@@@@@>" + "\n")
+        for sj in self.coding_set_patterns1:
+            result.write(sj.to_string() + "\n")

@@ -1,3 +1,5 @@
+import os
+
 class Files:
     """docstring for Fichier"""
 
@@ -43,15 +45,18 @@ class Files:
                 return key
         return 0
 
-    def to_file(ct, filename):
+    def to_file(self, ct, filename):
         first = True
         f = open(filename+".txt", "w")
         for k in ct.order_by_standard_cover_order():
+            l = []
+            res = ""
+            for x in k.elements:
+                l.append(self.dico[x])
+            res = ' '.join(sorted(l))
+            res += " ("+str(k.usage)+","+str(k.support)+")"
             if first:
-                f.write(repr(k))
+                f.write(res)
                 first = False
             else:
-                f.write("\n"+repr(k))
-
-def print_toto():
-    print('Toto')
+                f.write("\n"+res)

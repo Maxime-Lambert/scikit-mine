@@ -69,7 +69,7 @@ class DataBase:
 
     def get_support(self, pattern):
         """Return support of a pattern (number of transaction
-        this pattern appears in.
+        this pattern appears in).
 
         Parameters
         ----------

@@ -4,7 +4,7 @@ Created on Sun Mar  3 19:14:36 2019
 
 @author: Shito
 """
-
+import time
 from src.SLIM.slimalgo import slim
 from src.Files import Files
 from src.SLIM.slimalgo import DatabaseSlim
@@ -39,12 +39,14 @@ def test_iter1_file_correct():
 
 
 def test_itern_file_correct():
+    x = time.time()
     res = slim("iris", 10000)
+    print(str(time.time() - x))
     print(res)
 
 
 def test_itern_file():
-    res = slim("iris", 100)
+    res = slim("breast", 100)
     Files.to_file(res, "res_test_itern_iris")
     codetableslim.to_code_table_slim("res_test_itern_iris",)
 

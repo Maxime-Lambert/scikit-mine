@@ -5,15 +5,22 @@ from src.SQS_v2.Pattern import Pattern
 class CodeTable(CodeTable):
 
     def private(self, pattern_to_private):
-        print(self.patternMap)
         res = {}
+        print("patternMap")
+        print(self.patternMap)
         for pattern, codelength in self.patternMap.items():
             if pattern != pattern_to_private:
                 res[pattern] = codelength
         return res
 
-    def codetable_from_sqs(self, alignement):
-        return CodeTable(alignement, self.data)
+    def codetable_from_sqs(self, list_alignement):
+        tmp = {}
+        for alignement in list_alignement:
+            if alignement.pattern in tmp:
+                tmp[alignement.pattern] += 1
+            else:
+                tmp[alignement] = 1
+        return CodeTable(tmp, self.data)
 
     def __getitem__(self, pattern_to_find):
         """

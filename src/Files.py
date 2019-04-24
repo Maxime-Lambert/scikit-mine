@@ -50,7 +50,7 @@ class Files:
         f = open(filename+".txt", "w")
         for k in ct.order_by_standard_cover_order():
             res = ""
-            for x in k.elements:
+            for x in sorted(k.elements, key=lambda p : (int(p))):
                 res += str(self.dico[x])+" "
             res += "("+str(k.usage)+","+str(k.support)+")"
             if first:

@@ -79,7 +79,7 @@ class DiffNorm1:
     """
 
     def __init__(self, nom_db, nom_u):
-        data_directory_path = "../../test/data/DiffNorm/"
+        data_directory_path = "../../demo/"
         dn_dir = path.dirname(__file__)
         self.abs_file_path = path.join(dn_dir, data_directory_path)
         self.result_name = nom_db
@@ -581,20 +581,20 @@ class DiffNorm1:
     def pp_db(self):
         """Pretty-printer
         """
-        print("NИNИNИNИNИNИNИ alphabet NИИNИNИNИNИNИN")
+        print("<@@@@@@@@ alphabet @@@@@@@@>")
         print(self.alphabet)
         for cs in self.coding_sets_i:
             cs.pp()
-        print("NИNИNИNИNИNИNИN model NИNИИNИNИNИNИNИ")
+        print("<@@@@@@@@ model @@@@@@@@>")
         for sj in self.coding_set_patterns1:
             sj.pp()
 
     def write_to_disk(self):
         result = open(self.abs_file_path + 'result_' +
                       self.result_name, "w+")
-        result.write("NИNИNИNИNИNИNИN Code Tables NИNИИNИNИNИNИNИ" + "\n")
+        result.write("<@@@@@@@@ Code Tables @@@@@@@@>" + "\n")
         for cs in self.coding_sets_i:
             result.write(cs.to_string() + "\n")
-        result.write("NИNИNИNИNИNИNИ Pattern Sets ИNИИNИNИNИNИNИ" + "\n")
+        result.write("<@@@@@@@@ Pattern Sets @@@@@@@@>" + "\n")
         for sj in self.coding_set_patterns1:
             result.write(sj.to_string() + "\n")

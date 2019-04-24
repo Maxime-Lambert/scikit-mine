@@ -273,7 +273,7 @@ class CodeTable:
     def pp(self):
         """Pretty-printer
         """
-        print("NИNИNИNИNИNИN CT of " + self.database.name + " NИNИNИNИNИNИNИ")
+        print("<@@@@@@@@ CT of " + self.database.name + " @@@@@@@@>")
         print()
         print("Initial encoded size")
         print(self.initial_encoded_size)
@@ -285,7 +285,7 @@ class CodeTable:
         print()
 
     def to_string(self):
-        string = "NИNИNИNИNИNИN CT of " + self.database.name + " NИNИNИNИNИNИNИ" + "\n"
+        string = "<@@@@@@@@ CT of " + self.database.name + " @@@@@@@@>" + "\n"
         string += "Initial encoded size" + "\n"
         string += repr(self.initial_encoded_size) + "\n"
         string += "Final encoded size" + "\n"

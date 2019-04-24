@@ -200,13 +200,13 @@ class PatternSet:
     def pp(self):
         """Pretty-printer
         """
-        print("NИNИNИNИNИNИN S" + repr(self.j) + " NИNИNИNИNИNИNИ")
+        print("<@@@@@@@@ S" + repr(self.j) + " @@@@@@@@>")
         for x in self.patterns:
             print(x)
         print()
 
     def to_string(self):
-        string = "NИNИNИNИNИNИN S" + repr(self.j) + " NИNИNИNИNИNИNИ" + "\n"
+        string = "<@@@@@@@@ S" + repr(self.j) + " @@@@@@@@>" + "\n"
         for x in self.patterns:
             string += repr(x) + "\n"
         return string

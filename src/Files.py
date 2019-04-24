@@ -53,7 +53,8 @@ class Files:
             res = ""
             for x in k.elements:
                 l.append(self.dico[x])
-            res += "("+str(k.usage)+","+str(k.support)+")"
+            res = ' '.join(sorted(l, key=int))
+            res += " ("+str(k.usage)+","+str(k.support)+")"
             if first:
                 f.write(res)
                 first = False

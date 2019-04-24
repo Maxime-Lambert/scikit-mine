@@ -6,7 +6,6 @@ from src.SQS_v2.Utils import merge, private, sum_gain, calculate_length, calcula
 
 
 class SQS:
-
     changes = True
 
     def __init__(self, database):
@@ -34,7 +33,7 @@ class SQS:
         """
         list_patern = []
         self.alignement = self.run([])
-        #while self.changes:
+        # while self.changes:
         list_patern_old = list_patern.copy()
         self.list_pattern_from_estimate = []
         for pattern in self.codetable.patternMap.keys():
@@ -131,7 +130,8 @@ class SQS:
             g = sum_gain(self.alignement)
             if full or g < calculate_length_codetable(self.codetable) - calculate_length_codetable(codetable_except_x):
                 list_pattern_private_x = private(list_pattern, pattern)
-                if calculate_length(self.database, list_pattern_private_x) < calculate_length(self.database, list_pattern):
+                if calculate_length(self.database, list_pattern_private_x) < calculate_length(self.database,
+                                                                                              list_pattern):
                     list_pattern = list_pattern_private_x
         return list_pattern
 
@@ -167,5 +167,69 @@ class SQS:
             n = window
         return taboptimal
 
+    def find_windows_in_sequence(self, pattern, sequence, index):
+        list_window = []
+        li = sequence.list_item
+        print(pattern.elements)
+
+        for i in range(0, len(li)):
+            if li[i] == pattern.elements[0]:
+                for j in range(1, len(pattern.elements)):
+                    if li[i+j] != pattern.elements[j]:
+                        break
+                    list_window.append(Window(pattern, i, i + len(pattern.elements) - 1, index))
+        return list_window
+
+
+
+        '''while len(li) :
+
+            for v in pattern.elements:
+                if not v in li:
+                    return list_window
+                f[v] = li.index(v)
+
+
+            while True:
+                while len(Q) > 0:
+                    v = Q[0]
+                    Q.remove(v)
+                    matches = (idx for idx, val in enumerate(li) if val == v)
+                    f[v] = None
+                    for i in matches:
+                        if i > b[v]:
+                            f[v] = i
+                            break
+
+                    if f[v] is None:
+                        return list_window
+                    w = li[li.index(v) +1]
+                    for i in matches:
+                        if i < len(li)-1:
+                            w=li[i+1]
+                            b[w] = (max(int(b[w]), int(f[v])))
+                            if b[w] >= f[w] and w not in Q:
+                                Q.append(w)
+                maximum = max(f, key=f.get)  # Just use 'min' instead of 'max' for minimum.
+                minimum = min(f, key=f.get)  # Just use 'min' instead of 'max' for minimum.
+                # if f[maximum] - f[minimum] > window_size:
+                if len(list_window)>0:
+                    if f[maximum] == list_window[len(list_window) - 1].last:
+                        list_window.pop()
+                w = Window(pattern, f[minimum], f[maximum], index)
+                list_window.append(w)
+                v = min(f, key=f.get)
+                b[v] = f[v]
+                Q.append(v)'''
+
     def find_windows(self, pattern):
-        pass
+        list_window = []
+        f = {}
+        b = {}
+        Q = []
+        i = 0;
+
+        for sequence in self.database.list_sequence:
+            list_window.extend(self.find_windows_in_sequence(pattern, sequence, i))
+            i += 1;
+        return list_window

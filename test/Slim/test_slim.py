@@ -55,10 +55,10 @@ def test_iter0_sct(self):
     assert patterns[1].support == 3
     assert patterns[2].support == 2
     assert patterns[3].support == 1
-    assert self.checkEqual(patterns[0].usage_list, l1)
-    assert self.checkEqual(patterns[1].usage_list, l2)
-    assert self.checkEqual(patterns[2].usage_list, l3)
-    assert self.checkEqual(patterns[3].usage_list, l4)
+    assert checkEqual(patterns[0].usage_list, l1)
+    assert checkEqual(patterns[1].usage_list, l2)
+    assert checkEqual(patterns[2].usage_list, l3)
+    assert checkEqual(patterns[3].usage_list, l4)
 
 
 def test_iter1_nofail(self):
@@ -101,11 +101,11 @@ def test_iter1_len2(self):
     assert patterns[2].support == 3
     assert patterns[3].support == 2
     assert patterns[4].support == 1
-    assert self.checkEqual(patterns[0].usage_list, l1)
-    assert self.checkEqual(patterns[1].usage_list, l2)
-    assert self.checkEqual(patterns[2].usage_list, l3)
-    assert self.checkEqual(patterns[3].usage_list, l4)
-    assert self.checkEqual(patterns[4].usage_list, l5)
+    assert checkEqual(patterns[0].usage_list, l1)
+    assert checkEqual(patterns[1].usage_list, l2)
+    assert checkEqual(patterns[2].usage_list, l3)
+    assert checkEqual(patterns[3].usage_list, l4)
+    assert checkEqual(patterns[4].usage_list, l5)
 
 
 def test_itern_nofail(self):
@@ -161,8 +161,8 @@ def test_iter1_tricky(self):
     assert patterns[2].support == 4
     assert patterns[3].support == 3
     assert patterns[4].support == 3
-    assert self.checkEqual(patterns[0].usage_list, l3)
-    assert self.checkEqual(patterns[1].usage_list, l1)
-    assert self.checkEqual(patterns[2].usage_list, l2)
-    assert self.checkEqual(patterns[3].usage_list, l4)
-    assert self.checkEqual(patterns[4].usage_list, l4)
+    assert checkEqual(patterns[0].usage_list, l3)
+    assert checkEqual(patterns[1].usage_list, l1)
+    assert checkEqual(patterns[2].usage_list, l2)
+    assert checkEqual(patterns[3].usage_list, l4)
+    assert checkEqual(patterns[4].usage_list, l4)

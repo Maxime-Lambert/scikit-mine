@@ -13,14 +13,14 @@ def slim_iris():
     x = time.time()
     code_table = slim("iris", 1000)
     print("Result found in "+str(time.time() - x)+" seconds : \n")
-    print(code_table)
+    print("open res file to check results")
 
 
 def slim_ticket():
     x = time.time()
     code_table = slim("tickets", 1000)
     print("Result found in "+str(time.time() - x)+" seconds : \n")
-    print(code_table)
+    print("open res file to check results")
 
 
 def diffnorm():
@@ -32,19 +32,17 @@ def diffnorm():
 def sqs():
     if __name__ == "__main__":
         absolute_path = os.path.dirname(os.path.abspath(__file__))
-        file_path = absolute_path + "/../../demo/simpleS"
-         my_file = Files(file_path)
+        file_path = absolute_path + "\simpleS"
+        my_file = Files(file_path)
         print(my_file.list_string)
         database = Database(my_file.list_int)
-        ct = database.make_standard_code_table()
-        print(ct)
-        """sqs = SQS(database)
-        sqs.search()"""
+        sqs = SQS(database)
+        sqs.search()
 
 
 
-slim_iris()
-# slim_ticket()
-# diffnorm()
-# sqs()
+#slim_iris()
+#slim_ticket()
+#diffnorm()
+sqs()
 

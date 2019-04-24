@@ -11,12 +11,14 @@ import math
 
 
 def test_findWindow():
-    p = Pattern([3,2])
+    p = Pattern([1,2])
 
-    sqs = SQS(Database([[5, 2, 3, 5, 2, 3, 5, 2, 3, 5, 3, 2]]))
+    sqs = SQS(Database([[1,2,3,1,2,3,1,2,3]]))
 
-    w = sqs.find_windows(p)
-    print(w)
+    for w in sqs.find_windows(p):
+
+        print(w.first)
+
 
 
     assert p.support == 1  # maybe useless

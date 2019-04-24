@@ -118,48 +118,58 @@ class SQS:
 
     def find_windows_in_sequence(self, pattern, sequence, index):
         list_window = []
-        f = {}
-        b = {}
-        Q = []
         li = sequence.list_item
+        print(pattern.elements)
 
-        for v in pattern.elements:
-            if not v in li:
-                return []
-            f[v] = li.index(v)
-            b[v] = -1
-            Q.append(v)
-
-        for k in li:
-            f[k] = li.index(k)
-            b[k] = -1
-
-        while True:
-            while len(Q) > 0:
-                v = Q[0]
-                Q.remove(v)
-                matches = (idx for idx, val in enumerate(li) if val == v)
-                for i in matches:
-                    if i > b[v]:
-                        f[v] = i
+        for i in range(0, len(li)):
+            if li[i] == pattern.elements[0]:
+                for j in range(1, len(pattern.elements)):
+                    if li[i+j] != pattern.elements[j]:
                         break
-                if f[v] is None:
+                    list_window.append(Window(pattern, i, i + len(pattern.elements) - 1, index))
+        return list_window
+
+
+
+        '''while len(li) :
+
+            for v in pattern.elements:
+                if not v in li:
                     return list_window
-                w = li[li.index(v) +1]
-                b[w] = (max(int(b[w]), int(f[v])))
-                if b[w] >= f[w] and w not in Q:
-                    Q.append(w)
-            print(f.values())
-            maximum = max(f, key=f.get)  # Just use 'min' instead of 'max' for minimum.
-            minimum = min(f, key=f.get)  # Just use 'min' instead of 'max' for minimum.
-            # if f[maximum] - f[minimum] > window_size:
-            if len(list_window)>0:
-                if f[maximum] == list_window[len(list_window) - 1].last:
-                    list_window.pop()
-            list_window.append(Window(pattern, f[minimum], f[maximum], index))
-            v = min(f, key=f.get)
-            b[v] = f[v]
-            Q.append(v)
+                f[v] = li.index(v)
+
+
+            while True:
+                while len(Q) > 0:
+                    v = Q[0]
+                    Q.remove(v)
+                    matches = (idx for idx, val in enumerate(li) if val == v)
+                    f[v] = None
+                    for i in matches:
+                        if i > b[v]:
+                            f[v] = i
+                            break
+
+                    if f[v] is None:
+                        return list_window
+                    w = li[li.index(v) +1]
+                    for i in matches:
+                        if i < len(li)-1:
+                            w=li[i+1]
+                            b[w] = (max(int(b[w]), int(f[v])))
+                            if b[w] >= f[w] and w not in Q:
+                                Q.append(w)
+                maximum = max(f, key=f.get)  # Just use 'min' instead of 'max' for minimum.
+                minimum = min(f, key=f.get)  # Just use 'min' instead of 'max' for minimum.
+                # if f[maximum] - f[minimum] > window_size:
+                if len(list_window)>0:
+                    if f[maximum] == list_window[len(list_window) - 1].last:
+                        list_window.pop()
+                w = Window(pattern, f[minimum], f[maximum], index)
+                list_window.append(w)
+                v = min(f, key=f.get)
+                b[v] = f[v]
+                Q.append(v)'''
 
     def find_windows(self, pattern):
         list_window = []
@@ -169,6 +179,6 @@ class SQS:
         i = 0;
 
         for sequence in self.database.list_sequence:
-            list_window.append(self.find_windows_in_sequence(pattern, sequence, i))
+            list_window.extend(self.find_windows_in_sequence(pattern, sequence, i))
             i += 1;
         return list_window

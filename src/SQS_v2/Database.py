@@ -32,7 +32,7 @@ class Database:
             :rtype: CodeTableSQS
         """
         tmp = {}
-        #sct = CodeTable(self)  # map pattern code
+        # sct = CodeTable(self)  # map pattern code
         # On ajoute les singletons de la base à la SCT
         for sequences in self.list_sequence:
             for item in sequences:

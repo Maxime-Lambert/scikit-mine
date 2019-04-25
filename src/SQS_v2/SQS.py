@@ -2,22 +2,35 @@ from src.SQS_v2.CodeTable import CodeTable
 from src.SQS_v2.Alignement import Alignement
 from src.SQS_v2.Database import Database
 from src.SQS_v2.Pattern import Pattern
-from src.SQS_v2.Window import Window
-from src.SQS_v2.Utils import merge, private, sum_gain, calculate_length, calculate_length_codetable, find_usage, \
-    end_index_next_window, arg_min
-import math
+from src.SQS_v2.Utils import merge, private, sum_gain, calculate_length, calculate_length_codetable, find_usage, end_index_next_window, arg_min, gain_window
 
 
 class SQS:
     changes = True
 
     def __init__(self, database):
+        """
+            Initialize the algorithm with its database,
+            and set all its internal parameters to their initial states
+
+            :param database: name of the database used
+        """
         self.database = database
         self.codetable = self.database.make_standard_code_table()
+        print("#######CodeTable######")
+        print(self.codetable)
         self.list_pattern_from_estimate = []
         self.alignement = Alignement(0, 0, Pattern([]))
 
     def search(self):
+        """
+            Main function of the algorithm SQS_SEARCH
+            Use the internal database that was initialized
+            to return a set of interesting patterns for data mining
+
+            :return: The set of relevant patterns
+            :rtype: set_pattern
+        """
         list_patern = []
         self.alignement = self.run([])
         # while self.changes:
@@ -38,6 +51,13 @@ class SQS:
         return list_patern
 
     def run(self, set_pattern):
+        """
+            Function ???
+
+            :param set_pattern: set of pattern used
+            :return: The Alignement of the sequence
+            :rtype: Alignement
+        """
         changes = True
 
         list_window = []
@@ -50,7 +70,9 @@ class SQS:
                 list_window.append(self.find_windows(pattern))
                 pattern.set_usage(len(list_window))
         list_window_merged = merge(self.database, list_window)
-        # while changes:
+        print("list_window_merged")
+        print(list_window_merged)
+        #while changes:
         old_alignement = alignement
         alignement = self.align(list_window_merged)
         if alignement == old_alignement:
@@ -58,6 +80,16 @@ class SQS:
         return alignement
 
     def estimate(self, pattern, alignement):
+        """
+            Estimate take a pattern, its internal database and an alignement
+            to find a pattern with a better length than the one
+            provided in the parameter
+
+            :param pattern: pattern looked upon
+            :param alignement: Alignement considered
+            :return: The pattern with the minimum length
+            :rtype: pattern
+        """
         pass
         """ vx = {}
         wx = {}
@@ -81,12 +113,22 @@ class SQS:
            # t_min = arg_min(T)"""
 
     def prune(self, list_pattern, full):
+        """
+            Prune sort the list of patterns and at the same time,
+            search in an iterative way if the list is the most optimal
+
+            :param list_pattern: list of patterns looked upon
+            :param full: Execute a total search instead of an heuristic one
+            :return: The optimal list of patterns
+            :rtype: list_pattern
+        """
         for pattern in list_pattern:
             print("prune")
             codetable = self.codetable.codetable_from_sqs(self.list_pattern_from_estimate)
-            codetable_except_x = codetable.private(pattern)
+            print(codetable.patternMap)
+            codetable_except_x = self.codetable.private(pattern)
             g = sum_gain(self.alignement)
-            if full or g < calculate_length_codetable(codetable) - calculate_length_codetable(codetable_except_x):
+            if full or g < calculate_length_codetable(self.codetable) - calculate_length_codetable(codetable_except_x):
                 list_pattern_private_x = private(list_pattern, pattern)
                 if calculate_length(self.database, list_pattern_private_x) < calculate_length(self.database,
                                                                                               list_pattern):
@@ -94,7 +136,16 @@ class SQS:
         return list_pattern
 
     def align(self, tabwindow):
-        if tabwindow[0] is None:
+        """
+            From a list of windows provided, create the most optimal list of window
+            disjoint between each other included in the original list.
+
+            :param tabwindow: List of windows for the search
+            :return: The list of mutually dijoint windows with an optimal gain
+            :rtype: list_window
+        """
+        print(tabwindow)
+        if tabwindow is None:
             return
         taboptimal = []
         if (tabwindow[0].cost > 0) & tabwindow[0].pat.active:
@@ -106,11 +157,11 @@ class SQS:
             c = 0
             if next(n):
                 c = next(n).optimalgain
-            if self.gain(n) + c > window.optimalgain | window.pat.active is False:
-                n.optimalgain = self.gain(n) + c
-                n.optimalwindow = n
+            if gain_window(self.codetable, n)+c > window.optcost | window.pat.active is False:
+                n.optcost=gain_window(self.codetable, n)+c
+                n.optimalwindow=n
             else:
-                n.optimalgain = self.gain(window)
+                n.optcost = gain_window(self.codetable, window)
                 n.optimalwindow = window
             taboptimal.append(n)
             n = window

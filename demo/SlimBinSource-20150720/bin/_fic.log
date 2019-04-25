@@ -1,0 +1,19 @@
+[1552494677] -- 13/03/2019 17:31:17 * Initiating (compress_ng,compress)
+[1552494702] -- 13/03/2019 17:31:42 * Initiating (compress_ng,compress)
+[1552494866] -- 13/03/2019 17:34:26 * Initiating (compress_ng,compress)
+[1552494975] -- 13/03/2019 17:36:15 * Initiating (compress_ng,compress)
+[1552495279] -- 13/03/2019 17:41:19 * Initiating (compress_ng,compress)
+[1552495279] -- 13/03/2019 17:41:19 * Finished (compress_ng,compress)
+						This took about 0 seconds, peak mem usage: 59.98 Mb
+[1552495418] -- 13/03/2019 17:43:38 * Initiating (compress_ng,compress)
+[1552495418] -- 13/03/2019 17:43:39 * Finished (compress_ng,compress)
+						This took about 1 seconds, peak mem usage: 59.39 Mb
+[1552495604] -- 13/03/2019 17:46:44 * Initiating (compress_ng,compress)
+[1552495604] -- 13/03/2019 17:46:44 * Finished (compress_ng,compress)
+						This took about 0 seconds, peak mem usage: 59.37 Mb
+[1554331312] -- 04/04/2019 00:41:52 * Initiating (compress_ng,compress)
+[1554331312] -- 04/04/2019 00:41:56 * Finished (compress_ng,compress)
+						This took about 4 seconds, peak mem usage: 60.00 Mb
+[1555861094] -- 21/04/2019 17:38:14 * Initiating (compress_ng,compress)
+[1555861094] -- 21/04/2019 17:38:15 * Finished (compress_ng,compress)
+						This took about 1 seconds, peak mem usage: 59.48 Mb

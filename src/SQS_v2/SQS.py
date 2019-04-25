@@ -121,21 +121,19 @@ class SQS:
         li = sequence.list_item
         i = 0
 
-        while i<len(li)-len(pattern.elements)+1:
+        while i < len(li) - len(pattern.elements) + 1:
             window = True
             if li[i] == pattern.elements[0]:
                 for j in range(1, len(pattern.elements)):
-                    if li[i+j] != pattern.elements[j]:
+                    if li[i + j] != pattern.elements[j]:
                         window = False
                         break
-                    # i = i + len(pattern.elements) - 1
-                if window :
+
+                if window:
                     list_window.append(Window(pattern, i, i + len(pattern.elements) - 1, index))
-                    i = i + len(pattern.elements) - 1
-            i+=1
+                    i = i + len(pattern.elements) - 1  # On saute tout le pattern si il est ajoute
+            i += 1
         return list_window
-
-
 
         '''while len(li) :
 

@@ -119,14 +119,20 @@ class SQS:
     def find_windows_in_sequence(self, pattern, sequence, index):
         list_window = []
         li = sequence.list_item
-        print(pattern.elements)
+        i = 0
 
-        for i in range(0, len(li)):
+        while i<len(li)-len(pattern.elements)+1:
+            window = True
             if li[i] == pattern.elements[0]:
                 for j in range(1, len(pattern.elements)):
                     if li[i+j] != pattern.elements[j]:
+                        window = False
                         break
+                    # i = i + len(pattern.elements) - 1
+                if window :
                     list_window.append(Window(pattern, i, i + len(pattern.elements) - 1, index))
+                    i = i + len(pattern.elements) - 1
+            i+=1
         return list_window
 
 

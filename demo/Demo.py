@@ -25,9 +25,9 @@ def slim_ticket():
 
 def diffnorm():
     if __name__ == '__main__':
-        d = DiffNorm1("chess_demo_all", "chess_demo_u")
-        #  d = DiffNorm1("gen_all", "gen_u")
+        d = DiffNorm1("all_demo", "u_demo")
         d.run()
+
 
 def sqs():
     if __name__ == "__main__":
@@ -36,13 +36,12 @@ def sqs():
         my_file = Files(file_path)
         print(my_file.list_string)
         database = Database(my_file.list_int)
-        sqs = SQS(database)
-        sqs.search()
+        s = SQS(database)
+        s.search()
 
 
-
-#slim_iris()
-#slim_ticket()
-#diffnorm()
-sqs()
+# slim_iris()
+# slim_ticket()
+diffnorm()
+# sqs()
 

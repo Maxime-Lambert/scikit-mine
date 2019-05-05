@@ -84,7 +84,7 @@ class DiffNorm1:
         self.abs_file_path = path.join(dn_dir, data_directory_path)
         self.result_name = nom_db
         self.alphabet_id = -1
-        self.min_usage = 150
+        self.min_usage = 15
         self.min_gain = 1.0
         self.num_iterations = 0
         self.candidates = []
@@ -563,7 +563,7 @@ class DiffNorm1:
         self.generate_candidates()
         while self.candidates:
             self.load_next_candidate()
-            print("CANDIDATES LEFT: " + repr(len(self.candidates)))
+            #  print("CANDIDATES LEFT: " + repr(len(self.candidates)))
             self.add_candidate_to_all()
             w = self.check_gain_in_each()
             self.add_to_chosen(w)
@@ -575,7 +575,7 @@ class DiffNorm1:
             else:
                 self.rejected_candidates.append(self.current_candidate)
         self.set_final_encoded_size()
-        self.pp_db()
+        #  self.pp_db()
         self.write_to_disk()
 
     def pp_db(self):

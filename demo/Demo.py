@@ -42,6 +42,6 @@ def sqs():
 
 # slim_iris()
 # slim_ticket()
-diffnorm()
+# diffnorm()
 # sqs()
 

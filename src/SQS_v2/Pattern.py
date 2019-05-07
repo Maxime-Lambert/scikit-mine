@@ -64,6 +64,7 @@ class Pattern(Pattern):
     def contains(self, list_include):
         if self.elements == list_include.elements:
             return False
+        res = True
         for i in range(len(self.elements)):
             if self.elements[i] == list_include.elements[0]:
                 if len(self.elements) - i < i + len(list_include.elements):
@@ -72,3 +73,9 @@ class Pattern(Pattern):
                     if self.elements[i+j] != list_include.elements[j]:
                         return False
             return True
+        return False
+
+    def is_sub_list(self, other):
+        if self.elements == other.elements:
+            return False
+        return set.issubset(set(other.elements), set(self.elements))

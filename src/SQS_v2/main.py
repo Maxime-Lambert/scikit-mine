@@ -13,4 +13,6 @@ if __name__ == "__main__":
     print(ct)
     sqs = SQS(database)
     sqs.search()
+    #print(list(sqs.codetable.patternMap.keys()))
     print(sqs.codetable)
+

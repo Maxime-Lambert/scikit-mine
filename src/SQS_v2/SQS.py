@@ -54,7 +54,7 @@ class SQS:
             if list_patern == list_patern_old:
                 self.changes = False
             list_patern = self.prune(list_patern, True)
-        #self.codetable.reduce()
+        self.codetable.reduce()
         return list_patern
 
     def run(self, set_pattern):

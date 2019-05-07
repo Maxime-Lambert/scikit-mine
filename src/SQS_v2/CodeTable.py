@@ -61,7 +61,7 @@ class CodeTable(CodeTable):
         """
         if pattern_to_add in self.patternMap:
             for k in self.patternMap.keys():
-                if k == pattern_to_add:
+                if k.elements == pattern_to_add.elements:
                     k.usage += 1
                     k.support += 1
         else:
@@ -117,7 +117,43 @@ class CodeTable(CodeTable):
 
         res = {}
         l = list(self.patternMap.keys())
-        pat = l[0]
+        mini = l[0].usage
+        tmp = [l[0].elements]
+        for i in range(1, len(l)):
+            if l[i].elements not in tmp:
+                tmp.append(l[i].elements)
+        for element in tmp:
+            for pattern in self.order_by_standard_cover_order():
+                if pattern.elements == element:
+                    if pattern.usage < mini:
+                        mini = pattern.usage
+            p = Pattern(element)
+            p.usage = mini
+            res[p] = p.usage
+        self.patternMap = res
+        self.not_include()
+
+
+    def not_include(self):
+        change = True
+        l = self.list_sort_key()
+        res = {}
+        pattern_delete = []
+        while change:
+            old = pattern_delete.copy()
+            for p in l:
+                for pattern in self.order_by_standard_cover_order():
+                    if not p.is_sub_list(pattern):
+                        if pattern.elements not in pattern_delete:
+                            res[pattern] = pattern.usage
+                    else:
+                        if pattern.elements not in pattern_delete:
+                            pattern_delete.append(pattern.elements)
+            change = pattern_delete != old
+        self.patternMap = res
+
+
+        """pat = l[0]
         mini = pat.usage
         tmp = [pat]
         while tmp != []:
@@ -142,4 +178,4 @@ class CodeTable(CodeTable):
                     else:
                         tmp.append(pattern)
             res[pat] = mini
-        self.patternMap = res
+        self.patternMap = res """

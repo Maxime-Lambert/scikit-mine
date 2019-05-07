@@ -1,4 +1,6 @@
 from src.SQS_v2.CodeTable import CodeTable
+from src.Files import Files
+import os
 from src.SQS_v2.Alignement import Alignement
 from src.SQS_v2.Window import Window
 from src.SQS_v2.Database import Database
@@ -8,17 +10,25 @@ from src.SQS_v2.Utils import merge, copy, private, sum_gain, calculate_length, c
 
 class SQS:
     changes = True
-
-    def __init__(self, database):
+    database = None
+    codetable = None
+    list_pattern_from_estimate = []
+    def __init__(self, name):
         """
             Initialize the algorithm with its database,
             and set all its internal parameters to their initial states
 
             :param database: name of the database used
         """
-        self.database = database
+        self.name_file = name
+
+    def run(self):
+        absolute_path = os.path.dirname(os.path.abspath(__file__))
+        file_path = absolute_path + "/../../test/data/SQS/" + self.name_file
+        my_file = Files(file_path)
+        self.database = Database(my_file.list_int)
         self.codetable = self.database.make_standard_code_table()
-        self.list_pattern_from_estimate = []
+        self.search()
 
     def search(self):
         """
@@ -32,7 +42,7 @@ class SQS:
         list_patern = []
         list_patern_union_x = []
         standart_ct = self.codetable
-        alignment = self.run(self.list_pattern_from_estimate)
+        alignment = self.core(self.list_pattern_from_estimate)
         while self.changes:
             if isinstance(list_patern,list):
                 list_patern_old = list_patern.copy()
@@ -57,7 +67,7 @@ class SQS:
         self.codetable.reduce()
         return list_patern
 
-    def run(self, set_pattern):
+    def core(self, set_pattern):
         """
             Function ???
 

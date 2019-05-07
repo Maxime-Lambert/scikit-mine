@@ -45,3 +45,15 @@ def test_find_window_4():
     sqs = SQS(Database([[1, 1,1,2]]))
     for w in sqs.find_windows(p):
         print(w.first)
+
+def test_index_sequence():
+    p = Pattern([1, 2])
+
+    sqs = SQS(Database([[1, 2, 3, 1, 2, 3],
+                        [ 1, 2, 3, 4, 3, 2, 1, 2, 3, 4, 3, 2, 1, 1, 2],
+                        [3, 4, 5, 3, 2, 1],
+                        [1,2]]))
+
+
+    for w in sqs.find_windows(p):
+        print("Sequence:{0}|Index:{1}",w.sequence,w.first)

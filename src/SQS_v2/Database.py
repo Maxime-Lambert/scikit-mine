@@ -23,6 +23,9 @@ class Database:
             self.index = 0
             raise StopIteration
 
+    def __len__(self):
+        return len(self.list_sequence)
+
     def make_standard_code_table(self):
         """
             Make the standard code table of the database, i.e. Code table

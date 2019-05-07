@@ -8,7 +8,7 @@ class Alignement:
         self.index_of_beginning_pattern = index_begin
         self.index_of_ending_pattern = index_ending
         self.pattern = pattern
-        self.pattern.set_active()
+        #self.pattern.set_active()
         self.index_of_pattern = pattern.get_index()
 
     def __repr__(self):

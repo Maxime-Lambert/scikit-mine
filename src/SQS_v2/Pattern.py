@@ -22,6 +22,7 @@ class Pattern(Pattern):
     def __str__(self):
         return str(self.elements)
 
+
     def __eq__(self, other):
         if not isinstance(other, Pattern):
             return False
@@ -50,3 +51,24 @@ class Pattern(Pattern):
 
     def get_index(self):
         return self.index
+
+    def set_usage(self, usage):
+        self.usage = usage
+
+    def union(self, pattern):
+        res = []
+        res.extend(self.elements)
+        res.extend(pattern.elements)
+        return Pattern(res)
+
+    def contains(self, list_include):
+        if self.elements == list_include.elements:
+            return False
+        for i in range(len(self.elements)):
+            if self.elements[i] == list_include.elements[0]:
+                if len(self.elements) - i < i + len(list_include.elements):
+                    return False
+                for j in range(len(list_include.elements)):
+                    if self.elements[i+j] != list_include.elements[j]:
+                        return False
+            return True

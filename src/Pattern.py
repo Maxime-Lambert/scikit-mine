@@ -41,6 +41,7 @@ class Pattern:
 
     def __len__(self):
         return len(self.elements)
+
     def __repr__(self):
         """
             Return a String representation of the pattern

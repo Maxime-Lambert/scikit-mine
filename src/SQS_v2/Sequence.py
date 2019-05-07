@@ -7,6 +7,9 @@ class Sequence:
         self.index = 0
         self.list_item = sequence_int
 
+    def __len__(self):
+        return len(self.list_item)
+
     def __repr__(self):
         return str(self.list_item)
 
